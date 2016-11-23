@@ -1,0 +1,47 @@
+.imagepanzoom {
+  position: relative;
+  overflow: hidden;
+  cursor: move;
+  display: inline-block;
+  width: calc(480px - 3rem);
+  height:  360px;
+  border:  1px solid #ddd;
+
+  .points-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+}
+
+.image-point {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  background: transparent;
+  border: 1px solid #ff0099;
+
+  &:after {
+    content: ' ';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    bottom: 0;
+    width:  1px;
+    background: #ff0099;
+    transform: translateX(-50%);
+  }
+
+  &:before {
+    content: ' ';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height:  1px;
+    background: #ff0099;
+    transform: translateY(-50%);
+  }
+}

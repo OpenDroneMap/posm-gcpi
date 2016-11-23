@@ -1,0 +1,11 @@
+.header {
+  position: relative;
+  padding: 0 1rem;
+  flex: 0;
+  border-bottom: 1px solid #ddd;
+  z-index: 2000;
+
+  h1 {
+    margin: 1rem 0;
+  }
+}

@@ -1,0 +1,42 @@
+.image-panzoom {
+  width: auto;
+  height: auto;
+  max-width: initial;
+  transform: initial;
+  transform-origin: initial;
+
+  &.orientation2 {
+    transform: scale(-1,1);
+    transform-origin: initial;
+  }
+
+  &.orientation3 {
+    transform: rotate(180deg);
+    transform-origin: initial;
+  }
+
+  &.orientation4 {
+    transform: scale(1,-1);
+    transform-origin: initial;
+  }
+
+  &.orientation5 {
+    transform: scale(-1,1) rotate(90deg);
+    transform-origin: top left;
+  }
+
+  &.orientation6 {
+    transform: translateY(-100%) rotate(90deg);
+    transform-origin: left bottom;
+  }
+
+  &.orientation7 {
+    transform: scale(-1,1) translateX(100%) translateY(-100%) rotate(270deg);
+    transform-origin: bottom right;
+  }
+
+  &.orientation8 {
+    transform: translateX(-100%) rotate(270deg);
+    transform-origin: top right;
+  }
+}

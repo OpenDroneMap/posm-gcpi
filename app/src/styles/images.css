@@ -1,0 +1,40 @@
+.images-module {
+  position: relative;
+  padding:  0;
+  margin: 0;
+  background: white;
+
+  ul {
+    display: inline-block;
+    margin: 0 1rem 0 0;
+    border:  1px solid #ddd;
+    border-left: 0;
+    border-right: 0;
+    vertical-align: top;
+  }
+
+  li {
+    position: relative;
+    line-height:  2;
+    font-weight: bold;
+    padding: 0.5em;
+    cursor: pointer;
+
+    &:hover,
+    &.selected {
+      color: #0074D9;
+    };
+
+    span {
+      display: inline-block;
+    }
+
+    .filename {
+      margin-right: 10px;
+    }
+  }
+
+  li + li {
+    border-top:  1px solid #ddd;
+  }
+}

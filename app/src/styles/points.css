@@ -1,0 +1,39 @@
+.control-points {
+  position: absolute;
+  top: 50%;
+  left: 480px;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  transform: translateY(-50%) translateX(-50%);
+  z-index: 2001;
+
+  .btn {
+    padding: 0;
+    height: 26px;
+    width:  26px;
+    vertical-align: top;
+    line-height: 1;
+
+    &:focus {
+      border-color: none;
+      box-shadow: none;
+    }
+  }
+
+  .add, .remove {
+    border: 1px solid #ddd;
+  }
+
+  .point {
+
+    .btn {
+      border:  1px solid #ddd;
+    }
+
+    &.active .btn {
+      border-color: #ff0099;
+    }
+  }
+
+
+}
