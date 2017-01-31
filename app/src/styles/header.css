@@ -7,5 +7,14 @@
 
   h1 {
     margin: 1rem 0;
+    font-size: 1.5rem;
+  }
+
+  .logo {
+    display: inline-block;
+    width: 61px;
+    height: 67px;
+    background: url('../assets/icons/logo.png');
+    vertical-align: bottom;
   }
 }

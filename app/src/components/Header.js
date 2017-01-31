@@ -4,7 +4,7 @@ class Header extends Component {
   render() {
     return (
       <header className="header">
-        <h1>GCPi</h1>
+        <h1><span className='logo'></span>Ground Control Point Interface</h1>
       </header>
     );
   }
