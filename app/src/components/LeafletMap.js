@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import L from 'leaflet';
 import LeafletMapProviders from './LeafletMap-Providers';
-import ImagesGetter from '../connectors/ImagesGetter';
-import Images from '../connectors/Images';
-import Points from './Points';
 import PointMarkersMap from './PointMarkersMap';
 
 const MAP_OPTIONS = {
@@ -59,6 +56,7 @@ class LeafletMap extends Component {
 
   initializeMap() {
     const {leafletMap} = this.state;
+    const {onMapPositionChange} = this.props;
     if (leafletMap) return;
 
     let mapContainer = this.refs.lmap;
@@ -66,6 +64,14 @@ class LeafletMap extends Component {
                   .setView([51.505, -0.09], 13);
 
     map.on('mouseup', this.onMapMouseUp, this);
+    map.on('moveend', (evt) => {
+      onMapPositionChange(map.getCenter());
+    });
+
+    // let others know center
+    // method from Wrapped.js
+    onMapPositionChange(map.getCenter());
+
     this.setState({
       leafletMap: map
     });
@@ -80,27 +86,14 @@ class LeafletMap extends Component {
 
   render() {
     const {leafletMap} = this.state;
-    const {imagery, controlpoints} = this.props;
+    const {imagery, controlpoints, setControlPointPosition} = this.props;
 
     return (
-      <section className='inner'>
-        {imagery.items &&
-          <Points addControlPoint={this.props.addControlPoint} toggleControlPointMode={this.props.toggleControlPointMode} fileIndex={imagery.selected} points={this.getPointsForFile(imagery.selected)}/>
-        }
-        <div className='panel panel-images'>
-          <ImagesGetter />
-          <div className='images-container'>
-            <Images leafletMap={leafletMap} />
-          </div>
-        </div>
-        <div className='panel panel-map'>
-          <div className='leaflet-map-wrapper'>
-            <div className='leaflet-map' ref='lmap' />
-            <LeafletMapProviders leafletMap={leafletMap} />
-            <PointMarkersMap leafletMap={leafletMap} selectedImage={imagery.selected} points={controlpoints.points} />
-          </div>
-        </div>
-      </section>
+      <div className='leaflet-map-wrapper'>
+        <div className='leaflet-map' ref='lmap' />
+        <LeafletMapProviders leafletMap={leafletMap} />
+        <PointMarkersMap leafletMap={leafletMap} selectedImage={imagery.selected} draggable={controlpoints.active} points={controlpoints.points} updatePosition={setControlPointPosition} />
+      </div>
     );
   }
 }

@@ -15,14 +15,27 @@ export function updateControlPoint(loc) {
 }
 
 export const TOGGLE_CONTROL_POINT_MODE = 'TOGGLE_CONTROL_POINT_MODE';
-export function toggleControlPointMode(location, imageIndex, pointIndex) {
+export function toggleControlPointMode(imageIndex, pointIndex, point=null) {
   return {
     type: TOGGLE_CONTROL_POINT_MODE,
     imageIndex,
     pointIndex,
-    location
+    point
   }
 }
+
+export const SET_CONTROL_POINT_POSITION = 'SET_CONTROL_POINT_POSITION';
+export function setControlPointPosition(loc, id, pos) {
+  return {
+    type: SET_CONTROL_POINT_POSITION,
+    loc,
+    id,
+    pos
+  }
+}
+
+
+
 
 export const SELECT_IMAGE = 'SELECT_IMAGE';
 export function selectImageFile(index) {

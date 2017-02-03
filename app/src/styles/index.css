@@ -4,7 +4,12 @@ html, body, #root {
 }
 
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
+  background: $clr-grey;
+}
+
+button {
+  font-family: Helvetica, Arial, sans-serif;
 }
 
 .table-row {
@@ -15,6 +20,31 @@ body {
   position: relative;
   flex: 1;
 
+  .inner {
+    display:flex;
+    padding: 0;
+    flex-flow: row nowrap;
+    height: 100%;
+  }
+
+  .panel {
+    position: relative;
+    margin-top: 5px;
+    background: #fff;
+
+    &.left {
+      float: none;
+      flex: none;
+      width: 340px;
+    }
+
+    &.right {
+      float: none;
+      flex: auto;
+    }
+  }
+
+   /*
   .inner {
     display:flex;
     flex-flow: row nowrap;
@@ -34,6 +64,7 @@ body {
   .panel-map {
     flex: auto;
   }
+  */
 }
 
 .images-container {

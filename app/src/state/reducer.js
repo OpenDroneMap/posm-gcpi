@@ -38,25 +38,56 @@ function controlpoints(state = INITIAL_STATE, action) {
       return {
         ...state,
         active: false,
-        location: null,
         imageIndex: null,
         pointIndex: null,
         points
       }
+    case actions.SET_CONTROL_POINT_POSITION:
+      return {
+        ...state,
+        points: state.points.map((pt, idx) => {
+                  if (action.id === pt.id) {
+                    console.log('Match');
+                    return {
+                      ...pt,
+                      locations: {
+                        ...pt.locations,
+                        [action.loc]: action.pos
+                      }
+                    }
+                  }
+                  return pt;
+                })
+      }
+
     case actions.TOGGLE_CONTROL_POINT_MODE:
       let active;
-      if (action.location === state.location && action.imageIndex === state.imageIndex && action.pointIndex === state.pointIndex) {
+      if (action.imageIndex === state.imageIndex && action.pointIndex === state.pointIndex) {
         active = !state.active
       } else {
         active = true;
       }
-      return {
+      const st = {
         ...state,
         active: active,
-        location: action.location,
         imageIndex: action.imageIndex,
         pointIndex: action.pointIndex
       }
+
+      if (active && action.point) {
+        st.points = [
+          ...state.points,
+          {
+            imageIndex: action.imageIndex,
+            id: Date.now(),
+            locations: {
+              ...action.point
+            }
+          }
+        ];
+      }
+      return st;
+
     default:
       return state;
   }

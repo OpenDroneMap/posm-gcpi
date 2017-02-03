@@ -4,16 +4,23 @@ import diff from 'deep-diff';
 
 class PointMarkersMap extends Component {
   static propTypes = {
-    leafletMap: PropTypes.object
+    leafletMap: PropTypes.object,
+    updatePosition: PropTypes.func.isRequired,
+    points: PropTypes.array.isRequired,
+    selectedImage: PropTypes.number,
+    draggable: PropTypes.bool
   }
 
   static defaultProps = {
-    leafletMap: null
+    leafletMap: null,
+    selectedImage: 0,
+    draggable: false
   }
 
   constructor(props) {
     super(props);
 
+    this.onMarkerDragEnd = this.onMarkerDragEnd.bind(this);
     this.state = {markers: []};
   }
 
@@ -29,13 +36,20 @@ class PointMarkersMap extends Component {
     let d = diff(preppedMarkers, preppedPoints);
     if (typeof d === 'undefined' || !d.length) return;
 
+    let m = [...markers];
     d.forEach((item) => {
       switch(item.kind) {
         case 'A':
-          this.renderMarker(nextProps.points[item.index]);
+          this.renderMarker(nextProps.points[item.index], m);
           break;
       }
     });
+
+    m.forEach(d => {
+      d.marker.draggable = this.props.draggable;
+    });
+
+    this.setState({markers: m});
   }
 
   componentDidMount() {
@@ -44,9 +58,12 @@ class PointMarkersMap extends Component {
     if (valid) this.renderMarkers(valid);
   }
 
+  componentDidUpdate(prevProps, prevState) {
+
+  }
+
   prepMarkersForDiff(markers) {
     return markers.map((m) => {
-      console.log(m);
       let latlng = m.marker.getLatLng();
       return {
         id: m.id,
@@ -72,30 +89,43 @@ class PointMarkersMap extends Component {
     });
   }
 
-  renderMarker(pt) {
+  renderMarker(pt, arr) {
     const {leafletMap} = this.props;
-    const {markers} = this.state;
-
     if (!leafletMap) return;
 
     let myIcon = L.divIcon({className: 'image-point'});
     let lat = pt.locations.map[0];
     let lng = pt.locations.map[1];
-    let m = L.marker([lat, lng], {icon: myIcon});
+    let m = L.marker([lat, lng], {
+      icon: myIcon,
+      draggable: true
+    });
 
     m.addTo(leafletMap);
+    let me = this;
+    m.on('dragend', function(evt) {
+      me.onMarkerDragEnd(this);
+    });
 
-    markers.push({
+    m._pointid = pt.id;
+
+    arr.push({
       marker: m,
       id: pt.id
     });
   }
 
   renderMarkers(points) {
+    return;
     if (!points.length) return;
     points.forEach((pt) => {
       this.renderMarker(pt);
     });
+  }
+
+  onMarkerDragEnd(marker) {
+    let pos = marker.getLatLng();
+    this.props.updatePosition('map', marker._pointid, [pos.lat, pos.lng]);
   }
 
   render() {

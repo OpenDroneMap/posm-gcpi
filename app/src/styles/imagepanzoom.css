@@ -1,11 +1,15 @@
+.imgpanzoom-container {
+  position: relative;
+
+}
 .imagepanzoom {
   position: relative;
-  overflow: hidden;
-  cursor: move;
   display: inline-block;
-  width: calc(480px - 3rem);
-  height:  360px;
-  border:  1px solid #ddd;
+  cursor: move;
+  width: 244px;
+  height: 160px;
+  border: 2px solid $clr-grey;
+  overflow: hidden;
 
   .points-layer {
     position: absolute;
@@ -22,6 +26,11 @@
   margin: -5px 0 0 -5px;
   background: transparent;
   border: 1px solid #ff0099;
+  pointer-events: none;
+
+  &.draggable{
+    pointer-events: auto;
+  }
 
   &:after {
     content: ' ';
@@ -43,5 +52,63 @@
     height:  1px;
     background: #ff0099;
     transform: translateY(-50%);
+  }
+}
+
+/* Range slider style */
+.rangeslider {
+  position: relative;
+  display: inline-block;
+  margin: 0 0 0 5px;
+  height: 160px;
+  width: 18px;
+  background: #ccc;
+  border-radius: 18px;
+  text-align: center;
+
+  &:after, &:before {
+    content: '\2013';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    color: #fff;
+    font-size: 0.7rem;
+  }
+
+  &:before {
+    content: '+';
+    bottom: auto;
+    top: 0;
+  }
+
+  .rangeslider__fill, .rangeslider__handle {
+    position: absolute;
+  }
+
+  .rangeslider__fill {
+    display: block;
+    bottom: 0;
+    width: 100%;
+    background: #ccc;
+    border-bottom-left-radius: 18px;
+    border-bottom-right-radius: 18px;
+  }
+
+  .rangeslider__handle {
+    display: inline-block;
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 0;
+    background: #999;
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    z-index: 1;
+
+    &:active {
+      background: #999;
+    }
   }
 }

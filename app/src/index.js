@@ -1,6 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/App';
+import WrappedApp from './components/Wrapped';
+
+const ConnectedApp = WrappedApp(App);
 
 // Redux
 import { Provider } from 'react-redux'
@@ -16,7 +19,7 @@ const store = configureStore({imagery: {}, controlpoints:{points:[]}});
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <ConnectedApp />
   </Provider>,
   document.getElementById('root')
 );

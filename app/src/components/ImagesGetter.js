@@ -11,7 +11,9 @@ class ImagesGetter extends Component {
   }
 
   onImagesDrop(acceptedFiles, rejectedFiles) {
+    const {receiveImageFiles} = this.props;
     this.images = acceptedFiles;
+    receiveImageFiles(this.images, this.gcpText);
   }
 
   onTextDrop(acceptedFiles, rejectedFiles) {
@@ -26,7 +28,6 @@ class ImagesGetter extends Component {
   submitLocalFiles(evt) {
     evt.preventDefault();
 
-    this.refs.toggler.checked = false;
     const {receiveImageFiles} = this.props;
     receiveImageFiles(this.images, this.gcpText);
   }
@@ -39,11 +40,8 @@ class ImagesGetter extends Component {
   render() {
     return (
       <div className='images-getter'>
-        <input ref='toggler' id='images-getter-toggle' type='checkbox'/>
-        <label htmlFor='images-getter-toggle' onClick={this.onToggle}><h3>Images</h3> <span>+</span></label>
         <aside className='images-form'>
-          <h3>Local</h3>
-          <h4>GCP text file</h4>
+
           <div className='dropzone-wrapper'>
             <Dropzone
               className='dropzone'
@@ -51,10 +49,9 @@ class ImagesGetter extends Component {
               onDrop={this.onTextDrop}
               activeStyle={{borderStyle: 'solid', backgroundColor: '#eee'}}
               rejectStyle={{borderStyle: 'solid', backgroundColor: '#ffdddd'}}>
-              <div><b>Choose file</b> or drag here.</div>
+              <div>Load existing Control Point File</div>
             </Dropzone>
           </div>
-          <h4>Images</h4>
           <div className='dropzone-wrapper'>
             <Dropzone
               className='dropzone'
@@ -62,15 +59,9 @@ class ImagesGetter extends Component {
               onDrop={this.onImagesDrop}
               activeStyle={{borderStyle: 'solid', backgroundColor: '#eee'}}
               rejectStyle={{borderStyle: 'solid', backgroundColor: '#ffdddd'}}>
-              <div><b>Choose files</b> or drag them here.</div>
+              <div><b>Choose images</b> / drag here</div>
             </Dropzone>
           </div>
-          <div className='clearfix'>
-            <button className='btn btn-primary right' onClick={this.submitLocalFiles}>GO</button>
-          </div>
-
-          <h3>Remote Files</h3>
-          <p className='orange' style={{margin:0, padding: 0}}>Coming soon...</p>
         </aside>
 
       </div>

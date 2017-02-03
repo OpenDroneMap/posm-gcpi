@@ -1,20 +1,22 @@
 import React, { Component, PropTypes } from 'react';
 import Image from './Image';
-import RangeSlider from './RangeSlider';
+import Slider from 'react-rangeslider';
 
 // https://github.com/rexxars/react-element-pan/blob/master/src/element-pan.js
 class ImagePanZoom extends Component {
 
   static propTypes = {
     image: PropTypes.object,
-    onMouseUp: PropTypes.func,
-    points: PropTypes.array
+    points: PropTypes.array,
+    onImagePositionChange: PropTypes.func,
+    markerDraggable: PropTypes.bool
   }
 
   static defaultProps = {
     image: null,
     points: [],
-    onMouseUp: () => {}
+    onImagePositionChange: () => {},
+    markerDraggable: false
   }
 
   constructor(props) {
@@ -22,6 +24,7 @@ class ImagePanZoom extends Component {
 
     this.state = {
       dragging: false,
+      marker: null,
       scale: 1,
       imageWidth: 0,
       imageHeight: 0,
@@ -42,10 +45,10 @@ class ImagePanZoom extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.image !== nextProps.image) {
-      console.log('resetting');
-      console.log(this.props.image, nextProps.image);
       this.reset();
     }
+
+    this.setState({ dragging: false, marker: null });
   }
 
   componentDidMount() {
@@ -72,8 +75,30 @@ class ImagePanZoom extends Component {
     return [x - rect.left, y - rect.top];
   }
 
+  getCenter() {
+    if (!this.el) return [0,0];
+    let rect = this.el.getBoundingClientRect();
+    let x = this.el.scrollLeft + (rect.width / 2);
+    let y = this.el.scrollTop + (rect.height / 2);
+    return [x,y]
+  }
+
+
+  transformPosition(x, y, atNative) {
+    const {imageData, imageWidth, imageHeight} = this.state;
+    const dx = imageWidth / imageData.width;
+    const dy = imageHeight / imageData.height;
+
+    if (atNative) {
+      return [x * (1 / dx), y * (1 / dy)];
+    }
+
+    return [x * dx, y * dx];
+  }
+
   onDownHandler(evt) {
     evt.preventDefault();
+    if (!evt.target) return;
 
     window.addEventListener('mousemove', this.onDragMove);
     window.addEventListener('touchmove', this.onDragMove);
@@ -87,6 +112,7 @@ class ImagePanZoom extends Component {
 
     var state = {
       dragging: true,
+      marker: evt.target.className.indexOf('image-point') > -1 ? evt.target : null,
 
       elHeight: this.el.clientHeight,
       elWidth: this.el.clientWidth,
@@ -111,6 +137,12 @@ class ImagePanZoom extends Component {
 
     let [x, y] = this.getMousePosition(evt);
 
+    if (this.state.marker) {
+      this.state.marker.style.left = `${x}px`;
+      this.state.marker.style.top = `${y}px`;
+      return;
+    }
+
     // Letting the browser automatically stop on scrollHeight
     // gives weird bugs where some extra pixels are showing.
     // Substracting the height/width of the container from the
@@ -126,41 +158,36 @@ class ImagePanZoom extends Component {
     );
   }
 
-  transformPosition(x, y, atOne) {
-    const {imageData, imageWidth, imageHeight} = this.state;
-    const dx = imageWidth / imageData.width;
-    const dy = imageHeight / imageData.height;
-
-    if (atOne) {
-      return [x * (1 / dx), y * (1 / dy)];
-    }
-
-    return [x * dx, y * dx];
-  }
-
   onDragStop(evt) {
+    const {imageData, imageWidth, imageHeight} = this.state;
     let [x, y] = this.getMousePosition(evt);
+
     let left = this.el.scrollLeft;
     let top = this.el.scrollTop;
 
     let [nx, ny] = this.transformPosition(left + x, top + y, true);
 
-    this.setState({ dragging: false });
-
-    this.props.onMouseUp(nx, ny);
+    if (this.state.marker) {
+      this.state.marker.style.left = `${nx}px`;
+      this.state.marker.style.top = `${ny}px`;
+    }
 
     window.removeEventListener('mousemove', this.onDragMove);
     window.removeEventListener('touchmove', this.onDragMove);
     window.removeEventListener('mouseup', this.onDragStop);
     window.removeEventListener('touchend', this.onDragStop);
+
+    let markerId = this.state.marker ? +this.state.marker.getAttribute('data-id') : null;
+    this.props.onImagePositionChange([nx, ny], markerId);
+
+    this.setState({ dragging: false, marker: null });
   }
 
-  onSliderChange(evt) {
-    evt.preventDefault();
+  onSliderChange(value) {
     const {imageData, scaleFn} = this.state;
     if (!imageData.src || !scaleFn) return;
 
-    let scale = +evt.target.value;
+    let scale = value;
     let [imageWidth, imageHeight] = this.scaleImage(imageData.width, imageData.height, scale, scaleFn);
 
     this.setState({scale, imageWidth, imageHeight});
@@ -195,6 +222,7 @@ class ImagePanZoom extends Component {
     this.setState({imageData, scaleFn, scale, imageWidth, imageHeight});
   }
 
+
   // https://github.com/mapbox/simple-linear-scale/blob/master/index.js
   linearScale(domain, range, clamp) {
     return function(value) {
@@ -208,17 +236,20 @@ class ImagePanZoom extends Component {
   }
 
   renderPoints() {
-    const { points, selectedImage } = this.props;
+    const { points, selectedImage, markerDraggable } = this.props;
+    const {imageData, imageWidth, imageHeight} = this.state;
 
     return points.map((pt, i) => {
       if (pt.imageIndex === selectedImage && pt.locations.image) {
         let [x, y] = this.transformPosition(pt.locations.image[0], pt.locations.image[1]);
-        let style ={
+        let style = {
           left: `${x}px`,
           top: `${y}px`
         };
-        return <div key={`ip${i}`}className='image-point' style={style} />;
+        let klass = markerDraggable ? ' draggable' : '';
+        return <div key={`ip${i}`} className={`image-point${klass}`} data-id={pt.id} style={style} />;
       }
+
       return null;
     });
   }
@@ -227,9 +258,12 @@ class ImagePanZoom extends Component {
     const {imageData, scale, imageWidth, imageHeight} = this.state;
     const {image} = this.props;
 
+    let pos = this.getCenter();
+    pos = this.transformPosition(pos[0], pos[1], true);
+    this.props.onImagePositionChange(pos);
+
     return (
       <div className='imgpanzoom-container'>
-        <RangeSlider onChange={this.onSliderChange} value={scale} min={0} max={2} step={0.01}/>
         <div
           ref='container'
           className='imagepanzoom'
@@ -248,6 +282,14 @@ class ImagePanZoom extends Component {
             onImageLoad={this.onImageLoad}
           />
         </div>
+        <Slider
+          value={scale}
+          min={0}
+          max={2}
+          step={0.01}
+          orientation="vertical"
+          onChange={this.onSliderChange}
+        />
       </div>
     );
   }
