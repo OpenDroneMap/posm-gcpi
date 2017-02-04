@@ -28,7 +28,16 @@
         width: 53px;
         margin-right: 2px;
         background: #fff;
+
+        &.active {
+          background: $clr-green;
+        }
+
+        &.active.edit {
+          background: $clr-yellow;
+        }
       }
+
       li:last-child {
         margin-right: 0;
       }

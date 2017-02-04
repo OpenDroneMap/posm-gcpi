@@ -78,12 +78,17 @@
     }
 
     &.gcp {
+      background-image: url('../assets/icons/add_point_green.png');
+    }
+
+    &.gcp.add {
       background-image: url('../assets/icons/add_point.png');
     }
 
     &.gcp.active {
       background-image: url('../assets/icons/add_point_yellow.png');
     }
+
   }
 
   .img-container {
@@ -106,18 +111,30 @@
       vertical-align: top;
       text-align: left;
       line-height: 20px;
+    }
 
-      .icon {
-        width: 20px;
-        height: 20px;
-        vertical-align: top;
-        margin-right: 5px;
-      }
+    .icon {
+      width: 20px;
+      height: 20px;
+      vertical-align: top;
+      margin-right: 5px;
     }
 
     li {
-      line-height: 34px;
+      position: relative;
+      line-height: 1;
       margin-bottom: 0;
+
+      &.disabled {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      .icon.remove {
+        position: absolute;
+        right: 0;
+        top: 5px;
+      }
     }
   }
 }

@@ -6,6 +6,14 @@ export function addControlPoint(imageIndex) {
   }
 }
 
+export const DELETE_CONTROL_POINT = 'DELETE_CONTROL_POINT';
+export function deleteControlPoint(id) {
+  return {
+    type: DELETE_CONTROL_POINT,
+    id
+  }
+}
+
 export const UPDATE_CONTROL_POINT = 'UPDATE_CONTROL_POINT';
 export function updateControlPoint(loc) {
   return {
@@ -15,11 +23,11 @@ export function updateControlPoint(loc) {
 }
 
 export const TOGGLE_CONTROL_POINT_MODE = 'TOGGLE_CONTROL_POINT_MODE';
-export function toggleControlPointMode(imageIndex, pointIndex, point=null) {
+export function toggleControlPointMode(imageIndex, pointId, point=null) {
   return {
     type: TOGGLE_CONTROL_POINT_MODE,
     imageIndex,
-    pointIndex,
+    pointId,
     point
   }
 }
@@ -48,31 +56,16 @@ export function selectImageFile(index) {
 export const RECEIVE_IMAGE_FILES = 'RECEIVE_IMAGE_FILES';
 // Expects an array of File / Blob objects or strings
 export function receiveImageFiles(files) {
-  var isFileObjects = Object.prototype.toString.call(files[0]) === '[object File]' || Object.prototype.toString.call(files[0]) === '[object Blob]';
+  // var isFileObjects = Object.prototype.toString.call(files[0]) === '[object File]' || Object.prototype.toString.call(files[0]) === '[object Blob]';
 
-  let items = files.map((file)=>{
-    return {file, points: initializePoints()};
+  let now = +new Date();
+  files.forEach((f,i) => {
+    f.id = now + i;
   });
 
   return {
     type: RECEIVE_IMAGE_FILES,
-    items,
-    receivedAt: Date.now()
-  }
-}
-
-function initializePoints() {
-  return {
-    points: [],
-    addPoint: function(lat,lng) {
-      this.points.push([lat,lng]);
-    },
-    updatePoint: function(idx, lat, lng) {
-      if (!this.points[idx]) return new Error('Can not update point, index out of range');
-      this.points[idx] = [lat,lng]
-    },
-    isValid: function() {
-      return this.points.length === 3;
-    }
+    items: files,
+    receivedAt: now
   }
 }

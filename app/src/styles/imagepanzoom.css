@@ -21,38 +21,41 @@
 
 .image-point {
   position: absolute;
-  width: 10px;
-  height: 10px;
-  margin: -5px 0 0 -5px;
-  background: transparent;
-  border: 1px solid #ff0099;
+  width: 38px;
+  height: 38px;
+  margin: -19px 0 0 -19px;
+  background: url('../assets/icons/gcp.png') 50% 50% no-repeat;
+  background-size: contain;
   pointer-events: none;
 
-  &.draggable{
+  .imagepanzoom & {
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+  }
+
+  &.draggable {
     pointer-events: auto;
   }
 
-  &:after {
+  &.draggable:after,
+  &.leaflet-marker-draggable:after {
     content: ' ';
-    position: absolute;
+    position:absolute;
+    width: 58px;
+    height: 38px;
     top: 0;
-    left: 50%;
-    bottom: 0;
-    width:  1px;
-    background: #ff0099;
-    transform: translateX(-50%);
+    left: 18px;
+    background: url('../assets/icons/gcp-check.png') 50% 50% no-repeat;
+    background-size: contain;
   }
 
-  &:before {
-    content: ' ';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height:  1px;
-    background: #ff0099;
-    transform: translateY(-50%);
+  .imagepanzoom &.draggable:after {
+    width: 31px;
+    height: 20px;
+    left: 9px;
   }
+
 }
 
 /* Range slider style */

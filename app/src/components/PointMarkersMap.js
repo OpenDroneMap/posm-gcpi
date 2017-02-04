@@ -1,6 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import L from 'leaflet';
-import diff from 'deep-diff';
+
+const ICON = {
+  className: 'image-point',
+  iconSize: [38,38]
+};
 
 class PointMarkersMap extends Component {
   static propTypes = {
@@ -27,61 +31,40 @@ class PointMarkersMap extends Component {
   // adding markers here so we can
   // update state w/o re-rendering
   componentWillReceiveProps(nextProps) {
-    const {markers} = this.state;
+    let {markers} = this.state;
+    const {draggable} = nextProps;
 
-    let valid = this.getValidPoints(nextProps.points);
-    let preppedMarkers = this.prepMarkersForDiff(markers);
-    let preppedPoints = this.prepPointForDiff(valid);
+    let points = this.getValidPoints(nextProps.points);
 
-    let d = diff(preppedMarkers, preppedPoints);
-    if (typeof d === 'undefined' || !d.length) return;
+    // if same then go
+    if (points.length === markers.length) return;
 
-    let m = [...markers];
-    d.forEach((item) => {
-      switch(item.kind) {
-        case 'A':
-          this.renderMarker(nextProps.points[item.index], m);
-          break;
-      }
-    });
+    // if markers > points, delete
+    if (markers.length > points.length) {
+      markers = this.deleteMarkers(markers, points);
+    }
 
-    m.forEach(d => {
-      d.marker.draggable = this.props.draggable;
-    });
+    // if markers < points, add
+    if (points.length > markers.length) {
+      markers = this.addMarkers(markers, points);
+    }
 
-    this.setState({markers: m});
+    this.setState({markers});
   }
 
-  componentDidMount() {
-    var valid = this.getValidPoints(this.props.points);
+  componentDidUpdate() {
+    const {draggable} = this.props;
 
-    if (valid) this.renderMarkers(valid);
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-
-  }
-
-  prepMarkersForDiff(markers) {
-    return markers.map((m) => {
-      let latlng = m.marker.getLatLng();
-      return {
-        id: m.id,
-        lat: latlng.lat,
-        lng: latlng.lng
+    this.state.markers.forEach(m => {
+      if (draggable) {
+        m.marker.dragging.enable();
+      } else {
+        m.marker.dragging.disable();
       }
     });
   }
 
-  prepPointForDiff(points) {
-    return points.map((pt) => {
-      return {
-        id: pt.id,
-        lat: pt.locations.map[0],
-        lng: pt.locations.map[1]
-      }
-    });
-  }
+  componentDidMount() {}
 
   getValidPoints(points) {
     return points.filter((pt) => {
@@ -89,11 +72,54 @@ class PointMarkersMap extends Component {
     });
   }
 
-  renderMarker(pt, arr) {
+  createHash(arr, key='id') {
+    let h = {};
+    arr.forEach((m, i) => {
+      h[m.id] = i;
+    });
+
+    return h;
+  }
+
+  deleteMarkers(markers, points) {
     const {leafletMap} = this.props;
     if (!leafletMap) return;
 
-    let myIcon = L.divIcon({className: 'image-point'});
+    const hash = this.createHash(points);
+
+    return markers.filter(m => {
+      let r = hash.hasOwnProperty(m.id);
+
+      if (!r) {
+        leafletMap.removeLayer(m.marker);
+        m.marker = null;
+      }
+
+      return r;
+    });
+  }
+
+  addMarkers(markers, points) {
+    const {leafletMap} = this.props;
+    if (!leafletMap) return;
+
+    const hash = this.createHash(markers);
+
+    points.forEach(pt => {
+      let r = hash.hasOwnProperty(pt.id);
+      if (!r) {
+        markers.push(this.renderMarker(pt));
+      }
+    });
+
+    return markers;
+  }
+
+  renderMarker(pt) {
+    const {leafletMap} = this.props;
+    if (!leafletMap) return;
+
+    let myIcon = L.divIcon(ICON);
     let lat = pt.locations.map[0];
     let lng = pt.locations.map[1];
     let m = L.marker([lat, lng], {
@@ -109,18 +135,10 @@ class PointMarkersMap extends Component {
 
     m._pointid = pt.id;
 
-    arr.push({
+    return {
       marker: m,
       id: pt.id
-    });
-  }
-
-  renderMarkers(points) {
-    return;
-    if (!points.length) return;
-    points.forEach((pt) => {
-      this.renderMarker(pt);
-    });
+    };
   }
 
   onMarkerDragEnd(marker) {

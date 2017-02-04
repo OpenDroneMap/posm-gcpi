@@ -6,6 +6,17 @@ const INITIAL_STATE = {};
 
 function controlpoints(state = INITIAL_STATE, action) {
   switch (action.type) {
+    case actions.DELETE_CONTROL_POINT:
+      return {
+        ...state,
+        active: false,
+        imageIndex: null,
+        pointIndex: null,
+        points: state.points.filter(pt => {
+          return pt.id !== action.id;
+        })
+      }
+
     case actions.ADD_CONTROL_POINT:
       return {
         ...state,
@@ -47,7 +58,6 @@ function controlpoints(state = INITIAL_STATE, action) {
         ...state,
         points: state.points.map((pt, idx) => {
                   if (action.id === pt.id) {
-                    console.log('Match');
                     return {
                       ...pt,
                       locations: {
@@ -61,17 +71,13 @@ function controlpoints(state = INITIAL_STATE, action) {
       }
 
     case actions.TOGGLE_CONTROL_POINT_MODE:
-      let active;
-      if (action.imageIndex === state.imageIndex && action.pointIndex === state.pointIndex) {
-        active = !state.active
-      } else {
-        active = true;
-      }
+      let active = !state.active
+
       const st = {
         ...state,
         active: active,
-        imageIndex: action.imageIndex,
-        pointIndex: action.pointIndex
+        imageIndex: active ? action.imageIndex : null,
+        pointId: active ? action.pointId : null
       }
 
       if (active && action.point) {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Header from './Header';
 import Directions from './Directions';
-import ControlPoints from './ControlPoints';
+import ControlPoints from '../connectors/ControlPoints';
 import ExportButton from './ExportButton';
 import LeafletMap from '../connectors/LeafletMap';
 

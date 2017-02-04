@@ -25,14 +25,20 @@ class Images extends Component {
     }
   }
 
-  toggleEditing(evt, imageIndex, pointIndex) {
+  toggleEditing(evt, imageid, pointtId, addPt) {
     evt.preventDefault();
 
+    if (!addPt) return this.props.toggleControlPointMode(imageid, pointtId, null);
+
     let positions = this.props.getPositions();
-    this.props.toggleControlPointMode(imageIndex, pointIndex, {
+    this.props.toggleControlPointMode(imageid, pointtId, {
       image: [...positions.image],
       map: [positions.map.lat, positions.map.lng]
     });
+  }
+
+  deleteGCP(id) {
+    this.props.deleteControlPoint(id);
   }
 
   renderImagess() {
@@ -53,10 +59,24 @@ class Images extends Component {
   }
 
   renderPoints(imgIndex) {
-    const {controlpoints} = this.props;
-    let klass = controlpoints.active ? 'active' : '';
-    let points = [<li key='pt' className={klass}><button onClick={(evt) => {this.toggleEditing(evt,imgIndex,0);}}><span className={`icon gcp ${klass}`}></span>Add Ground Control Point</button></li>];
+    const {controlpoints, imagery} = this.props;
+    let klass;
+    let points = [];
 
+    controlpoints.points.forEach((pt, idx) => {
+      klass = (controlpoints.active && pt.id === controlpoints.pointId) ? 'active' : '';
+      if (controlpoints.active && controlpoints.pointId === null) klass += ' disabled';
+      points.push(
+        <li key={`pt-${idx}`} className={klass}>
+          <button onClick={(evt) => {this.toggleEditing(evt, imgIndex, pt.id);}}>
+          <span className={`icon gcp ${klass}`}></span>Ground Control Point</button>
+          <span className='icon remove' onClick={() => {this.deleteGCP(pt.id);}}></span>
+        </li>
+      );
+    })
+
+    klass = (controlpoints.active && controlpoints.pointId === null) ? 'active' : '';
+    points.push(<li key='pt' className={klass}><button onClick={(evt) => {this.toggleEditing(evt, imgIndex, null, true);}}><span className={`icon gcp add ${klass}`}></span>Add Ground Control Point</button></li>);
     return points;
   }
 
@@ -73,7 +93,8 @@ class Images extends Component {
       if (imagery.selected === idx) klasses.push('selected');
       if (!isImage) klasses.push('empty');
 
-      let image_name = imageryItems[idx] ? imageryItems[idx].file.name : '';
+      let image_name = imageryItems[idx] ? imageryItems[idx].name : '';
+
       return (
         <li key={`image-${idx}`} className={klasses.join(' ')} onClick={() => this.onImageSelect(idx)}>
           <div className='wrapper'>
@@ -92,7 +113,7 @@ class Images extends Component {
 
             <div className='img-container'>
               <ImagePanZoom
-                image={imagery.items[imagery.selected].file}
+                image={imagery.items[imagery.selected]}
                 selectedImage={imagery.selected}
                 points={controlpoints.points}
                 markerDraggable={controlpoints.active}

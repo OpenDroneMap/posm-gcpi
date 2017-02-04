@@ -11,5 +11,8 @@ module.exports = {
   'text-dark': '#000',
   'text-light': '#999',
   'clr-grey': '#999',
-  'clr-black': '#000'
+  'clr-black': '#000',
+  'clr-red': '#C1272D',
+  'clr-yellow': '#FBB03B',
+  'clr-green': '#006837'
 }
