@@ -15,8 +15,17 @@ class Images extends Component {
     selectImageFile(idx);
   }
 
+  onImageDelete(id) {
+    if (!id) return;
+
+    const {controlpoints, deleteImageFile} = this.props;
+    if (controlpoints.active) return;
+
+    deleteImageFile(id);
+  }
+
   onImagePositionChange(xy, markerId) {
-    const {controlpoints, updateControlPoint, onImagePositionChange, setControlPointPosition} = this.props;
+    const {controlpoints, onImagePositionChange, setControlPointPosition} = this.props;
     onImagePositionChange(xy);
 
     // update control point if in edit mode
@@ -41,31 +50,14 @@ class Images extends Component {
     this.props.deleteControlPoint(id);
   }
 
-  renderImagess() {
-    const {imagery, controlpoints} = this.props;
-    return imagery.items.map((item, idx) => {
-      let klass = (imagery.selected === idx) ? 'selected' : '';
-      if (imagery.selected === idx) {
-        return <li key={item.file.name} className={klass} onClick={() => this.onImageSelect(idx)}>
-          <span className='filename'>{item.file.name}</span>
-          <ImagePanZoom image={imagery.items[imagery.selected].file} selectedImage={imagery.selected} onMouseUp={this.onImagePositionChange} points={controlpoints.points}/>
-        </li>;
-      }
-
-      return <li key={item.file.name} className={klass} onClick={() => this.onImageSelect(idx)}>
-        <span className='filename'>{item.file.name}</span>
-      </li>;
-    });
-  }
-
   renderPoints(imgIndex) {
-    const {controlpoints, imagery} = this.props;
+    const {controlpoints} = this.props;
     let klass;
     let points = [];
 
     controlpoints.points.forEach((pt, idx) => {
-      klass = (controlpoints.active && pt.id === controlpoints.pointId) ? 'active' : '';
-      if (controlpoints.active && controlpoints.pointId === null) klass += ' disabled';
+      klass = (controlpoints.active && pt.id === controlpoints.pointId && !controlpoints.adding) ? 'active' : '';
+      if (controlpoints.active && controlpoints.adding) klass += ' disabled';
       points.push(
         <li key={`pt-${idx}`} className={klass}>
           <button onClick={(evt) => {this.toggleEditing(evt, imgIndex, pt.id);}}>
@@ -75,41 +67,44 @@ class Images extends Component {
       );
     })
 
-    klass = (controlpoints.active && controlpoints.pointId === null) ? 'active' : '';
+    klass = (controlpoints.active && controlpoints.adding) ? 'active' : '';
     points.push(<li key='pt' className={klass}><button onClick={(evt) => {this.toggleEditing(evt, imgIndex, null, true);}}><span className={`icon gcp add ${klass}`}></span>Add Ground Control Point</button></li>);
     return points;
   }
 
   renderImages() {
-    const {imagery, controlpoints, onImagePositionChange} = this.props;
+    const {imagery, controlpoints} = this.props;
     let imageryItems = imagery.items ? imagery.items : [];
     let imagesLength = Math.max(imageryItems.length, 5);
     let range = Array.from({length: imagesLength}, (value, key) => key);
 
     return range.map(idx => {
-      let isImage = imageryItems[idx];
+      let image = imageryItems[idx];
       let isSelected = imagery.selected === idx;
+      let image_name = image ? image.name : '';
+      let id = image ? image.id : null;
+
       let klasses = [];
       if (imagery.selected === idx) klasses.push('selected');
-      if (!isImage) klasses.push('empty');
+      if (!image) klasses.push('empty');
 
-      let image_name = imageryItems[idx] ? imageryItems[idx].name : '';
+      let detailsKlass = controlpoints.active ? ' no-remove' : '';
 
       return (
         <li key={`image-${idx}`} className={klasses.join(' ')} onClick={() => this.onImageSelect(idx)}>
           <div className='wrapper'>
-            <div className='details'>
+            <div className={`details${detailsKlass}`}>
               <span className='blocker'></span>
               <span className='icon add'></span>
               <span className='img-name'>{image_name}</span>
-              <span className='icon remove'></span>
+              <span className='icon remove' onClick={() => this.onImageDelete(id)}></span>
             </div>
-            { isImage && isSelected &&
+            { image && isSelected &&
             <ul className='gcp-controls'>
               {this.renderPoints(idx)}
             </ul>
             }
-            { isImage && isSelected &&
+            { image && isSelected &&
 
             <div className='img-container'>
               <ImagePanZoom
@@ -117,6 +112,7 @@ class Images extends Component {
                 selectedImage={imagery.selected}
                 points={controlpoints.points}
                 markerDraggable={controlpoints.active}
+                selectedMarker={controlpoints.pointId}
                 onImagePositionChange={this.onImagePositionChange}/>
             </div>
             }
@@ -124,14 +120,10 @@ class Images extends Component {
         </li>
       );
     });
-
-    return null;
-
   }
 
   render() {
     if (typeof this.props.imagery === 'undefined') return null;
-    const {controlpoints, imagery, points} = this.props;
 
     return (
       <div className='images-module'>

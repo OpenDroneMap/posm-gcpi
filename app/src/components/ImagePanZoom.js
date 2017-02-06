@@ -9,7 +9,8 @@ class ImagePanZoom extends Component {
     image: PropTypes.object,
     points: PropTypes.array,
     onImagePositionChange: PropTypes.func,
-    markerDraggable: PropTypes.bool
+    markerDraggable: PropTypes.bool,
+    selectedMarker: PropTypes.number
   }
 
   static defaultProps = {
@@ -110,9 +111,11 @@ class ImagePanZoom extends Component {
 
     let [startX, startY] = this.getMousePosition(evt);
 
+    this._marker = evt.target.className.indexOf('image-point') > -1 ? evt.target : null;
+
     var state = {
       dragging: true,
-      marker: evt.target.className.indexOf('image-point') > -1 ? evt.target : null,
+      marker: this._marker  ? true : false,
 
       elHeight: this.el.clientHeight,
       elWidth: this.el.clientWidth,
@@ -137,9 +140,9 @@ class ImagePanZoom extends Component {
 
     let [x, y] = this.getMousePosition(evt);
 
-    if (this.state.marker) {
-      this.state.marker.style.left = `${x}px`;
-      this.state.marker.style.top = `${y}px`;
+    if (this._marker) {
+      this._marker.style.left = `${x}px`;
+      this._marker.style.top = `${y}px`;
       return;
     }
 
@@ -159,7 +162,6 @@ class ImagePanZoom extends Component {
   }
 
   onDragStop(evt) {
-    const {imageData, imageWidth, imageHeight} = this.state;
     let [x, y] = this.getMousePosition(evt);
 
     let left = this.el.scrollLeft;
@@ -167,9 +169,9 @@ class ImagePanZoom extends Component {
 
     let [nx, ny] = this.transformPosition(left + x, top + y, true);
 
-    if (this.state.marker) {
-      this.state.marker.style.left = `${nx}px`;
-      this.state.marker.style.top = `${ny}px`;
+    if (this._marker) {
+      this._marker.style.left = `${nx}px`;
+      this._marker.style.top = `${ny}px`;
     }
 
     window.removeEventListener('mousemove', this.onDragMove);
@@ -180,7 +182,8 @@ class ImagePanZoom extends Component {
     let markerId = this.state.marker ? +this.state.marker.getAttribute('data-id') : null;
     this.props.onImagePositionChange([nx, ny], markerId);
 
-    this.setState({ dragging: false, marker: null });
+    this._marker = null;
+    this.setState({ dragging: false, marker: false });
   }
 
   onSliderChange(value) {
@@ -236,8 +239,7 @@ class ImagePanZoom extends Component {
   }
 
   renderPoints() {
-    const { points, selectedImage, markerDraggable } = this.props;
-    const {imageData, imageWidth, imageHeight} = this.state;
+    const { points, selectedImage, markerDraggable, selectedMarker } = this.props;
 
     return points.map((pt, i) => {
       if (pt.imageIndex === selectedImage && pt.locations.image) {
@@ -246,7 +248,8 @@ class ImagePanZoom extends Component {
           left: `${x}px`,
           top: `${y}px`
         };
-        let klass = markerDraggable ? ' draggable' : '';
+
+        let klass = markerDraggable && selectedMarker === pt.id ? ' draggable' : '';
         return <div key={`ip${i}`} className={`image-point${klass}`} data-id={pt.id} style={style} />;
       }
 

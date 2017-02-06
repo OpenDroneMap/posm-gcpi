@@ -66,11 +66,12 @@
   },
   "license": "BSD",
   "main": "n/a",
-  "homepage": "/posmodm/show/gcpi_11172016",
+  "homepage": "/posmodm/show/gcpi",
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js --env=jsdom"
+    "test": "node scripts/test.js --env=jsdom",
+    "deploy:latest": "scp -rq ./build/. studio.stamen.com:www/posmodm/show/gcpi"
   },
   "jest": {
     "moduleFileExtensions": [

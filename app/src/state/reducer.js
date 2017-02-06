@@ -12,47 +12,12 @@ function controlpoints(state = INITIAL_STATE, action) {
         active: false,
         imageIndex: null,
         pointIndex: null,
+        adding: false,
         points: state.points.filter(pt => {
           return pt.id !== action.id;
         })
       }
 
-    case actions.ADD_CONTROL_POINT:
-      return {
-        ...state,
-        points: [
-          ...state.points,
-          {
-            imageIndex: action.imageIndex,
-            id: Date.now(),
-            locations: {
-              map: null,
-              image: null
-            }
-          }
-        ]
-      }
-    case actions.UPDATE_CONTROL_POINT:
-      let points = state.points.map((pt, idx) => {
-        if (idx === state.pointIndex) {
-          return {
-            ...pt,
-            locations: {
-              ...pt.locations,
-              [state.location]: action.loc
-            }
-          }
-        }
-
-        return pt;
-      });
-      return {
-        ...state,
-        active: false,
-        imageIndex: null,
-        pointIndex: null,
-        points
-      }
     case actions.SET_CONTROL_POINT_POSITION:
       return {
         ...state,
@@ -77,15 +42,20 @@ function controlpoints(state = INITIAL_STATE, action) {
         ...state,
         active: active,
         imageIndex: active ? action.imageIndex : null,
-        pointId: active ? action.pointId : null
+        pointId: active ? action.pointId  : null,
+        adding: false
       }
 
       if (active && action.point) {
+        let now = Date.now();
+        st.adding = true;
+        st.pointId = now;
+
         st.points = [
           ...state.points,
           {
             imageIndex: action.imageIndex,
-            id: Date.now(),
+            id: now,
             locations: {
               ...action.point
             }
@@ -106,12 +76,25 @@ function imagery(state = INITIAL_STATE, action) {
         ...state,
         selected: action.index
       }
-    case actions.RECEIVE_IMAGE_FILES:
+
+    case actions.DELETE_IMAGE:
       return {
         ...state,
-        items: action.items,
+        items: state.items.filter(d => {
+          return d.id !== action.id;
+        })
+      }
+
+    case actions.RECEIVE_IMAGE_FILES:
+      let items = state.items || [];
+      return {
+        ...state,
+        items: [
+          ...items,
+          ...action.items
+        ],
         receivedAt: action.receivedAt,
-        selected: 0
+        selected: state.selected || 0
       };
 
     default:

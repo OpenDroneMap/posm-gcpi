@@ -11,13 +11,13 @@ class PointMarkersMap extends Component {
     leafletMap: PropTypes.object,
     updatePosition: PropTypes.func.isRequired,
     points: PropTypes.array.isRequired,
-    selectedImage: PropTypes.number,
+    selectedMarker: PropTypes.number,
     draggable: PropTypes.bool
   }
 
   static defaultProps = {
     leafletMap: null,
-    selectedImage: 0,
+    selectedMarker: -1,
     draggable: false
   }
 
@@ -32,7 +32,6 @@ class PointMarkersMap extends Component {
   // update state w/o re-rendering
   componentWillReceiveProps(nextProps) {
     let {markers} = this.state;
-    const {draggable} = nextProps;
 
     let points = this.getValidPoints(nextProps.points);
 
@@ -53,10 +52,10 @@ class PointMarkersMap extends Component {
   }
 
   componentDidUpdate() {
-    const {draggable} = this.props;
+    const {draggable, selectedMarker} = this.props;
 
     this.state.markers.forEach(m => {
-      if (draggable) {
+      if (draggable && m.id === selectedMarker) {
         m.marker.dragging.enable();
       } else {
         m.marker.dragging.disable();

@@ -1,24 +1,8 @@
-export const ADD_CONTROL_POINT = 'ADD_CONTROL_POINT';
-export function addControlPoint(imageIndex) {
-  return {
-    type: ADD_CONTROL_POINT,
-    imageIndex
-  }
-}
-
 export const DELETE_CONTROL_POINT = 'DELETE_CONTROL_POINT';
 export function deleteControlPoint(id) {
   return {
     type: DELETE_CONTROL_POINT,
     id
-  }
-}
-
-export const UPDATE_CONTROL_POINT = 'UPDATE_CONTROL_POINT';
-export function updateControlPoint(loc) {
-  return {
-    type: UPDATE_CONTROL_POINT,
-    loc
   }
 }
 
@@ -44,6 +28,13 @@ export function setControlPointPosition(loc, id, pos) {
 
 
 
+export const DELETE_IMAGE = 'DELETE_IMAGE';
+export function deleteImageFile(id) {
+  return {
+    type: DELETE_IMAGE,
+    id
+  }
+}
 
 export const SELECT_IMAGE = 'SELECT_IMAGE';
 export function selectImageFile(index) {

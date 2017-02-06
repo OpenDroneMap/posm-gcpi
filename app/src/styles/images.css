@@ -29,6 +29,15 @@
       background: rgba(255, 255, 255, 0.5);
     }
 
+    &.no-remove {
+      .blocker {
+        display: block;
+        left: auto;
+        right: 0;
+        width: 34px;
+      }
+    }
+
     span {
       display: inline-block;
       vertical-align: middle;
@@ -87,6 +96,11 @@
 
     &.gcp.active {
       background-image: url('../assets/icons/add_point_yellow.png');
+    }
+
+    &.disabled {
+      opacity: 0.5;
+      pointer-events: none;
     }
 
   }
