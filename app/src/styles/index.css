@@ -16,56 +16,6 @@ button {
   display: table-row;
 }
 
-.main {
-  position: relative;
-  flex: 1;
-
-  .inner {
-    display:flex;
-    padding: 0;
-    flex-flow: row nowrap;
-    height: 100%;
-  }
-
-  .panel {
-    position: relative;
-    margin-top: 5px;
-    background: #fff;
-
-    &.left {
-      float: none;
-      flex: none;
-      width: 340px;
-    }
-
-    &.right {
-      float: none;
-      flex: auto;
-    }
-  }
-
-   /*
-  .inner {
-    display:flex;
-    flex-flow: row nowrap;
-    height: 100%;
-  }
-
-  .panel {
-    position: relative;
-  }
-
-  .panel-images {
-    flex: none;
-    width: 480px;
-    padding: 0 1rem;
-  }
-
-  .panel-map {
-    flex: auto;
-  }
-  */
-}
 
 .images-container {
   margin-top: 0.5rem;

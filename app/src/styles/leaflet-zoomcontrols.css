@@ -1,0 +1,10 @@
+.leaflet-zoom-controls {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1rem;
+  z-index: 1001;
+
+  .leaflet-control-fit-bounds {
+    font-size: 14px;
+  }
+}

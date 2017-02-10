@@ -34,17 +34,22 @@ class Image extends Component {
     if (!src) return;
     const {onImageLoad} = this.props;
     const needsRevoking = (ImageLoader.isInstanceOf('Blob', src) || ImageLoader.isInstanceOf('File', src));
-
     ImageLoader(
         src,
         function (img, meta) {
 
           if (typeof onImageLoad === 'function') {
+            let orientation = meta.exif.get('Orientation');
+            let width = img.width;
+            let height = img.height;
+
+            let isPortrait = (orientation === 8 || orientation === 6) ? true : false;
             onImageLoad({
               src: img.src,
-              width: img.width,
-              height: img.height,
-              orientation: meta.exif.get('Orientation'),
+              width,
+              height,
+              isPortrait,
+              orientation,
               needsRevoking
             }, meta);
           }

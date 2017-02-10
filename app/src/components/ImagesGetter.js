@@ -17,11 +17,11 @@ class ImagesGetter extends Component {
   }
 
   onTextDrop(acceptedFiles, rejectedFiles) {
+    const {receiveGcpFile} = this.props;
     let fReader = new FileReader();
     fReader.readAsText(acceptedFiles[0]);
     fReader.onload = () => {
-      let rows = fReader.result.split('\n');
-      this.gcpText = rows;
+      receiveGcpFile(fReader.result)
     };
   }
 

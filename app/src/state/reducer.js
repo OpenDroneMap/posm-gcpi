@@ -3,6 +3,33 @@ import * as actions from './actions';
 
 const INITIAL_STATE = {};
 // const identity = (state = INITIAL_STATE, action) => state;
+//
+function windowSize(state = INITIAL_STATE, action) {
+  switch (action.type) {
+    case actions.ON_WINDOW_RESIZE:
+      return {
+        ...state,
+        size: action.size
+      }
+
+    default:
+      return state;
+  }
+}
+
+function exporter(state = INITIAL_STATE, action) {
+  switch (action.type) {
+    case actions.TOGGLE_EXPORT:
+      return {
+        active: !state.active
+      }
+
+    default:
+      return state;
+  }
+}
+
+
 
 function controlpoints(state = INITIAL_STATE, action) {
   switch (action.type) {
@@ -54,15 +81,49 @@ function controlpoints(state = INITIAL_STATE, action) {
         st.points = [
           ...state.points,
           {
+            imageName: action.imageName,
             imageIndex: action.imageIndex,
+            hasImage: true,
             id: now,
             locations: {
-              ...action.point
+              ...action.point,
+              z: 0
             }
           }
         ];
       }
       return st;
+
+    case 'SYNC_CONTROL_POINTS':
+      //lng lat z1 pixelx1 pixely1 imagename1
+      let images = action.images || [];
+      let list = action.list || [];
+      if (!list.length) return state;
+
+      let pts = [...state.points];
+      let now = Date.now();
+      list.forEach((r,i) => {
+        let index = images.findIndex( d => d.name === r[5] );
+
+        if (index > -1) {
+          pts.push({
+            imageName: images[index].name,
+            imageIndex: index,
+            hasImage: true,
+            id: now + i,
+            locations: {
+              map: [r[1], r[0]],
+              image: [r[3], r[4]],
+              z: r[2]
+            }
+          });
+        }
+      });
+
+      return {
+        ...state,
+        points: pts
+      };
 
     default:
       return state;
@@ -97,6 +158,13 @@ function imagery(state = INITIAL_STATE, action) {
         selected: state.selected || 0
       };
 
+    case actions.RECEIVE_GCP_FILE:
+      return {
+        ...state,
+        projection: action.projection,
+        gcp_list: action.rows
+      }
+
     default:
       return state;
   }
@@ -104,7 +172,9 @@ function imagery(state = INITIAL_STATE, action) {
 
 const combinedReducers = combineReducers({
   imagery,
-  controlpoints
+  controlpoints,
+  windowSize,
+  exporter
 });
 
 

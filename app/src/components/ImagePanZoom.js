@@ -26,9 +26,12 @@ class ImagePanZoom extends Component {
     this.state = {
       dragging: false,
       marker: null,
-      scale: 1,
+      scale: null,
+      minScale: 0,
       imageWidth: 0,
       imageHeight: 0,
+      scrollLeft: 0,
+      scrollTop: 0,
       imageData: {
         src: null,
         width: 0,
@@ -52,8 +55,15 @@ class ImagePanZoom extends Component {
     this.setState({ dragging: false, marker: null });
   }
 
-  componentDidMount() {
-    this.el = this.refs.container;
+  componentDidMount() {}
+
+  componentDidUpdate() {
+    const {scrollLeft, scrollTop} = this.state;
+
+    if (this.el) {
+      this.el.scrollLeft = scrollLeft;
+      this.el.scrollTop = scrollTop;
+    }
   }
 
   reset() {
@@ -84,9 +94,9 @@ class ImagePanZoom extends Component {
     return [x,y]
   }
 
-
   transformPosition(x, y, atNative) {
     const {imageData, imageWidth, imageHeight} = this.state;
+
     const dx = imageWidth / imageData.width;
     const dy = imageHeight / imageData.height;
 
@@ -162,6 +172,7 @@ class ImagePanZoom extends Component {
   }
 
   onDragStop(evt) {
+    const { imageWidth, imageHeight, scale } = this.state;
     let [x, y] = this.getMousePosition(evt);
 
     let left = this.el.scrollLeft;
@@ -183,46 +194,70 @@ class ImagePanZoom extends Component {
     this.props.onImagePositionChange([nx, ny], markerId);
 
     this._marker = null;
-    this.setState({ dragging: false, marker: false });
+    this.setState({ dragging: false, marker: false, scrollLeft: left, scrollTop: top });
   }
 
   onSliderChange(value) {
-    const {imageData, scaleFn} = this.state;
-    if (!imageData.src || !scaleFn) return;
+    const {imageData} = this.state;
+    if (!imageData.src) return;
 
     let scale = value;
-    let [imageWidth, imageHeight] = this.scaleImage(imageData.width, imageData.height, scale, scaleFn);
-
-    this.setState({scale, imageWidth, imageHeight});
+    let [imageWidth, imageHeight, scrollLeft, scrollTop] = this.scaleImage(imageData.width, imageData.height, scale);
+    this.setState({scale, imageWidth, imageHeight, scrollLeft, scrollTop});
   }
 
-  scaleImage(width, height, scale, fn) {
-    let ratio, dim;
+  getNativeCenter(left, top, scale) {
+    let {scrollLeft, scrollTop} = this.state;
 
-    if (width > height) {
-      ratio = height / width;
-      dim = fn(scale);
-      return [dim, dim * ratio];
+    let x = (left + 122) * (1/scale);
+    let y = (top + 80) * (1/scale);
+    return [x, y];
+  }
+
+  scaleImage(width, height, _scale, imageData, initialCalc) {
+    const { imageWidth, imageHeight, scrollLeft, scrollTop, scale} = this.state;
+    let ratio = height / width;
+    let w = width * _scale;
+    let h = w * ratio;
+
+
+    let sx = w / width;
+    let sy = h / height;
+
+    let dx, dy;
+    if (initialCalc) {
+      if (imageData.isPortrait) {
+        dx = (h / 2) - 122;
+        dy = (w / 2) - 80;
+      } else {
+        dx = (w / 2) - 122;
+        dy = (h / 2) - 80;
+      }
+      return [w, h, dx, dy];
     }
 
-    ratio = width / height;
-    dim = fn(scale);
-    return [dim * ratio, dim];
+
+    let c = this.getNativeCenter(scrollLeft, scrollTop, scale);
+    dx = (c[0] * sx) - 122;
+    dy = (c[1] * sy) - 80;
+
+
+    return [w, h, dx, dy];
   }
 
   onImageLoad(imageData, imageMeta) {
     let {width, height} = imageData;
 
-    let min = (width > height) ? 432 : 360;
-    let max = (width > height) ? width * 2 : height * 2;
+    // 244 & 160 come from css width / height for .imagepanzoom
+    let minWidth = 244 / width;
+    let minHeight = 160 / height;
+    let minScale = Math.round(Math.max(minWidth, minHeight) * 10) / 10;
 
-    let scaleFn = this.linearScale([0,2], [min, max], true);
-    let scaleFnInverse = this.linearScale([min, max], [0,2], true);
+    let scale = 0.5;
+    this.__scale = scale;
+    let [imageWidth, imageHeight, scrollLeft, scrollTop] = this.scaleImage(width, height, scale, imageData, true);
 
-    let scale = scaleFnInverse(max / 2);
-    let [imageWidth, imageHeight] = this.scaleImage(width, height, scale, scaleFn);
-
-    this.setState({imageData, scaleFn, scale, imageWidth, imageHeight});
+    this.setState({imageData, scale, imageWidth, imageHeight, minScale, scrollLeft, scrollTop});
   }
 
 
@@ -240,10 +275,12 @@ class ImagePanZoom extends Component {
 
   renderPoints() {
     const { points, selectedImage, markerDraggable, selectedMarker } = this.props;
+    const {imageData} = this.state;
 
     return points.map((pt, i) => {
       if (pt.imageIndex === selectedImage && pt.locations.image) {
         let [x, y] = this.transformPosition(pt.locations.image[0], pt.locations.image[1]);
+
         let style = {
           left: `${x}px`,
           top: `${y}px`
@@ -258,21 +295,26 @@ class ImagePanZoom extends Component {
   }
 
   render() {
-    const {imageData, scale, imageWidth, imageHeight} = this.state;
+    const {imageData, scale, imageWidth, imageHeight, minScale} = this.state;
     const {image} = this.props;
 
     let pos = this.getCenter();
     pos = this.transformPosition(pos[0], pos[1], true);
     this.props.onImagePositionChange(pos);
 
+    // due to image orientation, we need to reverse dimensions
+    // if image is a portrait
+    let pointsWidth = imageData.isPortrait ? imageHeight : imageWidth;
+    let pointsHeight = imageData.isPortrait ? imageWidth : imageHeight;
+
     return (
       <div className='imgpanzoom-container'>
         <div
-          ref='container'
+          ref={(el) => {this.el = el;}}
           className='imagepanzoom'
           onMouseDown={this.onDownHandler}
           onTouchStart={this.onDownHandler}>
-          <div className='points-layer' style={{width: `${imageWidth}px`, height: `${imageHeight}px`}}>
+          <div className='points-layer' style={{width: `${pointsWidth}px`, height: `${pointsHeight}px`}}>
             {this.renderPoints()}
           </div>
           <Image
@@ -287,7 +329,7 @@ class ImagePanZoom extends Component {
         </div>
         <Slider
           value={scale}
-          min={0}
+          min={minScale}
           max={2}
           step={0.01}
           orientation="vertical"

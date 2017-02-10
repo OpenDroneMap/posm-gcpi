@@ -1,3 +1,18 @@
+export const ON_WINDOW_RESIZE = 'ON_WINDOW_RESIZE';
+export function onWindowResize(size) {
+  return {
+    type: ON_WINDOW_RESIZE,
+    size
+  }
+}
+
+export const TOGGLE_EXPORT = 'TOGGLE_EXPORT';
+export function toggleExport() {
+  return {
+    type: TOGGLE_EXPORT
+  }
+}
+
 export const DELETE_CONTROL_POINT = 'DELETE_CONTROL_POINT';
 export function deleteControlPoint(id) {
   return {
@@ -7,10 +22,11 @@ export function deleteControlPoint(id) {
 }
 
 export const TOGGLE_CONTROL_POINT_MODE = 'TOGGLE_CONTROL_POINT_MODE';
-export function toggleControlPointMode(imageIndex, pointId, point=null) {
+export function toggleControlPointMode(imageIndex, imageName, pointId, point=null) {
   return {
     type: TOGGLE_CONTROL_POINT_MODE,
     imageIndex,
+    imageName,
     pointId,
     point
   }
@@ -49,7 +65,7 @@ export const RECEIVE_IMAGE_FILES = 'RECEIVE_IMAGE_FILES';
 export function receiveImageFiles(files) {
   // var isFileObjects = Object.prototype.toString.call(files[0]) === '[object File]' || Object.prototype.toString.call(files[0]) === '[object Blob]';
 
-  let now = +new Date();
+  let now = Date.now();
   files.forEach((f,i) => {
     f.id = now + i;
   });
@@ -60,3 +76,35 @@ export function receiveImageFiles(files) {
     receivedAt: now
   }
 }
+
+export const RECEIVE_GCP_FILE = 'RECEIVE_GCP_FILE';
+/*
+coordinate system description
+lng lat z1 pixelx1 pixely1 imagename1
+...
+*/
+export function receiveGcpFile(file) {
+
+  let now = Date.now();
+  let rows = file.split('\n').map(r => r.split(' '));
+  let projection = [...rows[0]];
+
+  rows = rows.filter(r => r.length === 6);
+  rows = rows.map(r => {
+    return r.map(d => {
+      if (!isNaN(d)) {
+        d = +d;
+      }
+      return d;
+    });
+  });
+
+  return {
+    type: RECEIVE_GCP_FILE,
+    receivedAt: now,
+    projection,
+    rows
+  }
+}
+
+

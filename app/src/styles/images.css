@@ -51,6 +51,9 @@
       font-size: 0.875rem;
       color: $text-light;
       line-height: 34px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
   }
 
@@ -148,6 +151,12 @@
         position: absolute;
         right: 0;
         top: 5px;
+      }
+
+      &.not-selected {
+        .icon.remove {
+          display: none;
+        }
       }
     }
   }

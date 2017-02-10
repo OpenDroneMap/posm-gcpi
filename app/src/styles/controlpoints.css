@@ -1,4 +1,5 @@
 .control-points-i {
+  overflow: auto;
 
   .overview {
     background: $clr-grey;

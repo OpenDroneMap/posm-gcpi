@@ -5,3 +5,32 @@
   flex-flow: column;
   justify-content: flex-start;
 }
+
+.main {
+  position: relative;
+  flex: 1;
+
+  .inner {
+    display:flex;
+    padding: 0;
+    flex-flow: row nowrap;
+    height: 100%;
+  }
+
+  .panel {
+    position: relative;
+    margin-top: 5px;
+    background: #fff;
+
+    &.left {
+      float: none;
+      flex: 0 0 340px;
+      overflow: hidden;
+    }
+
+    &.right {
+      float: none;
+      flex: auto;
+    }
+  }
+}

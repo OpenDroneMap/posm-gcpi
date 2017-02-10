@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import L from 'leaflet';
 import LeafletMapProviders from './LeafletMap-Providers';
 import PointMarkersMap from './PointMarkersMap';
+import LeafletZoomControls from './Leaflet-ZoomControls.js';
 
 const MAP_OPTIONS = {
   minZoom: 5,
-  scrollWheelZoom: false
+  scrollWheelZoom: false,
+  zoomControl: false
 };
 
 class LeafletMap extends Component {
@@ -17,26 +19,6 @@ class LeafletMap extends Component {
     };
   }
 
-  getPointsForFile(idx) {
-    const {controlpoints} = this.props;
-    let pts = [];
-
-    if (typeof controlpoints.points === 'undefined' || !controlpoints.points) return pts;
-
-    controlpoints.points.forEach(function(point, i){
-      if (point.imageIndex === idx) {
-
-        pts.push({
-          location: controlpoints.location,
-          active: (controlpoints.active && i === controlpoints.pointIndex),
-          imageIndex: point.imageIndex,
-          pointIndex: i
-        });
-      }
-    });
-
-    return pts;
-  }
 
   componentDidMount() {
     this.initializeMap();
@@ -50,6 +32,7 @@ class LeafletMap extends Component {
     let mapContainer = this.refs.lmap;
     let map = L.map(mapContainer, MAP_OPTIONS)
                   .setView([51.505, -0.09], 13);
+
 
     map.on('moveend', (evt) => {
       onMapPositionChange(map.getCenter());
@@ -72,6 +55,7 @@ class LeafletMap extends Component {
       <div className='leaflet-map-wrapper'>
         <div className='leaflet-map' ref='lmap' />
         <LeafletMapProviders leafletMap={leafletMap} />
+        <LeafletZoomControls leafletMap={leafletMap} controlpoints={controlpoints} />
         <PointMarkersMap
           leafletMap={leafletMap}
           selectedMarker={controlpoints.pointId}

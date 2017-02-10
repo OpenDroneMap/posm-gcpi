@@ -8,7 +8,7 @@
   cursor: move;
   width: 244px;
   height: 160px;
-  border: 2px solid $clr-grey;
+  border: none;
   overflow: hidden;
 
   .points-layer {

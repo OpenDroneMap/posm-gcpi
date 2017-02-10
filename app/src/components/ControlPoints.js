@@ -21,8 +21,10 @@ class ControlPoints extends Component {
   }
 
   render() {
+    let style = {height: this.props.height};
+
     return (
-      <div className='control-points-i'>
+      <div className='control-points-i' style={style}>
         <div className='overview'>
           <div>
             <h3>Ground Control Points</h3>
