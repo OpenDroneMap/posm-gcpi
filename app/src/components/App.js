@@ -12,7 +12,7 @@ class App extends Component {
 
   constructor(props) {
     super(props);
-    WindowResizeListener.DEBOUNCE_TIME = 250;
+    WindowResizeListener.DEBOUNCE_TIME = 200;
   }
 
   componentDidMount() {
@@ -34,6 +34,9 @@ class App extends Component {
 
   getLeftPanelHeight() {
     if (!this.innerLeftPanel) return 'auto';
+
+    this.innerLeftPanel.style.height = '1px';
+
     let panelHeight = this.innerLeftPanel.parentNode.offsetHeight;
     return `${panelHeight}px`;
   }
@@ -47,7 +50,7 @@ class App extends Component {
     const {exporter, controlpoints} = this.props;
     let controlPointsHeight = this.getControlPointsHeight();
     let panelHeight = this.getLeftPanelHeight();
-    console.log(this.props);
+    console.log(panelHeight);
 
     return (
       <div className='app'>
@@ -58,8 +61,8 @@ class App extends Component {
         <Header />
         <main className='main'>
           <section className='inner'>
-            <div className='panel left' style={{height: panelHeight}}>
-              <div ref={(el) => {this.innerLeftPanel = el;}}>
+            <div className='panel left'>
+              <div ref={(el) => {this.innerLeftPanel = el;}} style={{height: panelHeight}}>
                 <Directions/>
                 <ControlPoints {...this.props} height={controlPointsHeight}/>
                 <ExportButton onClick={(evt)=>{this.onExportClick(evt);}}/>
