@@ -50,7 +50,6 @@ class App extends Component {
     const {exporter, controlpoints} = this.props;
     let controlPointsHeight = this.getControlPointsHeight();
     let panelHeight = this.getLeftPanelHeight();
-    console.log(panelHeight);
 
     return (
       <div className='app'>

@@ -49,7 +49,7 @@ class ExportModal extends Component {
       let x = locs.image[0];
       let y = locs.image[1];
 
-      let row = [lng, lat, z, x, y, name].join(' ');
+      let row = [lng, lat, z, x, y, name].join('\t');
       txt.push(row);
     });
 

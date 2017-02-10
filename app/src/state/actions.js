@@ -86,8 +86,12 @@ lng lat z1 pixelx1 pixely1 imagename1
 export function receiveGcpFile(file) {
 
   let now = Date.now();
-  let rows = file.split('\n').map(r => r.split(' '));
-  let projection = [...rows[0]];
+
+  let delimiter = /\s|\t|,|\|/g;
+  let newline = /\r|\n/g;
+
+  let rows = file.split(newline).map(r => r.split(delimiter));
+  let projection = [...rows[0]]
 
   rows = rows.filter(r => r.length === 6);
   rows = rows.map(r => {
