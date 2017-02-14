@@ -151,8 +151,18 @@ class ImagePanZoom extends Component {
     let [x, y] = this.getMousePosition(evt);
 
     if (this._marker) {
-      this._marker.style.left = `${x}px`;
-      this._marker.style.top = `${y}px`;
+      let left = this.el.scrollLeft;
+      let top = this.el.scrollTop;
+
+      // get native pos
+      let [nx, ny] = this.transformPosition(left + x, top + y, true);
+
+      // pos accounting for scale
+      [nx, ny] = this.transformPosition(nx, ny);
+
+      // apply to marker
+      this._marker.style.left = `${nx}px`;
+      this._marker.style.top = `${ny}px`;
       return;
     }
 
@@ -190,10 +200,13 @@ class ImagePanZoom extends Component {
     window.removeEventListener('mouseup', this.onDragStop);
     window.removeEventListener('touchend', this.onDragStop);
 
-    let markerId = this.state.marker ? +this.state.marker.getAttribute('data-id') : null;
+    let markerId = this._marker ? +this._marker.dataset.id : null;
+
+    // let others know of image center change, via callback
     this.props.onImagePositionChange([nx, ny], markerId);
 
     this._marker = null;
+
     this.setState({ dragging: false, marker: false, scrollLeft: left, scrollTop: top });
   }
 
@@ -257,6 +270,10 @@ class ImagePanZoom extends Component {
     this.__scale = scale;
     let [imageWidth, imageHeight, scrollLeft, scrollTop] = this.scaleImage(width, height, scale, imageData, true);
 
+    // let connected app know the current center
+    let pos = this.getNativeCenter(scrollLeft, scrollTop, scale)
+    this.props.onImagePositionChange(pos);
+
     this.setState({imageData, scale, imageWidth, imageHeight, minScale, scrollLeft, scrollTop});
   }
 
@@ -280,7 +297,7 @@ class ImagePanZoom extends Component {
     return points.map((pt, i) => {
       if (pt.imageIndex === selectedImage && pt.locations.image) {
         let [x, y] = this.transformPosition(pt.locations.image[0], pt.locations.image[1]);
-
+        console.log('PT: ', pt.locations.image);
         let style = {
           left: `${x}px`,
           top: `${y}px`
@@ -298,9 +315,6 @@ class ImagePanZoom extends Component {
     const {imageData, scale, imageWidth, imageHeight, minScale} = this.state;
     const {image} = this.props;
 
-    let pos = this.getCenter();
-    pos = this.transformPosition(pos[0], pos[1], true);
-    this.props.onImagePositionChange(pos);
 
     // due to image orientation, we need to reverse dimensions
     // if image is a portrait
