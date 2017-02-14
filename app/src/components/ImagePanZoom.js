@@ -297,7 +297,7 @@ class ImagePanZoom extends Component {
     return points.map((pt, i) => {
       if (pt.imageIndex === selectedImage && pt.locations.image) {
         let [x, y] = this.transformPosition(pt.locations.image[0], pt.locations.image[1]);
-        console.log('PT: ', pt.locations.image);
+
         let style = {
           left: `${x}px`,
           top: `${y}px`
