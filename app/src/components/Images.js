@@ -26,9 +26,9 @@ class Images extends Component {
     deleteImageFile(id);
   }
 
-  onImagePositionChange(xy, markerId) {
+  onImagePositionChange(center, xy, markerId) {
     const {controlpoints, onImagePositionChange, setControlPointPosition} = this.props;
-    onImagePositionChange(xy);
+    onImagePositionChange(center);
 
     // update control point if in edit mode
     if (controlpoints.active && markerId) {

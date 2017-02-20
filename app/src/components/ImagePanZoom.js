@@ -189,6 +189,7 @@ class ImagePanZoom extends Component {
     let top = this.el.scrollTop;
 
     let [nx, ny] = this.transformPosition(left + x, top + y, true);
+    let center = this.getNativeCenter(left, top, this.state.scale);
 
     if (this._marker) {
       this._marker.style.left = `${nx}px`;
@@ -203,7 +204,7 @@ class ImagePanZoom extends Component {
     let markerId = this._marker ? +this._marker.dataset.id : null;
 
     // let others know of image center change, via callback
-    this.props.onImagePositionChange([nx, ny], markerId);
+    this.props.onImagePositionChange(center, [nx, ny], markerId);
 
     this._marker = null;
 
