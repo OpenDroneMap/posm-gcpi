@@ -51,6 +51,7 @@
     "json-loader": "0.5.4",
     "object-assign": "4.1.0",
     "path-exists": "2.1.0",
+    "postcss-hexrgba": "^0.2.1",
     "postcss-loader": "1.0.0",
     "postcss-nested": "^1.0.0",
     "postcss-simple-vars": "^3.0.0",

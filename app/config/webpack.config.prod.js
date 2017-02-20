@@ -172,7 +172,8 @@ module.exports = {
       }),
       require('postcss-simple-vars')({variables: cssVars}),
       require("css-mqpacker"),
-      require('postcss-nested')
+      require('postcss-nested'),
+      require('postcss-hexrgba')
     ];
   },
   plugins: [

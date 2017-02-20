@@ -1,10 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import L from 'leaflet';
+import config from '../config';
 
-/*
-  TODO: Map providers should come from a config
- */
-
+// Bing tileLayer
 L.TileLayer.Bing = L.TileLayer.extend({
  getTileUrl: function (tilePoint) {
     return L.Util.template(this._url, {
@@ -36,6 +34,7 @@ L.tileLayer.bing = function(url, options) {
     return new L.TileLayer.Bing(url, options);
 }
 
+
 class LeafletMapProviders extends Component {
 
   static propTypes = {
@@ -52,11 +51,13 @@ class LeafletMapProviders extends Component {
     this.state = {
       selected: 'osm',
       custom: null,
-      init: false
+      init: false,
+      open: false
     };
 
     this.onChangeHandler = this.onChangeHandler.bind(this);
     this.onCustomClick = this.onCustomClick.bind(this);
+    this.toggleMenu = this.toggleMenu.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -70,6 +71,13 @@ class LeafletMapProviders extends Component {
 
   componentDidMount() {
     this.setProvider(this.props.leafletMap, this.state.selected);
+  }
+
+  toggleMenu() {
+    const {open} = this.state;
+    this.setState({
+      open: !open
+    });
   }
 
   onChangeHandler(evt) {
@@ -105,60 +113,76 @@ class LeafletMapProviders extends Component {
   setProvider(map, provider, custom = null) {
     if (!map) return;
 
-    if (provider === 'satellite') {
-      L.tileLayer.bing('https://ecn.t{s}.tiles.virtualearth.net/tiles/a{q}.jpeg?g=587&mkt=en-gb&n=z', {
-          attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors</a>',
-          maxZoom: 19
-      }).addTo(map);
-    } else if (provider === 'osm') {
-      L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors</a>',
-          maxZoom: 19
-      }).addTo(map);
-    } else if (provider === 'custom' && custom) {
+    if (provider === 'custom' && custom) {
       L.tileLayer(custom, {
           attribution: '',
           maxZoom: 19
       }).addTo(map);
+
+      return;
     }
 
+    let definition = config.map_providers.find(p => p.id === provider);
+
+    if (definition) {
+      if (definition.useBing) {
+        L.tileLayer.bing(definition.url, {
+            attribution: definition.attribute,
+            maxZoom: definition.maxZoom
+        }).addTo(map);
+      } else {
+        L.tileLayer(definition.url, {
+            attribution: definition.attribute,
+            maxZoom: definition.maxZoom
+        }).addTo(map);
+      }
+    }
+
+  }
+
+  renderProviders() {
+    const {selected} = this.state;
+
+    return config.map_providers.map(p => {
+      let labelKlass = selected === p.id ? 'selected' : '';
+
+      return (
+        <li key={`provider_${p.id}`} className={labelKlass}>
+          <label>
+            <input className='input' type='radio' value={p.id} checked={selected === p.id} onChange={this.onChangeHandler}/>
+            <span>{p.label}</span>
+          </label>
+        </li>
+      );
+    });
   }
 
   render() {
     const {leafletMap} = this.props;
     if (!leafletMap) return null;
 
-    const {selected} = this.state;
+    const {selected, open} = this.state;
 
+    const klass = open ? 'leaflet-map-providers open' : 'leaflet-map-providers';
     return (
-      <div className='leaflet-map-providers'>
-        <h4>Map Providers</h4>
-        <ul className='list-reset'>
-          <li>
-            <label>
-              <input className='input' type='radio' value='osm' checked={selected === 'osm'} onChange={this.onChangeHandler}/>
-              <span>OpenStreetMap</span>
-            </label>
-          </li>
-
-          <li>
-            <label>
-              <input className='input' type='radio' value='satellite' checked={selected === 'satellite'} onChange={this.onChangeHandler}/>
-              <span>Satellite</span>
-            </label>
-          </li>
-
-          <li>
-            <label>
-              <input className='input custom-provider' type='radio' value='custom' checked={selected === 'custom'} onChange={this.onChangeHandler}/>
-              <span>Custom</span>
-              <div>
-                <input className='input' type='text' placeholder='Enter template URL...'/>
-                <button className='btn btn-outline teal' onClick={this.onCustomClick}>Update</button>
-              </div>
-            </label>
-          </li>
-        </ul>
+      <div className={klass}>
+        <h4 onClick={this.toggleMenu}><span className='icon providers'></span>Map Provider</h4>
+        {open &&
+          <ul className='list-reset'>
+            {this.renderProviders()}
+            <li className={selected === 'custom' ? 'selected' : ''}>
+              <label>
+                <input className='input custom-provider' type='radio' value='custom' checked={selected === 'custom'} onChange={this.onChangeHandler}/>
+                <span>Custom</span>
+                <div>
+                  <p>{config.custom_description}</p>
+                  <input className='input' type='text' placeholder={config.custom_placeholder}/>
+                  <button className='btn' onClick={this.onCustomClick}>Apply</button>
+                </div>
+              </label>
+            </li>
+          </ul>
+        }
       </div>
     );
   }

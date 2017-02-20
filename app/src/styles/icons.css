@@ -1,0 +1,17 @@
+.icon.providers {
+  display: inline-block;
+  width: 25px;
+  height: 26px;
+  background: url('../assets/icons/providers.png') 50% 50% no-repeat;
+  background-size: 25px 26px;
+}
+
+/* ... */
+
+@media
+(-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
+    .icon.providers {
+      background-image: url('../assets/icons/providers@2x.png');
+    }
+}

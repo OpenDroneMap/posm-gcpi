@@ -1,54 +1,146 @@
 .leaflet-map-providers {
   position: absolute;
-  top:  1rem;
-  right:  1rem;
-  width:  auto;
+  top: 1rem;
+  right: 1rem;
+  width: auto;
   height: auto;
-  min-width: 280px;
-  padding:  1em;
-  background:  white;
+  width: 38px;
+  padding: 0;
+  background: transparent;
+  color: transparent;
   z-index: $z-leaflet;
+  transition: width 100ms linear;
+  overflow: hidden;
+
+  &.open {
+    width: 280px;
+    color: $clr-white;
+  }
 
   h4 {
+    position: relative;
     margin: 0;
+    padding: 0;
+    height: 38px;
+    font-weight: normal;
+    background: $clr-grey;
+    border-radius: 38px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 200;
+    letter-spacing: 0.5px;
+    line-height: 38px;
+    user-select: none;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .icon.providers {
+    position: absolute;
+    left: 6px;
+    top: 6px;
   }
 
   ul {
-    border: 1px solid #ddd;
+    margin: 0 1.2rem;
   }
 
   li {
-    padding: 5px;
+    padding: 5px 0;
+    background: rgba($clr-grey, 0.6);
   }
 
-  li + li {
-    border-top: 1px solid #ddd;
+  li:hover label {
+    color: $clr-white;
   }
+
+  li.selected {
+    background: rgba($clr-grey, 0.8);
+
+    & label {
+      color: $clr-white;
+    }
+  }
+
 
   label {
     display: block;
     white-space: nowrap;
+    text-align: center;
+    color: $clr-white;
+    font-weight: 200;
+    user-select: none;
+    cursor: pointer;
 
     span {
       vertical-align: middle;
     }
   }
 
+
+
   input[type="radio"] {
     display: inline-block;
-    height: auto;
-    width: auto;
-    margin: 0.5rem 5px 0.5rem 0;
+    visibility: hidden;
+    height: 0px;
+    width: 0px;
+    margin: 0;
     vertical-align: middle;
   }
 
   input.custom-provider ~ div {
     display: none;
-    padding: 0.5em;
-    background: #eee;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    cursor: default;
+    text-align: right;
+
+    p {
+      display: inline-block;
+      padding: 0;
+      margin: 0;
+      color: $clr-white;
+      white-space: pre-wrap;
+      font-size: 0.75rem;
+      line-height: 1rem;
+      text-align: left;
+    }
+
+    .btn {
+      padding: 0.3rem 1rem;
+      margin: 0;
+      outline: 0;
+      border: 0;
+      box-shadow: none;
+      background: $clr-grey;
+      font-weight: normal;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+    }
 
     input {
-      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      margin: 0 0 0.5rem;
+      height: auto;
+      background: $clr-grey;
+      font-size: 0.75rem;
+      border: 0;
+      border-radius: 1rem;
+      text-align: left;
+      color: $clr-white;
+
+      &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+        color: $clr-white;
+      }
+      &::-moz-placeholder { /* Firefox 19+ */
+        color: $clr-white;
+      }
+      &:-ms-input-placeholder { /* IE 10+ */
+        color: $clr-white;
+      }
+      &:-moz-placeholder { /* Firefox 18- */
+        color: $clr-white;
+      }
     }
   }
 
