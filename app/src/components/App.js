@@ -47,7 +47,7 @@ class App extends Component {
   }
 
   render() {
-    const {exporter, controlpoints} = this.props;
+    const {exporter, controlpoints, imagery} = this.props;
     let controlPointsHeight = this.getControlPointsHeight();
     let panelHeight = this.getLeftPanelHeight();
 
@@ -55,7 +55,10 @@ class App extends Component {
       <div className='app'>
         <WindowResizeListener onResize={(w) => {this.onResize(w);}} />
         {exporter.active &&
-          <ExportModal controlpoints={controlpoints} onClick={(evt)=>{this.onExportClick(evt);}}/>
+          <ExportModal
+            projection={imagery.projection}
+            controlpoints={controlpoints}
+            onClick={(evt)=>{this.onExportClick(evt);}}/>
         }
         <Header />
         <main className='main'>

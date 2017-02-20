@@ -34,12 +34,12 @@ class ExportModal extends Component {
   }
 
   renderText() {
-    const {controlpoints} = this.props;
+    const {controlpoints, projection} = this.props;
     // EPSG:4326
     // 16.63593223 52.77337048 70 691 3498 img_4851.jpg
     // lng lat z1 pixelx1 pixely1 imagename1
     let txt = [];
-    controlpoints.points.map(pt => {
+    controlpoints.points.forEach(pt => {
       let name = pt.imageName;
       let locs = pt.locations;
       if (!locs.map.length === 2 || !locs.image.length === 2) return;
@@ -55,7 +55,8 @@ class ExportModal extends Component {
 
     if (!txt.length) return 'Need control points!';
 
-    txt.unshift('EPSG:4326');
+    let proj = (projection && projection.length) ? projection.join('\t') : ''; // Handle empty projection
+    txt.unshift(proj);
 
     return txt.join('\n');
   }

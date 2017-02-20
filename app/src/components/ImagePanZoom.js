@@ -58,7 +58,7 @@ class ImagePanZoom extends Component {
   componentDidMount() {}
 
   componentDidUpdate() {
-    const {scrollLeft, scrollTop} = this.state;
+    const { scrollLeft, scrollTop } = this.state;
 
     if (this.el) {
       this.el.scrollLeft = scrollLeft;
@@ -88,6 +88,7 @@ class ImagePanZoom extends Component {
 
   getCenter() {
     if (!this.el) return [0,0];
+
     let rect = this.el.getBoundingClientRect();
     let x = this.el.scrollLeft + (rect.width / 2);
     let y = this.el.scrollTop + (rect.height / 2);
@@ -95,7 +96,7 @@ class ImagePanZoom extends Component {
   }
 
   transformPosition(x, y, atNative) {
-    const {imageData, imageWidth, imageHeight} = this.state;
+    const { imageData, imageWidth, imageHeight } = this.state;
 
     const dx = imageWidth / imageData.width;
     const dy = imageHeight / imageData.height;
@@ -182,7 +183,6 @@ class ImagePanZoom extends Component {
   }
 
   onDragStop(evt) {
-    const { imageWidth, imageHeight, scale } = this.state;
     let [x, y] = this.getMousePosition(evt);
 
     let left = this.el.scrollLeft;
@@ -211,7 +211,7 @@ class ImagePanZoom extends Component {
   }
 
   onSliderChange(value) {
-    const {imageData} = this.state;
+    const { imageData } = this.state;
     if (!imageData.src) return;
 
     let scale = value;
@@ -220,15 +220,13 @@ class ImagePanZoom extends Component {
   }
 
   getNativeCenter(left, top, scale) {
-    let {scrollLeft, scrollTop} = this.state;
-
     let x = (left + 122) * (1/scale);
     let y = (top + 80) * (1/scale);
     return [x, y];
   }
 
   scaleImage(width, height, _scale, imageData, initialCalc) {
-    const { imageWidth, imageHeight, scrollLeft, scrollTop, scale} = this.state;
+    const { scrollLeft, scrollTop, scale } = this.state;
     let ratio = height / width;
     let w = width * _scale;
     let h = w * ratio;
@@ -259,7 +257,7 @@ class ImagePanZoom extends Component {
   }
 
   onImageLoad(imageData, imageMeta) {
-    let {width, height} = imageData;
+    let { width, height } = imageData;
 
     // 244 & 160 come from css width / height for .imagepanzoom
     let minWidth = 244 / width;
@@ -278,21 +276,8 @@ class ImagePanZoom extends Component {
   }
 
 
-  // https://github.com/mapbox/simple-linear-scale/blob/master/index.js
-  linearScale(domain, range, clamp) {
-    return function(value) {
-      if (domain[0] === domain[1] || range[0] === range[1]) {
-        return range[0];
-      }
-      let ratio = (range[1] - range[0]) / (domain[1] - domain[0]),
-        result = range[0] + ratio * (value - domain[0]);
-      return clamp ? Math.min(range[1], Math.max(range[0], result)) : result;
-    };
-  }
-
   renderPoints() {
     const { points, selectedImage, markerDraggable, selectedMarker } = this.props;
-    const {imageData} = this.state;
 
     return points.map((pt, i) => {
       if (pt.imageIndex === selectedImage && pt.locations.image) {
@@ -312,8 +297,8 @@ class ImagePanZoom extends Component {
   }
 
   render() {
-    const {imageData, scale, imageWidth, imageHeight, minScale} = this.state;
-    const {image} = this.props;
+    const { imageData, scale, imageWidth, imageHeight, minScale } = this.state;
+    const { image } = this.props;
 
 
     // due to image orientation, we need to reverse dimensions
