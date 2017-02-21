@@ -1,0 +1,49 @@
+.leaflet-pelias-control {
+  z-index: 9999;
+  background: $clr-grey;
+
+  &.leaflet-pelias-expanded {
+    height: 38px !important;
+    border-radius: 38px;
+  }
+
+  &.leaflet-bar {
+    border: 0;
+    right: 1rem;
+  }
+
+  &.leaflet-pelias-expanded .leaflet-pelias-close {
+    border-top-right-radius: 38px;
+    border-bottom-right-radius: 38px;
+  }
+
+  .leaflet-pelias-results {
+    top: 100%;
+    padding: 0 1.2rem;
+    box-shadow: none;
+
+    .leaflet-pelias-result {
+      padding: 5px 7px;
+      background: rgba($clr-grey, 0.8);
+      color: $clr-white;
+    }
+  }
+
+  input {
+    color: $clr-white;
+
+    &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+      color: $clr-white;
+    }
+    &::-moz-placeholder { /* Firefox 19+ */
+      color: $clr-white;
+    }
+    &:-ms-input-placeholder { /* IE 10+ */
+      color: $clr-white;
+    }
+    &:-moz-placeholder { /* Firefox 18- */
+      color: $clr-white;
+    }
+  }
+
+}

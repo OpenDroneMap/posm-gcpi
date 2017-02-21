@@ -1,6 +1,6 @@
 .leaflet-map-providers {
   position: absolute;
-  top: 1rem;
+  top: 3rem;
   right: 1rem;
   width: auto;
   height: auto;
@@ -11,6 +11,10 @@
   z-index: $z-leaflet;
   transition: width 100ms linear;
   overflow: hidden;
+
+  &.leaflet-bar {
+    border: 0;
+  }
 
   &.open {
     width: 280px;
@@ -42,7 +46,12 @@
   }
 
   ul {
+    display: none;
     margin: 0 1.2rem;
+  }
+
+  &.open ul {
+    display: block;
   }
 
   li {

@@ -17,7 +17,7 @@ const config = {
     }
   ],
   custom_placeholder: 'Enter template url...',
-  custom_description: 'Enter a tile URL template. Valid tokens ar {z}, {x}, {y}, for Z/X/Y scheme and {u} for quadtile scheme.'
+  custom_description: 'Enter a tile URL template. Valid tokens are {z}, {x}, {y}, for Z/X/Y scheme and {u} for quadtile scheme.'
 };
 
 export default config;

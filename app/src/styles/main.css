@@ -1,3 +1,6 @@
+/* Vendor Styles */
+@import "../../node_modules/leaflet-geocoder-mapzen/dist/leaflet-geocoder-mapzen.css";
+
 /* User Styles */
 @import "index.css";
 @import "app.css";
@@ -6,6 +9,7 @@
 @import "leafletmap.css";
 @import "leafletmap-providers.css";
 @import "leaflet-zoomcontrols.css";
+@import "leaflet-search.css";
 @import "images.css";
 @import "imagepanzoom.css";
 @import "image.css";

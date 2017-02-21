@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import L from 'leaflet';
+import LeafletSearch from './Leaflet-Search';
 import LeafletMapProviders from './LeafletMap-Providers';
 import PointMarkersMap from './PointMarkersMap';
 import LeafletZoomControls from './Leaflet-ZoomControls.js';
@@ -54,6 +55,7 @@ class LeafletMap extends Component {
     return (
       <div className='leaflet-map-wrapper'>
         <div className='leaflet-map' ref='lmap' />
+        <LeafletSearch leafletMap={leafletMap} />
         <LeafletMapProviders leafletMap={leafletMap} />
         <LeafletZoomControls leafletMap={leafletMap} controlpoints={controlpoints} />
         <PointMarkersMap
