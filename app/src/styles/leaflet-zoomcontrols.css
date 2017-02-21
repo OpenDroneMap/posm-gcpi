@@ -4,7 +4,34 @@
   right: 1rem;
   z-index: 1001;
 
-  .leaflet-control-fit-bounds {
-    font-size: 14px;
+  .leaflet-control-zoom.leaflet-bar {
+    box-shadow: none;
+    border-radius: 0;
+
+    a {
+      width: 36px;
+      height: 36px;
+      line-height: 36px;
+      background-color: $clr-grey;
+      color: $clr-white;
+      font-weight: 200;
+      font-size: 24px;
+    }
+
+    a:first-child {
+      border-top-left-radius: 18px;
+      border-top-right-radius: 18px;
+    }
+
+    a:last-child {
+      border-bottom-left-radius: 18px;
+      border-bottom-right-radius: 18px;
+    }
+    .leaflet-control-zoom-out {
+      font-size: 26px;
+    }
+    .leaflet-control-fit-bounds {
+      font-size: 14px;
+    }
   }
 }
