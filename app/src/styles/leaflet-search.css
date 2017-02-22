@@ -12,6 +12,10 @@
     right: 1rem;
   }
 
+  &.leaflet-bar a:hover {
+    background: transparent;
+  }
+
   &.leaflet-pelias-expanded .leaflet-pelias-close {
     border-top-right-radius: 38px;
     border-bottom-right-radius: 38px;
@@ -50,6 +54,9 @@
 
   .leaflet-touch &.leaflet-bar a.leaflet-pelias-search-icon {
     background-image: url('../assets/icons/search.png');
+    background-repeat: no-repeat;
+    background-size: 16px;
+    background-position: 50%;
   }
 
   .leaflet-pelias-close {

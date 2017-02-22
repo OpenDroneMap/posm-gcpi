@@ -67,7 +67,7 @@ class Images extends Component {
       points.push(
         <li key={`pt-${idx}`} className={klass.join(' ')}>
           <button onClick={(evt) => {this.toggleEditing(evt, imgIndex, imgName, pt.id);}}>
-          <span className={`icon gcp ${klass}`}></span>Ground Control Point</button>
+          <span className={`icon gcp ${klass}`} role='presentation'></span>Ground Control Point</button>
           <span className='icon remove' onClick={() => {this.deleteGCP(pt.id);}}></span>
         </li>
       );
@@ -104,7 +104,7 @@ class Images extends Component {
           <div className='wrapper'>
             <div className={`details${detailsKlass}`}>
               <span className='blocker'></span>
-              <span className='icon add'></span>
+              <span className='icon add' role='presentation'></span>
               <span className='img-name'>{image_name}</span>
               <span className='icon remove' onClick={() => this.onImageDelete(id)}></span>
             </div>

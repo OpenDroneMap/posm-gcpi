@@ -1,17 +1,53 @@
-.icon.providers {
+.icon {
   display: inline-block;
-  width: 25px;
-  height: 26px;
-  background: url('../assets/icons/providers.png') 50% 50% no-repeat;
-  background-size: 25px 26px;
-}
+  width: 34px;
+  height: 34px;
+  font-size: 0;
+  line-height: 1;
+  background-repeat: no-repeat;
+  background-position: 50%;
+  background-size: 20px 20px;
+  vertical-align: middle;
 
-.icon.fit-marker {
-  display: inline-block;
-  width: 25px;
-  height: 25px;
-  background: url('../assets/icons/fit_markers.png') 50% 50% no-repeat;
-  background-size: 25px 25px;
+  &.providers {
+    width: 25px;
+    height: 26px;
+    background-image: url('../assets/icons/providers.png');
+    background-size: 25px 26px;
+  }
+
+  &.fit-marker {
+    width: 25px;
+    height: 25px;
+    background-image: url('../assets/icons/fit_markers.png');
+    background-size: 25px 25px;
+  }
+
+  &.add {
+    background-image: url('../assets/icons/add.png');
+  }
+
+  &.remove {
+    background-image: url('../assets/icons/close.png');
+  }
+
+  &.gcp {
+    background-image: url('../assets/icons/add_point_green.png');
+  }
+
+  &.gcp.add {
+    background-image: url('../assets/icons/add_point.png');
+  }
+
+  &.gcp.active {
+    background-image: url('../assets/icons/add_point_yellow.png');
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
 }
 
 /* ... */
@@ -19,11 +55,33 @@
 @media
 (-webkit-min-device-pixel-ratio: 2),
 (min-resolution: 192dpi) {
-    .icon.providers {
-      background-image: url('../assets/icons/providers@2x.png');
-    }
+    .icon {
+      &.providers {
+        background-image: url('../assets/icons/providers@2x.png');
+      }
 
-    .icon.fit-marker {
-      background-image: url('../assets/icons/fit_markers@2x.png');
+      &..fit-marker {
+        background-image: url('../assets/icons/fit_markers@2x.png');
+      }
+
+      &.add {
+        background-image: url('../assets/icons/add@2x.png');
+      }
+
+      &.remove {
+        background-image: url('../assets/icons/close@2x.png');
+      }
+
+      &.gcp {
+        background-image: url('../assets/icons/add_point_green@2x.png');
+      }
+
+      &.gcp.add {
+        background-image: url('../assets/icons/add_point@2x.png');
+      }
+
+      &.gcp.active {
+        background-image: url('../assets/icons/add_point_yellow@2x.png');
+      }
     }
 }

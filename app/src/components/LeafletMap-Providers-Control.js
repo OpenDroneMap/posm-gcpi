@@ -130,7 +130,8 @@
       let container = this._container = L.DomUtil.create('div', this.getContainerClass());
 
       let h4 = L.DomUtil.create('h4', '', container);
-      L.DomUtil.create('span', 'icon providers', h4);
+      let icon = L.DomUtil.create('span', 'icon providers', h4);
+      icon.setAttribute('role', 'presentation');
       let h4_text = L.DomUtil.create('span', '', h4);
       h4_text.innerHTML = 'Map Provider';
 
