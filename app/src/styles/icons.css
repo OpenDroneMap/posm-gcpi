@@ -6,6 +6,14 @@
   background-size: 25px 26px;
 }
 
+.icon.fit-marker {
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  background: url('../assets/icons/fit_markers.png') 50% 50% no-repeat;
+  background-size: 25px 25px;
+}
+
 /* ... */
 
 @media
@@ -13,5 +21,9 @@
 (min-resolution: 192dpi) {
     .icon.providers {
       background-image: url('../assets/icons/providers@2x.png');
+    }
+
+    .icon.fit-marker {
+      background-image: url('../assets/icons/fit_markers@2x.png');
     }
 }

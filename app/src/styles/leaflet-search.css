@@ -31,6 +31,7 @@
 
   input {
     color: $clr-white;
+    font-size: 1rem;
 
     &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
       color: $clr-white;
@@ -46,4 +47,22 @@
     }
   }
 
+
+  .leaflet-touch &.leaflet-bar a.leaflet-pelias-search-icon {
+    background-image: url('../assets/icons/search.png');
+  }
+
+  .leaflet-pelias-close {
+    color: $clr-white;
+  }
+
+  @media
+  (-webkit-min-device-pixel-ratio: 2),
+  (min-resolution: 192dpi) {
+
+      .leaflet-touch &.leaflet-bar a.leaflet-pelias-search-icon {
+        background-image: url('../assets/icons/search@2x.png');
+      }
+  }
 }
+

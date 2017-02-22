@@ -9,6 +9,7 @@
     border-radius: 0;
 
     a {
+      display: block;
       width: 36px;
       height: 36px;
       line-height: 36px;
@@ -31,7 +32,12 @@
       font-size: 26px;
     }
     .leaflet-control-fit-bounds {
-      font-size: 14px;
+      position: relative;
+
+      .icon {
+        margin-top: -5px;
+        vertical-align: middle;
+      }
     }
   }
 }
