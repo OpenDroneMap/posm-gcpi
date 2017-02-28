@@ -47,15 +47,21 @@ class ImagePanZoom extends Component {
     this.onImageLoad = this.onImageLoad.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.image !== nextProps.image) {
+  componentWillReceiveProps(np) {
+    if (this.props.image !== np.image) {
       this.reset();
+    }
+
+    if (this.props.windowSize !== np.windowSize) {
+      this.updateImageContainerSize();
     }
 
     this.setState({ dragging: false, marker: null });
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.updateImageContainerSize();
+  }
 
   componentDidUpdate() {
     const { scrollLeft, scrollTop } = this.state;
@@ -75,6 +81,20 @@ class ImagePanZoom extends Component {
     this.setState({
       dragging: false
     });
+  }
+
+  updateImageContainerSize() {
+    if (!this.el) return;
+
+    let w = this.el.parentNode.offsetWidth;
+
+    this.el.style.width = `${w - 24}px`;
+    this.el.style.height = `${w * .75}px`;
+
+    // This is a bit of a hack.
+    // Would need to modify external library to fix properly
+    this.slider.slider.style.height = `${w * .75}px`;
+    this.slider.handleUpdate();
   }
 
   getMousePosition(evt) {
@@ -221,17 +241,25 @@ class ImagePanZoom extends Component {
   }
 
   getNativeCenter(left, top, scale) {
-    let x = (left + 122) * (1/scale);
-    let y = (top + 80) * (1/scale);
+    let w2 = this.el.offsetWidth / 2;
+    let h2 = this.el.offsetHeight / 2;
+
+    let x = (left + w2) * (1/scale);
+    let y = (top + h2) * (1/scale);
     return [x, y];
   }
 
   scaleImage(width, height, _scale, imageData, initialCalc) {
     const { scrollLeft, scrollTop, scale } = this.state;
+
+    // parent height divided by 2
+    let w2= this.el.offsetWidth / 2;
+    let h2 = this.el.offsetHeight / 2;
+
+    // image height & width
     let ratio = height / width;
     let w = width * _scale;
     let h = w * ratio;
-
 
     let sx = w / width;
     let sy = h / height;
@@ -239,20 +267,18 @@ class ImagePanZoom extends Component {
     let dx, dy;
     if (initialCalc) {
       if (imageData.isPortrait) {
-        dx = (h / 2) - 122;
-        dy = (w / 2) - 80;
+        dx = (h / 2) - w2;
+        dy = (w / 2) - h2;
       } else {
-        dx = (w / 2) - 122;
-        dy = (h / 2) - 80;
+        dx = (w / 2) - w2;
+        dy = (h / 2) - h2;
       }
       return [w, h, dx, dy];
     }
 
-
     let c = this.getNativeCenter(scrollLeft, scrollTop, scale);
-    dx = (c[0] * sx) - 122;
-    dy = (c[1] * sy) - 80;
-
+    dx = (c[0] * sx) - w2;
+    dy = (c[1] * sy) - h2;
 
     return [w, h, dx, dy];
   }
@@ -260,10 +286,9 @@ class ImagePanZoom extends Component {
   onImageLoad(imageData, imageMeta) {
     let { width, height } = imageData;
 
-    // 244 & 160 come from css width / height for .imagepanzoom
-    let minWidth = 244 / width;
-    let minHeight = 160 / height;
-    let minScale = Math.round(Math.max(minWidth, minHeight) * 10) / 10;
+    let minWidth = this.el.offsetWidth / width;
+    let minHeight = this.el.offsetHeight / height;
+    let minScale = Math.round(Math.max(minWidth, minHeight) * 100) / 100;
 
     let scale = 0.5;
     this.__scale = scale;
@@ -310,7 +335,7 @@ class ImagePanZoom extends Component {
     return (
       <div className='imgpanzoom-container'>
         <div
-          ref={(el) => {this.el = el;}}
+          ref={el => {this.el = el;}}
           className='imagepanzoom'
           onMouseDown={this.onDownHandler}
           onTouchStart={this.onDownHandler}>
@@ -328,6 +353,7 @@ class ImagePanZoom extends Component {
           />
         </div>
         <Slider
+          ref={el => {this.slider = el;}}
           value={scale}
           min={minScale}
           max={2}

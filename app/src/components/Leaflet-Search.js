@@ -30,7 +30,8 @@ class LeafletSearch extends Component {
       panToPoint: false,
       pointIcon: false,
       polygonIcon: false,
-      markers: false
+      markers: false,
+      fullWidth: false
     };
 
     L.control.geocoder(API_KEY, options).addTo(map);

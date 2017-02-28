@@ -82,7 +82,7 @@ class Images extends Component {
   }
 
   renderImages() {
-    const {imagery, controlpoints} = this.props;
+    const {imagery, controlpoints, windowSize} = this.props;
     let imageryItems = imagery.items ? imagery.items : [];
     let imagesLength = Math.max(imageryItems.length, 5);
     let range = Array.from({length: imagesLength}, (value, key) => key);
@@ -117,6 +117,7 @@ class Images extends Component {
 
             <div className='img-container'>
               <ImagePanZoom
+                windowSize={windowSize}
                 image={imagery.items[imagery.selected]}
                 selectedImage={imagery.selected}
                 points={controlpoints.points}
