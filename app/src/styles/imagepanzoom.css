@@ -66,9 +66,9 @@
 .rangeslider {
   position: relative;
   display: inline-block;
-  margin: 0 0 0 5px;
+  margin: 0 0 0 resolve($slider-padding * 1px);
   height: 160px;
-  width: 18px;
+  width: resolve($slider-width * 1px);
   background: #ccc;
   border-radius: 18px;
   text-align: center;

@@ -15,5 +15,7 @@ module.exports = {
   'clr-red': '#C1272D',
   'clr-yellow': '#FBB03B',
   'clr-green': '#006837',
-  'clr-white': '#fff'
+  'clr-white': '#fff',
+  'slider-width': 18,
+  'slider-padding': 5
 }

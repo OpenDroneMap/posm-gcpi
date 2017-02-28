@@ -1,6 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import Image from './Image';
 import Slider from 'react-rangeslider';
+import config from '../config';
+import styleVariables from '../styles/variables';
 
 // https://github.com/rexxars/react-element-pan/blob/master/src/element-pan.js
 class ImagePanZoom extends Component {
@@ -86,13 +88,14 @@ class ImagePanZoom extends Component {
   updateImageContainerSize() {
     if (!this.el) return;
 
-    let w = this.el.parentNode.offsetWidth;
+    let w = this.el.parentNode.offsetWidth - styleVariables['slider-width'] - (styleVariables['slider-padding'] * 2);
 
-    this.el.style.width = `${w - 24}px`;
+    this.el.style.width = `${w}px`;
     this.el.style.height = `${w * .75}px`;
 
     // This is a bit of a hack.
-    // Would need to modify external library to fix properly
+    // Would need to modify `react-rangeslider`
+    // library to fix properly
     this.slider.slider.style.height = `${w * .75}px`;
     this.slider.handleUpdate();
   }
@@ -290,7 +293,7 @@ class ImagePanZoom extends Component {
     let minHeight = this.el.offsetHeight / height;
     let minScale = Math.round(Math.max(minWidth, minHeight) * 100) / 100;
 
-    let scale = 0.5;
+    let scale = config.image_initial_scale || 0.5;
     this.__scale = scale;
     let [imageWidth, imageHeight, scrollLeft, scrollTop] = this.scaleImage(width, height, scale, imageData, true);
 
@@ -356,8 +359,8 @@ class ImagePanZoom extends Component {
           ref={el => {this.slider = el;}}
           value={scale}
           min={minScale}
-          max={2}
-          step={0.01}
+          max={config.image_slider_zoom_max || 2}
+          step={config.image_slider_step || 0.01}
           orientation="vertical"
           onChange={this.onSliderChange}
         />

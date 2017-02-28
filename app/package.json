@@ -54,6 +54,7 @@
     "path-exists": "2.1.0",
     "postcss-hexrgba": "^0.2.1",
     "postcss-loader": "1.0.0",
+    "postcss-math": "0.0.7",
     "postcss-nested": "^1.0.0",
     "postcss-simple-vars": "^3.0.0",
     "promise": "7.1.1",

@@ -17,7 +17,10 @@ const config = {
     }
   ],
   custom_placeholder: 'Enter template url...',
-  custom_description: 'Enter a tile URL template. Valid tokens are {z}, {x}, {y}, for Z/X/Y scheme and {u} for quadtile scheme.'
+  custom_description: 'Enter a tile URL template. Valid tokens are {z}, {x}, {y}, for Z/X/Y scheme and {u} for quadtile scheme.',
+  image_slider_zoom_max: 2,
+  image_slider_step: 0.01,
+  image_initial_scale: 0.5
 };
 
 export default config;
