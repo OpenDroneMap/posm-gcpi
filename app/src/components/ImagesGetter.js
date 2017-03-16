@@ -48,7 +48,8 @@ class ImagesGetter extends Component {
               disablePreview={true}
               onDrop={this.onTextDrop}
               activeStyle={{borderStyle: 'solid', backgroundColor: '#eee'}}
-              rejectStyle={{borderStyle: 'solid', backgroundColor: '#ffdddd'}}>
+              rejectStyle={{borderStyle: 'solid', backgroundColor: '#ffdddd'}}
+              accept='text/plain'>
               <div>Load existing Control Point File</div>
             </Dropzone>
           </div>
@@ -58,7 +59,8 @@ class ImagesGetter extends Component {
               disablePreview={true}
               onDrop={this.onImagesDrop}
               activeStyle={{borderStyle: 'solid', backgroundColor: '#eee'}}
-              rejectStyle={{borderStyle: 'solid', backgroundColor: '#ffdddd'}}>
+              rejectStyle={{borderStyle: 'solid', backgroundColor: '#ffdddd'}}
+              accept='image/jpeg,image/png'>
               <div><b>Choose images</b> / drag here</div>
             </Dropzone>
           </div>

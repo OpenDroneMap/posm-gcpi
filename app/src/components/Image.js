@@ -39,7 +39,7 @@ class Image extends Component {
         function (img, meta) {
 
           if (typeof onImageLoad === 'function') {
-            let orientation = meta.exif.get('Orientation');
+            let orientation = (meta.exif) ? meta.exif.get('Orientation') : 1;
             let width = img.width;
             let height = img.height;
 

@@ -15,8 +15,7 @@ class App extends Component {
     WindowResizeListener.DEBOUNCE_TIME = 200;
   }
 
-  componentDidMount() {
-  }
+  componentDidMount() {}
 
   onResize(w) {
     this.props.onWindowResize(w);
