@@ -11,10 +11,15 @@
     padding: 1rem;
 
     .dropzone-wrapper {
+      display: inline-block;
       margin-bottom: 1rem;
+      width: 50%;
+      padding-right: 5px;
 
       &:last-child {
         margin-bottom: 0;
+        padding-right: 0;
+        padding-left: 5px;
       }
     }
 

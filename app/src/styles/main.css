@@ -12,6 +12,7 @@
 @import "leaflet-search.css";
 @import "images.css";
 @import "imagepanzoom.css";
+@import "images-grid.css";
 @import "image.css";
 @import "icons.css";
 
@@ -19,3 +20,8 @@
 @import "controlpoints.css";
 @import "export_button.css";
 @import "export-modal.css";
+@import "sliding-panel.css";
+@import "image-nav.css";
+@import "image-editor.css";
+@import "toggle-images-grid-btn.css";
+@import "button-add-point.css";

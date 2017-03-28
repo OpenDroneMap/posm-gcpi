@@ -1,0 +1,16 @@
+.sliding-panel {
+  position: absolute;
+  left: -100%;
+  top: 72px;
+  bottom: 0;
+  width: 100%;
+  background: white;
+  z-index: $z-10;
+  transition: left 200ms linear;
+  overflow: hidden;
+
+  &.open {
+    left: 0;
+    overflow: auto;
+  }
+}

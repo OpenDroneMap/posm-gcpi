@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import { Component } from 'react';
 
 import L from 'leaflet';
 import 'leaflet-geocoder-mapzen';

@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import L from 'leaflet';
+import {CP_TYPES} from '../state/utils/controlpoints';
 
 
 class LeafletZoomControls extends Component {
@@ -51,7 +52,9 @@ class LeafletZoomControls extends Component {
     let bds = L.latLngBounds();
 
     controlpoints.points.forEach(pt => {
-      bds.extend(pt.locations.map);
+      if (pt.type !== CP_TYPES.MAP) return;
+
+      bds.extend(pt.coord);
     });
 
     if (!bds.isValid()) return;

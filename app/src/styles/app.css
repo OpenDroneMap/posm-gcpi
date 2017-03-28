@@ -25,7 +25,8 @@
     &.left {
       float: none;
       flex: 0 0 50%;
-      overflow: hidden;
+      overflow: visible;
+      z-index: $z-leaflet;
     }
 
     &.right {

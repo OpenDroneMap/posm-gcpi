@@ -1,4 +1,11 @@
 const config = {
+  map_options: {
+    minZoom: 2,
+    scrollWheelZoom: false,
+    zoomControl: false,
+    initialZoom: 2,
+    initialCenter: [30, -20]
+  },
   map_providers: [
     {
       id: 'osm',

@@ -1,90 +1,189 @@
 import React, { Component, PropTypes } from 'react';
 import L from 'leaflet';
+import {CP_TYPES} from '../state/utils/controlpoints';
 
 const ICON = {
   className: 'image-point',
   iconSize: [38,38]
 };
+const GCPMarker = L.Marker.extend({
+  initialize: function (latlng, options) {
+    // add the default actions click handler to options
+    L.Util.setOptions(this, {
+      onActionsClick: (evt) => {}
+    });
+
+    L.Marker.prototype.initialize.call(this, latlng, options);
+  },
+
+  _initIcon: function () {
+    L.Marker.prototype._initIcon.call(this);
+
+    this._actionsEl = this._icon.querySelector('.actions');
+
+    L.DomEvent.on(this._actionsEl, 'click', this.options.onActionsClick);
+  },
+
+  _removeIcon: function () {
+    if (this._actionsEl) {
+      L.DomEvent.off(this._actionsEl, 'click', this.options.onActionsClick);
+    };
+
+    this._actionsEl = null;
+
+    L.Marker.prototype._removeIcon.call(this);
+  },
+
+  addClass: function(k) {
+    if (!this._icon) return;
+    if (L.DomUtil.hasClass(this._icon, k)) return;
+    L.DomUtil.addClass(this._icon, k);
+  },
+
+  removeClass: function(k) {
+    if (!this._icon) return;
+    if (!L.DomUtil.hasClass(this._icon, k)) return;
+    L.DomUtil.removeClass(this._icon, k);
+  }
+});
+
+const GCPIcon = L.DivIcon.extend({
+  createIcon: function (oldIcon) {
+      let div = L.DivIcon.prototype.createIcon.call(this, oldIcon);
+
+      let actions = L.DomUtil.create('div', 'actions', div);
+      let ul = L.DomUtil.create('ul', '', actions);
+      ['Delete', 'Lock'].forEach(d => {
+        let li = L.DomUtil.create('li', '', ul);
+        let a = L.DomUtil.create('a', '', li);
+        a.setAttribute('data-action', d.toLowerCase());
+        a.innerHTML = d;
+        a.href = '#';
+      });
+
+      return div;
+    }
+});
 
 class PointMarkersMap extends Component {
   static propTypes = {
     leafletMap: PropTypes.object,
-    updatePosition: PropTypes.func.isRequired,
-    points: PropTypes.array.isRequired,
-    selectedMarker: PropTypes.number,
-    draggable: PropTypes.bool
+    points: PropTypes.array,
+    selectedMarker: PropTypes.any,
+    selectedImage: PropTypes.any,
+    onMarkerDragged: PropTypes.func,
+    onMarkerDelete: PropTypes.func,
+    onMarkerToggle: PropTypes.func
   }
 
   static defaultProps = {
     leafletMap: null,
-    selectedMarker: -1,
-    draggable: false
+    points: [],
+    selectedMarker: null,
+    selectedImage: null,
+    onMarkerDragged: () => {},
+    onMarkerDelete: () => {},
+    onMarkerToggle: () => {}
   }
 
   constructor(props) {
     super(props);
 
     this.onMarkerDragEnd = this.onMarkerDragEnd.bind(this);
+
     this.state = {markers: []};
   }
 
-  // adding markers here so we can
-  // update state w/o re-rendering
-  componentWillReceiveProps(nextProps) {
+  // Determine if an update is needed
+  dirty(np) {
+    const {points, selectedMarker, selectedImage} = this.props;
+
+    return (
+      (np.points !== points) ||
+      (np.selectedMarker !== selectedMarker) ||
+      (np.selectedImage !== selectedImage)
+    );
+  }
+
+  componentWillReceiveProps(np) {
+    // set dirty flag
+    this._dirty = this.dirty(np);
+
+    if (!this._dirty) return;
+
     let {markers} = this.state;
 
-    let points = this.getValidPoints(nextProps.points);
+    let points = this.getValidPoints(np.points);
 
-    // if same then go
-    if (points.length === markers.length) return;
-
-    // if markers > points, delete
-    if (markers.length > points.length) {
+    if (markers.length > points.length) { // if markers > points, delete
       markers = this.deleteMarkers(markers, points);
-    }
-
-    // if markers < points, add
-    if (points.length > markers.length) {
+    } else if (points.length > markers.length) { // if markers < points, add
       markers = this.addMarkers(markers, points);
     }
 
-    this.setState({markers});
+    this.setState({markers: this.updateMarkersAttributes(markers, points)});
+  }
+
+  // dirty flag set in componentWillReceiveProps
+  shouldComponentUpdate(np, ns) {
+    return this._dirty;
   }
 
   componentDidUpdate() {
-    const {draggable, selectedMarker} = this.props;
+    const {selectedMarker, selectedImage} = this.props;
+    const {markers} = this.state;
 
-    this.state.markers.forEach(m => {
-      if (draggable && m.id === selectedMarker) {
+    markers.forEach((m,i) => {
+      if (m.id === selectedMarker) {
+        m.marker.addClass('active');
         m.marker.dragging.enable();
+        m.marker.setZIndexOffset(10000); // 10000 should pop it to the top
       } else {
         m.marker.dragging.disable();
+        m.marker.removeClass('active');
+        if (m.img === selectedImage){
+          m.marker.setZIndexOffset(5000);
+        } else {
+          m.marker.setZIndexOffset(0);
+        }
       }
     });
   }
 
-  componentDidMount() {}
-
   getValidPoints(points) {
     return points.filter((pt) => {
-      return pt.locations.map && pt.locations.map.length === 2;
+      return pt.type === CP_TYPES.MAP;
     });
   }
 
-  createHash(arr, key='id') {
+  createLookup(arr, key='id') {
     let h = {};
     arr.forEach((m, i) => {
-      h[m.id] = i;
+      h[m[key]] = i;
     });
 
     return h;
+  }
+
+  updateMarkersAttributes(markers, points) {
+    const hash = this.createLookup(points);
+
+    markers.forEach(m => {
+      let r = hash.hasOwnProperty(m.id);
+      if (r) {
+        let pt = points[hash[m.id]];
+        m.hasImage = pt.hasImage;
+      }
+    });
+
+    return markers;
   }
 
   deleteMarkers(markers, points) {
     const {leafletMap} = this.props;
     if (!leafletMap) return;
 
-    const hash = this.createHash(points);
+    const hash = this.createLookup(points);
 
     return markers.filter(m => {
       let r = hash.hasOwnProperty(m.id);
@@ -102,7 +201,7 @@ class PointMarkersMap extends Component {
     const {leafletMap} = this.props;
     if (!leafletMap) return;
 
-    const hash = this.createHash(markers);
+    const hash = this.createLookup(markers);
 
     points.forEach(pt => {
       let r = hash.hasOwnProperty(pt.id);
@@ -114,35 +213,74 @@ class PointMarkersMap extends Component {
     return markers;
   }
 
+
+  onActionsClick(evt, id) {
+    L.DomEvent.stop(evt);
+    let action = evt.target.dataset.action;
+    if (!action) return;
+
+    const {onMarkerDelete, onMarkerToggle} = this.props;
+
+    if (action === 'delete') {
+      onMarkerDelete(id);
+    } else if (action === 'lock') {
+      onMarkerToggle(id);
+    }
+  }
+
+  onMarkerDragEnd(marker) {
+    const {onMarkerDragged} = this.props;
+    let pos = marker.getLatLng();
+    onMarkerDragged(marker._pointid, [pos.lat, pos.lng]);
+  }
+
+  onMarkerClicked(marker) {
+    if (marker.dragging.enabled()) return;
+
+    const {onMarkerToggle} = this.props;
+    const {markers} = this.state;
+
+    let match = markers.find(m => m.id === marker._pointid);
+    //if (!match || !match.hasImage) return;
+    if (!match) return;
+
+    onMarkerToggle(match.id, match.img, marker.getLatLng());
+  }
+
   renderMarker(pt) {
     const {leafletMap} = this.props;
     if (!leafletMap) return;
 
-    let myIcon = L.divIcon(ICON);
-    let lat = pt.locations.map[0];
-    let lng = pt.locations.map[1];
-    let m = L.marker([lat, lng], {
+    let me = this;
+    let myIcon = new GCPIcon(ICON);
+    let lat = pt.coord[0];
+    let lng = pt.coord[1];
+
+    let m = new GCPMarker([lat, lng], {
       icon: myIcon,
-      draggable: true
+      draggable: true,
+      onActionsClick: (evt) => {
+        this.onActionsClick(evt, pt.id);
+      }
     });
 
     m.addTo(leafletMap);
-    let me = this;
+    m._pointid = pt.id;
+
     m.on('dragend', function(evt) {
       me.onMarkerDragEnd(this);
     });
 
-    m._pointid = pt.id;
+    m.on('click', function(evt) {
+      me.onMarkerClicked(this);
+    });
 
     return {
       marker: m,
-      id: pt.id
+      id: pt.id,
+      img: pt.img,
+      hasImage: pt.hasImage
     };
-  }
-
-  onMarkerDragEnd(marker) {
-    let pos = marker.getLatLng();
-    this.props.updatePosition('map', marker._pointid, [pos.lat, pos.lng]);
   }
 
   render() {

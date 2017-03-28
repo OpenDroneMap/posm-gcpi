@@ -10,6 +10,7 @@
   &.leaflet-bar {
     border: 0;
     right: 1rem;
+    margin-right: 0;
   }
 
   &.leaflet-bar a:hover {

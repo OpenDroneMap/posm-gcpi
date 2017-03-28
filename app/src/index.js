@@ -1,9 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './connectors/App';
-import WrappedApp from './components/Wrapped';
-
-const ConnectedApp = WrappedApp(App);
+import WrappedApp from './connectors/Wrapped';
 
 // Redux
 import { Provider } from 'react-redux'
@@ -14,12 +12,19 @@ import 'ace-css/css/ace.min.css';
 import 'leaflet/dist/leaflet.css';
 import './styles/main.css';
 
+// Default state
+const DEFAULT_STATE = {
+  imagepanel: { menu_active: true },
+  imagery: {},
+  controlpoints:{ points:[], joins: {} }
+};
 
-const store = configureStore({imagery: {}, controlpoints:{points:[]}});
+// create store
+const store = configureStore(DEFAULT_STATE);
 
 ReactDOM.render(
   <Provider store={store}>
-    <ConnectedApp />
+    <WrappedApp />
   </Provider>,
   document.getElementById('root')
 );

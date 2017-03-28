@@ -1,5 +1,8 @@
 import {combineReducers} from 'redux';
 import * as actions from './actions';
+import gcpValidator from '../common/gcp-validator';
+
+import controlPointReducer from './reducers/controlpoints';
 
 const INITIAL_STATE = {};
 // const identity = (state = INITIAL_STATE, action) => state;
@@ -29,120 +32,33 @@ function exporter(state = INITIAL_STATE, action) {
   }
 }
 
-
-
-function controlpoints(state = INITIAL_STATE, action) {
+function imagepanel(state = INITIAL_STATE, action) {
   switch (action.type) {
-    case actions.DELETE_CONTROL_POINT:
+    case actions.TOGGLE_MENU:
       return {
-        ...state,
-        active: false,
-        imageIndex: null,
-        pointIndex: null,
-        adding: false,
-        points: state.points.filter(pt => {
-          return pt.id !== action.id;
-        })
+        menu_active: !state.menu_active
       }
-
-    case actions.SET_CONTROL_POINT_POSITION:
-      return {
-        ...state,
-        points: state.points.map((pt, idx) => {
-                  if (action.id === pt.id) {
-                    return {
-                      ...pt,
-                      locations: {
-                        ...pt.locations,
-                        [action.loc]: action.pos
-                      }
-                    }
-                  }
-                  return pt;
-                })
-      }
-
-    case actions.TOGGLE_CONTROL_POINT_MODE:
-      let active = !state.active
-
-      const st = {
-        ...state,
-        active: active,
-        imageIndex: active ? action.imageIndex : null,
-        pointId: active ? action.pointId  : null,
-        adding: false
-      }
-
-      if (active && action.point) {
-        let now = Date.now();
-        st.adding = true;
-        st.pointId = now;
-
-        st.points = [
-          ...state.points,
-          {
-            imageName: action.imageName,
-            imageIndex: action.imageIndex,
-            hasImage: true,
-            id: now,
-            locations: {
-              ...action.point,
-              z: 0
-            }
-          }
-        ];
-      }
-      return st;
-
-    case 'SYNC_CONTROL_POINTS':
-      //lng lat z1 pixelx1 pixely1 imagename1
-      let images = action.images || [];
-      let list = action.list || [];
-      if (!list.length) return state;
-
-      let pts = [...state.points];
-      let now = Date.now();
-      list.forEach((r,i) => {
-        let index = images.findIndex( d => d.name === r[5] );
-
-        if (index > -1) {
-          pts.push({
-            imageName: images[index].name,
-            imageIndex: index,
-            hasImage: true,
-            id: now + i,
-            locations: {
-              map: [r[1], r[0]],
-              image: [r[3], r[4]],
-              z: r[2]
-            }
-          });
-        }
-      });
-
-      return {
-        ...state,
-        points: pts
-      };
 
     default:
       return state;
   }
 }
 
+const controlpoints = controlPointReducer(INITIAL_STATE);
+
 function imagery(state = INITIAL_STATE, action) {
   switch (action.type) {
     case actions.SELECT_IMAGE:
       return {
         ...state,
-        selected: action.index
+        selected: action.img_name
       }
 
     case actions.DELETE_IMAGE:
       return {
         ...state,
         items: state.items.filter(d => {
-          return d.id !== action.id;
+          return d.name !== action.name;
         })
       }
 
@@ -155,14 +71,15 @@ function imagery(state = INITIAL_STATE, action) {
           ...action.items
         ],
         receivedAt: action.receivedAt,
-        selected: state.selected || 0
+        selected: state.selected || action.items[0].name
       };
 
     case actions.RECEIVE_GCP_FILE:
       return {
         ...state,
         projection: action.projection,
-        gcp_list: action.rows
+        gcp_list: action.rows,
+        gcp_list_name: action.file_name
       }
 
     default:
@@ -174,7 +91,8 @@ const combinedReducers = combineReducers({
   imagery,
   controlpoints,
   windowSize,
-  exporter
+  exporter,
+  imagepanel
 });
 
 

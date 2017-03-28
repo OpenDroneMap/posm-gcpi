@@ -1,14 +1,21 @@
 .export-btn {
   position: absolute;
   bottom: 0;
-  width: 100%;
-  height: 4.5rem;
+  right: 1rem;
+  width: 10rem;
+  height: 2.5rem;
   padding: 0;
   border: 0;
-  background: $clr-grey;
-  color: #fff;
+  background: transparent;
+  color: $clr-grey;
+  border: 1px solid $clr-grey;
+  border-bottom: 0;
   font-size: 1rem;
   text-transform: uppercase;
   outline: 0;
   cursor: pointer;
+
+  &:hover {
+    color: $clr-highlight;
+  }
 }

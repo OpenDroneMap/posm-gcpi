@@ -1,0 +1,41 @@
+$header-height: 72px;
+
+.image-nav {
+  display: block;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: $header-height;
+  background: $clr-grey;
+  overflow: visible;
+  z-index: $z-10;
+
+  .control-points-i {
+
+  }
+
+  .toggle-grid {
+    position: absolute;
+    left: 0;
+    top: calc($header-height / 2);
+    transform: translateY(-50%);
+  }
+
+  .add-point-wrapper {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc($header-height / 2);
+    transform: translateY(-50%);
+  }
+
+  &.no-images .toggle-grid {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  &.editable .add-point-wrapper {
+    display: inline-block;
+  }
+}

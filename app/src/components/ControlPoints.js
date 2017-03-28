@@ -1,40 +1,38 @@
 import React, { Component } from 'react';
-import ImagesGetter from '../connectors/ImagesGetter';
-import Images from '../connectors/Images';
+
+const MIN_POINTS = 5;
 
 class ControlPoints extends Component {
 
   renderPoints() {
-    const {controlpoints} = this.props;
-    let range = Array.from({length: 5}, (value, key) => key);
-    return range.map((d,i) => {
-      let id = controlpoints.points[i] ? controlpoints.points[i].id : null;
-      let k = id ? 'active' : '';
-      if (controlpoints.active &&
-          controlpoints.pointId &&
-          id === controlpoints.pointId) k += ' edit';
+    const {controlpoints, selectedImage} = this.props;
+    const points = controlpoints.points.filter(p => {
+      return p.img_name === selectedImage;
+    });
+
+    if (!points.length) return (
+      <li>No points...</li>
+    );
+
+    return points.map((pt) => {
+      let k = 'active point';
+      if (pt.id === controlpoints.selected) k += ' edit';
 
       return (
-        <li key={`gcp-tick-${i}`} className={k}/>
+        <li key={`gcp-tick-${pt.id}`} className={k}/>
       );
     });
   }
 
   render() {
-    let style = {height: this.props.height};
-
     return (
-      <div className='control-points-i' style={style}>
-        <div className='overview'>
-          <div>
-            <h3>Ground Control Points</h3>
-            <ul>
-              {this.renderPoints()}
-            </ul>
-          </div>
+      <div className='control-points-i'>
+        <div>
+          <h3>Ground Control Points</h3>
+          <ul>
+            {this.renderPoints()}
+          </ul>
         </div>
-        <ImagesGetter/>
-        <Images {...this.props}/>
       </div>
     );
   }

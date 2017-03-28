@@ -24,10 +24,13 @@
   width: 38px;
   height: 38px;
   margin: -19px 0 0 -19px;
-  background: url('../assets/icons/gcp-green.png') 50% 50% no-repeat;
+  padding: 0;
+  background: transparent;
+  background-image: url('../assets/icons/gcp.png');
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
   background-size: contain;
-  pointer-events: none;
-  cursor: default;
+  cursor: pointer;
 
   .imagepanzoom & {
     width: 20px;
@@ -35,23 +38,77 @@
     margin: -10px 0 0 -10px;
   }
 
-  &.draggable,
-  &.leaflet-marker-draggable {
-    cursor: pointer;
-    pointer-events: auto;
-    background: url('../assets/icons/gcp.png') 50% 50% no-repeat;
+  .actions {
+    display: none;
+    position: absolute;
+    background: white;
+    left: 100%;
+    top: 50%;
+    margin-left: 10px;
+    border-radius: 4px;
+    transform: translateY(-50%);
+
+    ul {
+      padding: 5px;
+      margin: 0;
+      list-style: none;
+    }
+
+    ul:after {
+      content: ' ';
+      position: absolute;
+      display: block;
+      top: 50%;
+      right: 100%;
+      width: 0;
+      height: 0;
+      border: solid transparent;
+      pointer-events: none;
+      border-right-color: white;
+      border-width: 8px;
+      transform: translateY(-50%);
+    }
+
+    li {
+      line-height: 1;
+    }
+
+    li + li {
+      margin-top: 2px;
+    }
+
+    a {
+      display: block;
+      padding: 1px 8px;
+      color: $text-light;
+
+      font-size: 12px;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 
-  &.draggable:after,
-  &.leaflet-marker-draggable:after {
-    content: ' ';
-    position:absolute;
-    width: 58px;
-    height: 38px;
-    top: 0;
-    left: 18px;
-    background: url('../assets/icons/gcp-check.png') 50% 50% no-repeat;
-    background-size: contain;
+  &.draggable {
+    .actions {
+      display: block;
+    }
+  }
+
+  &.active,
+  &.active {
+    background-image: url('../assets/icons/gcp-green.png');
+  }
+
+  &.active.draggable,
+  &.active.leaflet-marker-draggable {
+    background-image: url('../assets/icons/gcp-yellow.png');
+
+    .actions {
+      display: block;
+    }
   }
 
   .imagepanzoom &.draggable:after {
@@ -60,62 +117,4 @@
     left: 9px;
   }
 
-}
-
-/* Range slider style */
-.rangeslider {
-  position: relative;
-  display: inline-block;
-  margin: 0 0 0 resolve($slider-padding * 1px);
-  height: 160px;
-  width: resolve($slider-width * 1px);
-  background: #ccc;
-  border-radius: 18px;
-  text-align: center;
-
-  &:after, &:before {
-    content: '\2013';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    color: #fff;
-    font-size: 0.7rem;
-  }
-
-  &:before {
-    content: '+';
-    bottom: auto;
-    top: 0;
-  }
-
-  .rangeslider__fill, .rangeslider__handle {
-    position: absolute;
-  }
-
-  .rangeslider__fill {
-    display: block;
-    bottom: 0;
-    width: 100%;
-    background: #ccc;
-    border-bottom-left-radius: 18px;
-    border-bottom-right-radius: 18px;
-  }
-
-  .rangeslider__handle {
-    display: inline-block;
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    left: 0;
-    background: #999;
-    border: none;
-    cursor: pointer;
-    border-radius: 50%;
-    z-index: 1;
-
-    &:active {
-      background: #999;
-    }
-  }
 }

@@ -1,25 +1,41 @@
 import React, { Component, PropTypes } from 'react';
 import Image from './Image';
-import Slider from 'react-rangeslider';
+import {CP_TYPES} from '../state/utils/controlpoints';
 import config from '../config';
-import styleVariables from '../styles/variables';
 
 // https://github.com/rexxars/react-element-pan/blob/master/src/element-pan.js
 class ImagePanZoom extends Component {
 
   static propTypes = {
     image: PropTypes.object,
-    points: PropTypes.array,
-    onImagePositionChange: PropTypes.func,
+    markers: PropTypes.array,
+    selectedMarker: PropTypes.any,
+    selectedImage: PropTypes.string,
+    onImageDragged: PropTypes.func,
+    onMarkerToggle: PropTypes.func,
+    onMarkerDelete: PropTypes.func,
+    addControlPoint: PropTypes.func,
+
     markerDraggable: PropTypes.bool,
-    selectedMarker: PropTypes.number
+    scrollWheelZoom: PropTypes.bool,
+    doubleClickZoom: PropTypes.bool,
+    mode: PropTypes.string
   }
 
   static defaultProps = {
     image: null,
-    points: [],
-    onImagePositionChange: () => {},
-    markerDraggable: false
+    markers: [],
+    selectedMarker: null,
+    selectedImage: null,
+    onImageDragged: () => {},
+    onMarkerToggle: () => {},
+    onMarkerDelete: () => {},
+    addControlPoint: () => {},
+
+    markerDraggable: false,
+    scrollWheelZoom: true,
+    doubleClickZoom: true,
+    mode: ''
   }
 
   constructor(props) {
@@ -47,6 +63,9 @@ class ImagePanZoom extends Component {
     this.onDragStop = this.onDragStop.bind(this);
     this.onSliderChange = this.onSliderChange.bind(this);
     this.onImageLoad = this.onImageLoad.bind(this);
+
+    this.onWheel = this.onWheel.bind(this);
+    this.onDoubleClick = this.onDoubleClick.bind(this);
   }
 
   componentWillReceiveProps(np) {
@@ -74,6 +93,8 @@ class ImagePanZoom extends Component {
     }
   }
 
+  componentWillUnmount() {}
+
   reset() {
     if (this.el) {
       this.el.scrollLeft = 0;
@@ -85,19 +106,64 @@ class ImagePanZoom extends Component {
     });
   }
 
+  onDoubleClick(evt) {
+    const {doubleClickZoom} = this.props;
+    if (!doubleClickZoom) return;
+
+    const { scale, minScale, imageData } = this.state;
+    if (!imageData.src) return;
+
+    let max = config.image_slider_zoom_max || 2;
+
+    let shiftKey = evt.shiftKey;
+
+    let zoomScaleModifier = 0.3;
+    let newScale = (shiftKey) ? scale + -(zoomScaleModifier) : scale + zoomScaleModifier;
+    newScale = Math.min(Math.max(newScale, minScale), max);
+    this.onSliderChange(newScale);
+  }
+
+  onWheel(evt) {
+    evt.preventDefault();
+
+    const {scrollWheelZoom} = this.props;
+    if (!scrollWheelZoom) return;
+
+    const { scale, minScale, imageData } = this.state;
+    if (!imageData.src) return;
+
+    let max = config.image_slider_zoom_max || 2;
+
+    let zoomScaleSensitivity = 0.1;
+    let delta = evt.deltaY || 1;
+    let now = Date.now();
+    let timeDelta = now - (this.lastMouseWheelEventTime || 0);
+    let divider = 3 + Math.max(0, 30 - timeDelta);
+
+    this.lastMouseWheelEventTime = now;
+
+    // Make empirical adjustments for browsers that give deltaY in pixels (deltaMode=0)
+    if ('deltaMode' in evt && evt.deltaMode === 0 && evt.wheelDelta) {
+      delta = evt.deltaY === 0 ? 0 :  Math.abs(evt.wheelDelta) / evt.deltaY;
+    }
+
+    delta = -0.3 < delta && delta < 0.3 ? delta : (delta > 0 ? 1 : -1) * Math.log(Math.abs(delta) + 10) / divider;
+
+    let zoom = Math.pow(1 + zoomScaleSensitivity, (-1) * delta);
+
+    let newScale = zoom * scale;
+    newScale = Math.min(Math.max(newScale, minScale), max);
+    this.onSliderChange(newScale);
+  }
+
   updateImageContainerSize() {
     if (!this.el) return;
 
-    let w = this.el.parentNode.offsetWidth - styleVariables['slider-width'] - (styleVariables['slider-padding'] * 2);
+    let w = this.el.parentNode.offsetWidth;
+    let h = this.el.parentNode.offsetHeight;
 
     this.el.style.width = `${w}px`;
-    this.el.style.height = `${w * .75}px`;
-
-    // This is a bit of a hack.
-    // Would need to modify `react-rangeslider`
-    // library to fix properly
-    this.slider.slider.style.height = `${w * .75}px`;
-    this.slider.handleUpdate();
+    this.el.style.height = `${h}px`;
   }
 
   getMousePosition(evt) {
@@ -131,21 +197,52 @@ class ImagePanZoom extends Component {
     return [x * dx, y * dx];
   }
 
-  onDownHandler(evt) {
-    evt.preventDefault();
-    if (!evt.target) return;
-
+  addPanningEvents() {
     window.addEventListener('mousemove', this.onDragMove);
     window.addEventListener('touchmove', this.onDragMove);
     window.addEventListener('mouseup', this.onDragStop);
     window.addEventListener('touchend', this.onDragStop);
+  }
 
-    // let target = evt.currentTarget || evt.target;
+  removePanningEvents() {
+    window.removeEventListener('mousemove', this.onDragMove);
+    window.removeEventListener('touchmove', this.onDragMove);
+    window.removeEventListener('mouseup', this.onDragStop);
+    window.removeEventListener('touchend', this.onDragStop);
+  }
+
+  onDownHandler(evt) {
+    const {mode, addControlPoint, image} = this.props;
+    evt.preventDefault();
+
+    if (!evt.target) return;
+
     let bounds = evt.target.getBoundingClientRect();
-
     let [startX, startY] = this.getMousePosition(evt);
 
+    // check if marker was clicked
     this._marker = evt.target.className.indexOf('image-point') > -1 ? evt.target : null;
+
+    let marker_id = null;
+    let marker_selected = null;
+    if (this._marker) {
+      marker_selected = +evt.target.dataset.selected;
+      marker_id = evt.target.dataset.id;
+    }
+
+    if (mode === 'adding') {
+      let [mx,my,center] = this.getCoordinatesFromMousePosition(evt);
+      addControlPoint([mx, my], image.name, true);
+      return;
+    }
+
+    if (this._marker && !marker_selected) {
+      this.props.onMarkerToggle(marker_id);
+      return;
+    }
+
+    this.addPanningEvents();
+
 
     var state = {
       dragging: true,
@@ -164,6 +261,8 @@ class ImagePanZoom extends Component {
       maxY: bounds.height
     };
 
+    this._dragged = false;
+
     this.setState(state);
   }
 
@@ -171,6 +270,8 @@ class ImagePanZoom extends Component {
     if (!this.state.dragging) {
       return;
     }
+
+    this._dragged = true;
 
     let [x, y] = this.getMousePosition(evt);
 
@@ -205,7 +306,7 @@ class ImagePanZoom extends Component {
     );
   }
 
-  onDragStop(evt) {
+  getCoordinatesFromMousePosition(evt) {
     let [x, y] = this.getMousePosition(evt);
 
     let left = this.el.scrollLeft;
@@ -214,24 +315,41 @@ class ImagePanZoom extends Component {
     let [nx, ny] = this.transformPosition(left + x, top + y, true);
     let center = this.getNativeCenter(left, top, this.state.scale);
 
+    return [nx,ny, center];
+  }
+
+  onDragStop(evt) {
+    const {mode} = this.props;
+
+    this.removePanningEvents();
+
+    if (!this._dragged || mode === 'adding') return;
+
+    let [x, y] = this.getMousePosition(evt);
+
+    let left = this.el.scrollLeft;
+    let top = this.el.scrollTop;
+
+    let [nx, ny] = this.transformPosition(left + x, top + y, true);
+    let center = this.getNativeCenter(left, top, this.state.scale);
+
+    let marker_id = null;
+
     if (this._marker) {
       this._marker.style.left = `${nx}px`;
       this._marker.style.top = `${ny}px`;
+      marker_id = this._marker.dataset.id;
     }
-
-    window.removeEventListener('mousemove', this.onDragMove);
-    window.removeEventListener('touchmove', this.onDragMove);
-    window.removeEventListener('mouseup', this.onDragStop);
-    window.removeEventListener('touchend', this.onDragStop);
-
-    let markerId = this._marker ? +this._marker.dataset.id : null;
-
-    // let others know of image center change, via callback
-    this.props.onImagePositionChange(center, [nx, ny], markerId);
 
     this._marker = null;
 
-    this.setState({ dragging: false, marker: false, scrollLeft: left, scrollTop: top });
+    this.setState({ dragging: false, marker: false, scrollLeft: left, scrollTop: top }, () => {
+      if (marker_id) {
+        this.props.onMarkerDragged(marker_id, [nx, ny]);
+      } else {
+        this.props.onImageDragged(center);
+      }
+    });
   }
 
   onSliderChange(value) {
@@ -256,7 +374,7 @@ class ImagePanZoom extends Component {
     const { scrollLeft, scrollTop, scale } = this.state;
 
     // parent height divided by 2
-    let w2= this.el.offsetWidth / 2;
+    let w2 = this.el.offsetWidth / 2;
     let h2 = this.el.offsetHeight / 2;
 
     // image height & width
@@ -299,26 +417,66 @@ class ImagePanZoom extends Component {
 
     // let connected app know the current center
     let pos = this.getNativeCenter(scrollLeft, scrollTop, scale)
-    this.props.onImagePositionChange(pos);
+    this.props.onImageDragged(pos);
 
     this.setState({imageData, scale, imageWidth, imageHeight, minScale, scrollLeft, scrollTop});
   }
 
+  onActionDelete(evt, marker) {
+    evt.preventDefault();
+    const {onMarkerDelete} = this.props;
+    onMarkerDelete(marker.id);
+  }
+
+  onActionLock(evt, marker) {
+    evt.preventDefault();
+    const {onMarkerToggle} = this.props;
+
+    onMarkerToggle(marker.id);
+  }
+
+  onActionJoin(evt, marker) {
+    evt.preventDefault();
+
+  }
 
   renderPoints() {
-    const { points, selectedImage, markerDraggable, selectedMarker } = this.props;
+    const { markers, selectedImage, markerDraggable, selectedMarker } = this.props;
 
-    return points.map((pt, i) => {
-      if (pt.imageIndex === selectedImage && pt.locations.image) {
-        let [x, y] = this.transformPosition(pt.locations.image[0], pt.locations.image[1]);
+    let hasMapMarkers = markers.some(m => m.type === CP_TYPES.MAP);
+
+    return markers.map((marker, i) => {
+      if (marker.type === CP_TYPES.IMAGE && marker.img_name === selectedImage) {
+        let [x, y] = this.transformPosition(marker.coord[0], marker.coord[1]);
 
         let style = {
           left: `${x}px`,
           top: `${y}px`
         };
 
-        let klass = markerDraggable && selectedMarker === pt.id ? ' draggable' : '';
-        return <div key={`ip${i}`} className={`image-point${klass}`} data-id={pt.id} style={style} />;
+
+        let selected = selectedMarker === marker.id ? 1 : 0;
+        let klass = selected ? ' draggable' : '';
+
+        return (
+          <div key={`ip${i}`} className={`image-point active${klass}`} data-selected={selected} data-id={marker.id} style={style}>
+            <div className='actions'>
+              <ul>
+                <li>
+                  <a href='#' onClick={(evt) => {this.onActionDelete(evt, marker);}}>Delete</a>
+                </li>
+                { hasMapMarkers &&
+                <li>
+                  <a href='#' onClick={(evt) => {this.onActionJoin(evt, marker);}} title='Click on map marker to link'>Link</a>
+                </li>
+                }
+                <li>
+                  <a href='#' onClick={(evt) => {this.onActionLock(evt, marker);}}>Lock</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        );
       }
 
       return null;
@@ -326,8 +484,8 @@ class ImagePanZoom extends Component {
   }
 
   render() {
-    const { imageData, scale, imageWidth, imageHeight, minScale } = this.state;
-    const { image } = this.props;
+    const { imageData, imageWidth, imageHeight } = this.state;
+    const { image, height } = this.props;
 
 
     // due to image orientation, we need to reverse dimensions
@@ -341,7 +499,10 @@ class ImagePanZoom extends Component {
           ref={el => {this.el = el;}}
           className='imagepanzoom'
           onMouseDown={this.onDownHandler}
-          onTouchStart={this.onDownHandler}>
+          onTouchStart={this.onDownHandler}
+          onWheel={this.onWheel}
+          onDoubleClick={this.onDoubleClick}
+          style={{height: height}}>
           <div className='points-layer' style={{width: `${pointsWidth}px`, height: `${pointsHeight}px`}}>
             {this.renderPoints()}
           </div>
@@ -355,15 +516,7 @@ class ImagePanZoom extends Component {
             onImageLoad={this.onImageLoad}
           />
         </div>
-        <Slider
-          ref={el => {this.slider = el;}}
-          value={scale}
-          min={minScale}
-          max={config.image_slider_zoom_max || 2}
-          step={config.image_slider_step || 0.01}
-          orientation="vertical"
-          onChange={this.onSliderChange}
-        />
+
       </div>
     );
   }

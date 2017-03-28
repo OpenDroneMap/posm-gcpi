@@ -1,6 +1,6 @@
 {
   "name": "gcpi",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Ground Control Point interface",
   "author": "Sean Connelley <connelley@stamen.com>",
   "private": true,
@@ -60,6 +60,7 @@
     "promise": "7.1.1",
     "react-dev-utils": "^0.3.0",
     "recursive-readdir": "2.1.0",
+    "redux-logger": "^2.10.2",
     "rimraf": "2.5.4",
     "strip-ansi": "3.0.1",
     "style-loader": "0.13.1",

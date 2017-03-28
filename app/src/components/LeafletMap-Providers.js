@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import { Component, PropTypes } from 'react';
 import L from 'leaflet';
 import './LeafletMap-Providers-Control';
 import config from '../config';

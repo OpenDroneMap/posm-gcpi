@@ -8,13 +8,16 @@ class ExportModal extends Component {
 
     // detect if we can use FileSaver
     try {
+        /*eslint-disable */
         this.isFileSaverSupported = !!new Blob;
+        /*eslint-enable */
     } catch (e) {}
 
   }
 
   copyText(evt) {
     evt.preventDefault();
+
     if (this.txtarea && this.txtarea.select) {
       this.txtarea.select();
       try {
@@ -35,10 +38,8 @@ class ExportModal extends Component {
 
   renderText() {
     const {controlpoints, projection} = this.props;
-    // EPSG:4326
-    // 16.63593223 52.77337048 70 691 3498 img_4851.jpg
-    // lng lat z1 pixelx1 pixely1 imagename1
     let txt = [];
+
     controlpoints.points.forEach(pt => {
       let name = pt.imageName;
       let locs = pt.locations;
@@ -53,17 +54,21 @@ class ExportModal extends Component {
       txt.push(row);
     });
 
-    if (!txt.length) return 'Need control points!';
+    if (!txt.length) return [0, 'Need control points!'];
 
     let proj = (projection && projection.length) ? projection.join('\t') : ''; // Handle empty projection
     txt.unshift(proj);
 
-    return txt.join('\n');
+    return [txt.length, txt.join('\n')];
   }
 
   render() {
+    let [pointsLength, exportText] = this.renderText();
+    let klass = (!pointsLength) ? ' no-pts' : '';
+
     return (
-      <div className='export-modal'>
+      <div className={`export-modal${klass}`}>
+        <div className='bk' onClick={(evt) => {this.props.onClick(evt);} }/>
         <div className='inner'>
           <div className='head'>
             <h3>Ground control point file</h3>
@@ -77,16 +82,16 @@ class ExportModal extends Component {
                     <p>Here is your text</p>
                   </td>
                   <td>
-                    <textarea ref={el => {this.txtarea = el;}} readOnly value={this.renderText()}/>
+                    <textarea ref={el => {this.txtarea = el;}} readOnly value={exportText}/>
                   </td>
                 </tr>
               </tbody>
             </table>
             <div className='actions'>
               <p>Copy text with <strong>Ctrl / Cmd+C</strong> or </p>
-              <button onClick={e => {this.copyText(e);}}>Copy</button>
+              <button onClick={e => {this.copyText(e);}} disabled={!pointsLength}>Copy</button>
               { this.isFileSaverSupported &&
-              <button onClick={e => {this.saveText(e);}}>Save</button>
+              <button onClick={e => {this.saveText(e);}} disabled={!pointsLength}>Save</button>
               }
             </div>
           </div>

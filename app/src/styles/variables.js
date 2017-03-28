@@ -1,4 +1,6 @@
 /* PostCSS variables, loaded by webpack */
+/* Any changes made here will need a restart */
+
 module.exports = {
   "z-1": 1,
   "z-2": 2,
@@ -16,6 +18,5 @@ module.exports = {
   'clr-yellow': '#FBB03B',
   'clr-green': '#006837',
   'clr-white': '#fff',
-  'slider-width': 18,
-  'slider-padding': 5
+  'clr-highlight': 'yellow'
 }

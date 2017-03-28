@@ -1,0 +1,16 @@
+.toggle-grid {
+  display: inline-block;
+  padding: 4px;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  font-weight: bold;
+  line-height: 0;
+  outline: 0;
+  cursor: pointer;
+  user-select: none;
+
+  &:hover svg {
+    fill: $clr-highlight;
+  }
+}

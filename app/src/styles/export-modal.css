@@ -5,11 +5,20 @@
   width: 100%;
   height: 100%;
   z-index: 9999;
-  background: rgba(0,0,0,0.1);
 
   p {
     margin: 0;
     padding: 0;
+  }
+
+  .bk {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.1);
+    z-index: 1;
   }
 
   .inner {
@@ -19,6 +28,7 @@
     min-width: 500px;
     background: $clr-white;
     transform: translateX(-50%) translateY(-50%);
+    z-index: 2;
   }
 
   .head {
@@ -101,10 +111,22 @@
       padding: 4px 10px;
       outline: 0;
       cursor: pointer;
+      user-select: none;
 
       &:hover {
         color: yellow;
       }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: default;
+        pointer-events: none;
+      }
+
+      &:disabled:hover {
+        color: $clr-white;
+      }
     }
+
   }
 }

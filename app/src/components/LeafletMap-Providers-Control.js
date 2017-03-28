@@ -12,7 +12,6 @@
     factory(window.L);
   }
 }(function (L) {
-  'use strict';
 
   const CONTAINER_CLASS = 'leaflet-map-providers leaflet-bar leaflet-control';
   const PROVIDER_ITEM_CLASS = 'provider-item';
