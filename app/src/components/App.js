@@ -63,12 +63,12 @@ class App extends Component {
 
     return (
       <div className='app'>
-        <WindowResizeListener onResize={(w) => {this.onResize(w);}} />
+        <WindowResizeListener onResize={ (w) => {this.onResize(w);} } />
         {exporter.active &&
           <ExportModal
             projection={imagery.projection}
             controlpoints={controlpoints}
-            onClick={(evt)=>{this.onExportClick(evt);}}/>
+            onClick={ (evt)=>{this.onExportClick(evt);} }/>
         }
         <Header onExportClick={this.onExportClick}/>
         <main className='main'>

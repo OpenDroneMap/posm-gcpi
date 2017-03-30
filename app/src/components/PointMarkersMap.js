@@ -6,6 +6,12 @@ const ICON = {
   className: 'image-point',
   iconSize: [38,38]
 };
+
+const Z_INDEXES = {
+  ACTIVE: 5000,
+  EDITABLE: 10000
+};
+
 const GCPMarker = L.Marker.extend({
   initialize: function (latlng, options) {
     // add the default actions click handler to options
@@ -134,15 +140,18 @@ class PointMarkersMap extends Component {
     const {markers} = this.state;
 
     markers.forEach((m,i) => {
+
+      m.marker.removeClass('active');
+      m.marker.dragging.disable();
+
       if (m.id === selectedMarker) {
         m.marker.addClass('active');
         m.marker.dragging.enable();
-        m.marker.setZIndexOffset(10000); // 10000 should pop it to the top
+        m.marker.setZIndexOffset(Z_INDEXES.EDITABLE);
       } else {
-        m.marker.dragging.disable();
-        m.marker.removeClass('active');
-        if (m.img === selectedImage){
-          m.marker.setZIndexOffset(5000);
+        if (this.shouldHighlightMarker(m.id)){
+          m.marker.addClass('active');
+          m.marker.setZIndexOffset(Z_INDEXES.ACTIVE);
         } else {
           m.marker.setZIndexOffset(0);
         }
@@ -154,6 +163,18 @@ class PointMarkersMap extends Component {
     return points.filter((pt) => {
       return pt.type === CP_TYPES.MAP;
     });
+  }
+
+  shouldHighlightMarker(marker_id) {
+    const {joins, selectedImage} = this.props;
+
+    if (!joins.hasOwnProperty(marker_id)) return false;
+
+    let match = joins[marker_id].find(img_name => {
+      return img_name.indexOf(selectedImage) > -1;
+    });
+
+    return match ? true : false;
   }
 
   createLookup(arr, key='id') {

@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import ImagePanZoom from './ImagePanZoom';
+import {CP_MODES} from '../state/utils/controlpoints';
 
 class ImageEditor extends Component {
   static propTypes = {};
@@ -30,7 +31,12 @@ class ImageEditor extends Component {
   }
 
   onMarkerToggle(marker_id) {
-    const {toggleControlPointMode} = this.props;
+    const {controlpoints, toggleControlPointMode, joinControlPoint} = this.props;
+
+    if (controlpoints.mode === CP_MODES.MAP_EDIT) {
+        return joinControlPoint(marker_id);
+    }
+
     toggleControlPointMode(marker_id);
   }
 
@@ -47,7 +53,7 @@ class ImageEditor extends Component {
   }
 
   render() {
-    const {controlpoints, imagery, height, addControlPoint} = this.props;
+    const {controlpoints, imagery, height, addControlPoint, joinControlPoint} = this.props;
 
     return (
       <div className='image-editor'>

@@ -4,6 +4,7 @@ import LeafletSearch from './Leaflet-Search';
 import LeafletMapProviders from './LeafletMap-Providers';
 import PointMarkersMap from './PointMarkersMap';
 import LeafletZoomControls from './Leaflet-ZoomControls.js';
+import {CP_MODES} from '../state/utils/controlpoints';
 
 import config from '../config';
 
@@ -77,11 +78,9 @@ class LeafletMap extends Component {
 
   onMapClick(evt) {
     const {controlpoints, addControlPoint} = this.props;
-    if (controlpoints.mode === 'adding') {
+    if (controlpoints.mode === CP_MODES.ADDING) {
       let ll = evt.latlng;
       addControlPoint([ll.lat, ll.lng]);
-      // fromImage, img, img_id, img_loc, map_id, map_loc
-      //setPointProperties(false, null, null, null, null, [ll.lat, ll.lng]);
     }
   }
 
@@ -96,11 +95,14 @@ class LeafletMap extends Component {
   }
 
   onMarkerToggle(marker_id, marker_img, latlng) {
-    const {toggleControlPointMode, controlpoints, setPointProperties} = this.props;
+    const {toggleControlPointMode, controlpoints, setPointProperties, joinControlPoint} = this.props;
 
-    if (controlpoints.mode === 'adding') {
-      setPointProperties(false, null, null, null, marker_id, [latlng.lat, latlng.lng]);
-      return;
+    if (controlpoints.mode === CP_MODES.ADDING) {
+      return setPointProperties(false, null, null, null, marker_id, [latlng.lat, latlng.lng]);
+
+    } else if (controlpoints.mode === CP_MODES.IMAGE_EDIT) {
+      console.log('JOIN HERE: ', marker_id);
+      return joinControlPoint(marker_id);
     }
 
     toggleControlPointMode(marker_id);
@@ -120,6 +122,7 @@ class LeafletMap extends Component {
           leafletMap={leafletMap}
           selectedMarker={controlpoints.selected}
           selectedImage={imagery.selected}
+          joins={controlpoints.joins}
           points={controlpoints.points}
           mode={controlpoints.mode}
           onMarkerDragged={this.onMarkerDragged}

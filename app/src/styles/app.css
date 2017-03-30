@@ -35,3 +35,7 @@
     }
   }
 }
+
+.prevent-overflow {
+  overflow: hidden !important;
+}

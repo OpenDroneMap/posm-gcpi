@@ -3,6 +3,13 @@ export const CP_TYPES = {
   IMAGE: 'image'
 }
 
+export const CP_MODES = {
+  ADDING: 'adding',
+  MAP_EDIT: 'map_edit',
+  IMAGE_EDIT: 'img_edit',
+  DEFAULT: null
+}
+
 const generateID = (coord, img_name='') => {
   return `${coord.join('_')}_${img_name}_${Date.now()}`;
 }
@@ -10,6 +17,15 @@ const generateID = (coord, img_name='') => {
 const validCoordinate = (coord) => {
   if (Array.isArray(coord) !== true) return false;
   return coord.length > 1 && !coord.some(isNaN);
+}
+
+export const getModeFromId = (id, points) => {
+  let f = points.find(p => p.id === id);
+  if (!f) return CP_MODES.DEFAULT;
+
+  if (f.type === CP_TYPES.MAP) return CP_MODES.MAP_EDIT;
+
+  return CP_MODES.IMAGE_EDIT;
 }
 
 // returns image point object

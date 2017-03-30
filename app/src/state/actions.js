@@ -20,6 +20,14 @@ export function toggleMenu() {
   }
 }
 
+export const JOIN_CONTROL_POINT = 'JOIN_CONTROL_POINT';
+export function joinControlPoint(id) {
+  return {
+    type: JOIN_CONTROL_POINT,
+    id
+  }
+}
+
 export const DELETE_CONTROL_POINT = 'DELETE_CONTROL_POINT';
 export function deleteControlPoint(id) {
   return {

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import FileSaver from 'file-saver';
+import L from 'leaflet';
 
 class ExportModal extends Component {
 
@@ -13,6 +14,14 @@ class ExportModal extends Component {
         /*eslint-enable */
     } catch (e) {}
 
+  }
+
+  componentDidMount() {
+    L.DomUtil.addClass(document.body, 'prevent-overflow');
+  }
+
+  componentWillUnmount() {
+    L.DomUtil.removeClass(document.body, 'prevent-overflow');
   }
 
   copyText(evt) {
@@ -38,25 +47,33 @@ class ExportModal extends Component {
 
   renderText() {
     const {controlpoints, projection} = this.props;
+    const {joins, points} = controlpoints;
+
     let txt = [];
 
-    controlpoints.points.forEach(pt => {
-      let name = pt.imageName;
-      let locs = pt.locations;
-      if (!locs.map.length === 2 || !locs.image.length === 2) return;
-      let lat = locs.map[0];
-      let lng = locs.map[1];
-      let z = locs.z || 0;
-      let x = locs.image[0];
-      let y = locs.image[1];
+    Object.keys(joins).forEach(k => {
+      let mapPt = points.find(p => p.id === k);
+      if (mapPt === undefined) return;
 
-      let row = [lng, lat, z, x, y, name].join('\t');
-      txt.push(row);
+      let lat = mapPt.coord[0].toFixed(6);
+      let lng = mapPt.coord[1].toFixed(6);
+
+      joins[k].forEach(ptId => {
+        let pt = points.find(p => p.id === ptId);
+        if (pt === undefined) return;
+
+        let name = pt.img_name;
+        let x = pt.coord[0];
+        let y = pt.coord[1];
+        let z = pt.coord[2] || 0;
+        txt.push( [lng, lat, z, x, y, name].join('\t') );
+      });
+
     });
 
-    if (!txt.length) return [0, 'Need control points!'];
+    if (!txt.length) return [0, 'Could not find a control points!'];
 
-    let proj = (projection && projection.length) ? projection.join('\t') : ''; // Handle empty projection
+    let proj = (projection && projection.length) ? projection.join('\t') : 'EPSG:4326'; // Handle empty projection
     txt.unshift(proj);
 
     return [txt.length, txt.join('\n')];

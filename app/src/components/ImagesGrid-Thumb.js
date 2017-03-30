@@ -61,10 +61,10 @@ class ImagesGridThumb extends Component {
   }
 
   onDeleteHandler(evt) {
-    const {onDeleteImage, src} = this.props;
+    const {onDeleteImage, filename} = this.props;
     evt.preventDefault();
     evt.stopPropagation();
-    onDeleteImage(src);
+    onDeleteImage(filename);
   }
 
   getThumbClass() {

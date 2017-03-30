@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import ImagesGridThumb from './ImagesGrid-Thumb';
+import {CP_TYPES} from '../state/utils/controlpoints';
 
 class ImagesGrid extends Component {
   static propTypes = {
@@ -19,12 +20,14 @@ class ImagesGrid extends Component {
 
   onImageClick(file) {
     const {selectImageFile} = this.props;
+    if (!file) return;
+
     selectImageFile(file.name);
   }
 
-  onDeleteImage(file) {
+  onDeleteImage(filename) {
     const {deleteImageFile} = this.props;
-    deleteImageFile(file.name);
+    deleteImageFile(filename);
   }
 
   renderImages() {
@@ -37,7 +40,7 @@ class ImagesGrid extends Component {
     let rollup = {};
 
     controlpoints.points.forEach(pt => {
-      if (pt.type !== 'image') return;
+      if (pt.type !== CP_TYPES.IMAGE) return;
 
       if (!rollup.hasOwnProperty(pt.img_name)) {
         rollup[pt.img_name] = 0;
@@ -52,9 +55,6 @@ class ImagesGrid extends Component {
         }
       });
     }
-
-
-
 
 
     return Object.keys(rollup).map(key => {

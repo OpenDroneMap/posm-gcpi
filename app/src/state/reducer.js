@@ -55,6 +55,8 @@ function imagery(state = INITIAL_STATE, action) {
       }
 
     case actions.DELETE_IMAGE:
+      if (!Array.isArray(state.items)) return state;
+
       return {
         ...state,
         items: state.items.filter(d => {

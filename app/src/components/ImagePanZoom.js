@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import Image from './Image';
-import {CP_TYPES} from '../state/utils/controlpoints';
+import {CP_TYPES, CP_MODES} from '../state/utils/controlpoints';
 import config from '../config';
 
 // https://github.com/rexxars/react-element-pan/blob/master/src/element-pan.js
@@ -230,7 +230,7 @@ class ImagePanZoom extends Component {
       marker_id = evt.target.dataset.id;
     }
 
-    if (mode === 'adding') {
+    if (mode === CP_MODES.ADDING) {
       let [mx,my,center] = this.getCoordinatesFromMousePosition(evt);
       addControlPoint([mx, my], image.name, true);
       return;

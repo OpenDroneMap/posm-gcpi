@@ -35,6 +35,11 @@ const gcpiMiddleware = store => next => action => {
         type: 'TOGGLE_MENU'
       });
     }
+  } else if (action.type === 'DELETE_IMAGE') {
+    store.dispatch({
+      type: 'ON_DELETE_IMAGE',
+      img_name: action.name
+    });
   }
 
   // resume to original action
