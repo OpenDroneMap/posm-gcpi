@@ -435,11 +435,6 @@ class ImagePanZoom extends Component {
     onMarkerToggle(marker.id);
   }
 
-  onActionJoin(evt, marker) {
-    evt.preventDefault();
-
-  }
-
   renderPoints() {
     const { markers, selectedImage, markerDraggable, selectedMarker } = this.props;
 
@@ -465,11 +460,6 @@ class ImagePanZoom extends Component {
                 <li>
                   <a href='#' onClick={(evt) => {this.onActionDelete(evt, marker);}}>Delete</a>
                 </li>
-                { hasMapMarkers &&
-                <li>
-                  <a href='#' onClick={(evt) => {this.onActionJoin(evt, marker);}} title='Click on map marker to link'>Link</a>
-                </li>
-                }
                 <li>
                   <a href='#' onClick={(evt) => {this.onActionLock(evt, marker);}}>Lock</a>
                 </li>
