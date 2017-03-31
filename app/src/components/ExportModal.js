@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import FileSaver from 'file-saver';
 import L from 'leaflet';
+import {generateGcpOutput} from '../state/utils/controlpoints';
 
 class ExportModal extends Component {
 
@@ -47,41 +48,28 @@ class ExportModal extends Component {
 
   renderText() {
     const {controlpoints, projection} = this.props;
-    const {joins, points} = controlpoints;
+    const {joins, points, status} = controlpoints;
 
-    let txt = [];
-
-    Object.keys(joins).forEach(k => {
-      let mapPt = points.find(p => p.id === k);
-      if (mapPt === undefined) return;
-
-      let lat = mapPt.coord[0].toFixed(6);
-      let lng = mapPt.coord[1].toFixed(6);
-
-      joins[k].forEach(ptId => {
-        let pt = points.find(p => p.id === ptId);
-        if (pt === undefined) return;
-
-        let name = pt.img_name;
-        let x = pt.coord[0];
-        let y = pt.coord[1];
-        let z = pt.coord[2] || 0;
-        txt.push( [lng, lat, z, x, y, name].join('\t') );
+    if (!status.valid) {
+      return status.errors.map(err => {
+        return <p dangerouslySetInnerHTML={{ __html: err }} />
       });
+    }
 
-    });
-
-    if (!txt.length) return [0, 'Could not find a control points!'];
+    let rows = generateGcpOutput(joins, points);
 
     let proj = (projection && projection.length) ? projection.join('\t') : 'EPSG:4326'; // Handle empty projection
-    txt.unshift(proj);
+    rows.unshift(proj);
 
-    return [txt.length, txt.join('\n')];
+    return rows.join('\n');
   }
 
   render() {
-    let [pointsLength, exportText] = this.renderText();
-    let klass = (!pointsLength) ? ' no-pts' : '';
+    const {controlpoints} = this.props;
+    const {status} = controlpoints;
+
+    let exportText = this.renderText();
+    let klass = (!status.valid) ? ' no-pts' : '';
 
     return (
       <div className={`export-modal${klass}`}>
@@ -92,25 +80,34 @@ class ExportModal extends Component {
             <span className='icon' onClick={(evt) => {this.props.onClick(evt);} }><span>&times;</span></span>
           </div>
           <div className='output'>
-            <table>
-              <tbody>
-                <tr>
-                  <td>
-                    <p>Here is your text</p>
-                  </td>
-                  <td>
-                    <textarea ref={el => {this.txtarea = el;}} readOnly value={exportText}/>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <div className='actions'>
-              <p>Copy text with <strong>Ctrl / Cmd+C</strong> or </p>
-              <button onClick={e => {this.copyText(e);}} disabled={!pointsLength}>Copy</button>
-              { this.isFileSaverSupported &&
-              <button onClick={e => {this.saveText(e);}} disabled={!pointsLength}>Save</button>
-              }
-            </div>
+            {status.valid &&
+              <div>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>Here is your text</p>
+                      </td>
+                      <td>
+                        <textarea ref={el => {this.txtarea = el;}} readOnly value={exportText}/>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div className='actions'>
+                  <p>Copy text with <strong>Ctrl / Cmd+C</strong> or </p>
+                  <button onClick={e => {this.copyText(e);}} disabled={!status.valid}>Copy</button>
+                  { this.isFileSaverSupported &&
+                  <button onClick={e => {this.saveText(e);}} disabled={!status.valid}>Save</button>
+                  }
+                </div>
+              </div>
+            }
+            {!status.valid &&
+              <div className='errors'>
+                {exportText}
+              </div>
+            }
           </div>
         </div>
       </div>

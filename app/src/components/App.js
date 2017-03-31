@@ -70,7 +70,7 @@ class App extends Component {
             controlpoints={controlpoints}
             onClick={ (evt)=>{this.onExportClick(evt);} }/>
         }
-        <Header onExportClick={this.onExportClick}/>
+        <Header onExportClick={this.onExportClick} status={controlpoints.status}/>
         <main className='main'>
           <section className='inner'>
             <div className='panel left'>

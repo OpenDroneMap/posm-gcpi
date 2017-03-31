@@ -18,4 +18,14 @@
   &:hover {
     color: $clr-highlight;
   }
+
+  &:disabled {
+    pointer-events: none;
+    cursor: default;
+    opacity: 0.5;
+
+    &:hover {
+      color: $clr-grey;
+    }
+  }
 }

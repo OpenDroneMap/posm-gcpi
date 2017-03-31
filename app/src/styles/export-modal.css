@@ -67,8 +67,14 @@
   .output {
     padding: 1rem 1.5rem;
 
-    table {
+    table, .errors {
       width: 500px;
+    }
+    .errors {
+      p {
+        font-size: 0.85rem;
+        white-space: initial;
+      }
     }
 
     td:first-child {

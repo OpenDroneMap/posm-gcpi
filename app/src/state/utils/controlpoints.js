@@ -52,36 +52,67 @@ export const mapPoint = (coord) => {
   }
 }
 
+export const generateGcpOutput = (joins, points) => {
+  let rows = [];
 
-export const validate = (points) => {
-  if (points.length < 15) {
-    console.warn('Not enough points. Need at least 15 points.');
-    return false;
-  }
-  // TODO: update to newer points model
-  // remove return once done
-  return true;
+  Object.keys(joins).forEach(k => {
+    let mapPt = points.find(p => p.id === k);
+    if (mapPt === undefined) return;
 
-  // unique map location points
-  let uniques = {};
-  points.forEach(pt => {
-    let loc = pt.locations;
-    if (!loc) return;
+    let lat = mapPt.coord[0].toFixed(6);
+    let lng = mapPt.coord[1].toFixed(6);
 
-    let k = loc.map.join(':');
+    joins[k].forEach(ptId => {
+      let pt = points.find(p => p.id === ptId);
+      if (pt === undefined) return;
 
-    if (!uniques[k]) uniques[k] = {ct: 0, imgs: []};
-    uniques[k].ct++;
-    uniques[k].imgs.push(pt.img);
+      let name = pt.img_name;
+      let x = pt.coord[0];
+      let y = pt.coord[1];
+      let z = pt.coord[2] || 0;
+      rows.push( [lng, lat, z, x, y, name].join('\t') );
+    });
+
   });
 
-  // check if each point has 3 images associated with it
-  let valid = Object.keys(uniques).filter(d => d.imgs >= 3);
+  return rows;
+}
 
-  if (valid.length < 5) {
-    console.warn('A point on the map must be referenced in 3 images.');
-    return false;
+
+export const validate = (points, joins) => {
+  let valid = true;
+  let errors = [];
+
+  if (points.length < 15) {
+    errors.push('A ground control point file must have a minimum of 15 points. There needs to 5 control objects and each control object must have 3 image points referenced. Please see this <a href="https://github.com/OpenDroneMap/OpenDroneMap/wiki/Running-OpenDroneMap#running-odm-with-ground-control" target="_blank">article</a> for more information.');
   }
 
-  return true;
+  if (errors.length) {
+    return {
+      valid: false,
+      errors
+    };
+  }
+
+  let mapPoints = points.filter(pt => pt.type === CP_TYPES.MAP);
+  let imgPointsLength = points.length - mapPoints.length;
+  let joinKeys = Object.keys(joins);
+  let validObjects = joinKeys.filter(d => d.length >= 3);
+
+  if (imgPointsLength < 9) {
+    errors.push('Need at least 10 image points.');
+  }
+
+  if (mapPoints.length < 5) {
+    errors.push('Seems you have enough image points but not enough control objects. There must be at least 5.');
+  } else if (joinKeys.length < 5) {
+    errors.push('There must be at least 5 control points that have image points referenced.');
+  } else if (validObjects.length < 5) {
+    errors.push('Control objects must have at least 3 image points referenced.');
+  }
+
+  return {
+    valid: errors.length ? false : true,
+    errors
+  }
 };

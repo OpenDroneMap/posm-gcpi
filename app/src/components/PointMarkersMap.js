@@ -140,7 +140,6 @@ class PointMarkersMap extends Component {
     const {markers} = this.state;
 
     markers.forEach((m,i) => {
-
       m.marker.removeClass('active');
       m.marker.dragging.disable();
 

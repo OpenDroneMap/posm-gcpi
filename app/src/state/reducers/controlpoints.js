@@ -26,7 +26,7 @@ const onDeleteImage = (state, action) => {
     selected: null,
     points,
     joins,
-    valid: validate(points)
+    status: validate(points, joins)
   }
 }
 
@@ -44,8 +44,8 @@ const deletePoint = (state, action) => {
     })
   }
 
-  st.valid = validate(st.points);
   st.joins = removeFromJoins(st.joins, pt);
+  st.status = validate(st.points, st.joins);
 
   return st;
 }
@@ -92,12 +92,17 @@ const removeMapPointFromJoins = (joins, map_id) => {
 const joinPoints = (joins, img_id, map_id) => {
   if (!joins.hasOwnProperty(map_id)) {
     joins[map_id] = [];
+  }
 
-  } else if (joins[map_id].indexOf(img_id) > -1) {
-    // Check if image point exists for a particular map point
-    // Not sure if this could happen but checking to be sure
-    console.warn(`Image point ${img_id} already exists for map point ${map_id}`);
-    return joins;
+  // Check if image point exists for a particular map point
+  // If exists remove it
+  if (joins[map_id].indexOf(img_id) > -1) {
+    console.warn(`Removing image point ${img_id} from map point ${map_id}`);
+
+    return {
+      ...joins,
+      [map_id]: joins[map_id].filter(d => d !== img_id)
+    }
   }
 
   return {
@@ -133,14 +138,15 @@ const addPoint = (state, action) => {
 
   if (pt === null) return state;
   let points = [...state.points, pt];
+  let joins = state.joins || {};
 
   return {
     ...state,
     points,
-    joins: {},
+    joins,
     selected: pt.id,
     mode: getModeFromId(pt.id, points),
-    valid: validate(points)
+    status: validate(points, joins)
   };
 }
 
@@ -227,7 +233,7 @@ const syncList = (state, action) => {
     joins,
     selected,
     mode: getModeFromId(selected, points),
-    valid: validate(points)
+    status: validate(points, joins)
   };
 }
 
