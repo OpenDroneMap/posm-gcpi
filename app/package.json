@@ -1,9 +1,8 @@
 {
   "name": "gcpi",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Ground Control Point interface",
   "author": "Sean Connelley <connelley@stamen.com>",
-  "private": true,
   "dependencies": {
     "ace-css": "^1.1.0",
     "blueimp-load-image": "^2.9.0",
@@ -72,12 +71,11 @@
   },
   "license": "BSD",
   "main": "n/a",
-  "homepage": "/posmodm/show/gcpi",
+  "homepage": "/",
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js --env=jsdom",
-    "deploy:latest": "scp -rq ./build/. studio.stamen.com:www/posmodm/show/gcpi"
+    "test": "node scripts/test.js --env=jsdom"
   },
   "jest": {
     "moduleFileExtensions": [
