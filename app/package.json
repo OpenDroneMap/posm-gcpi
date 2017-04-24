@@ -71,7 +71,7 @@
   },
   "license": "BSD",
   "main": "n/a",
-  "homepage": "/",
+  "homepage": "/posm-gcpi",
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
