@@ -73,8 +73,6 @@ export function setControlPointPosition(loc, id, pos) {
   }
 }
 
-
-
 export const DELETE_IMAGE = 'DELETE_IMAGE';
 export function deleteImageFile(name) {
   return {
@@ -109,36 +107,47 @@ export function receiveImageFiles(files) {
 }
 
 export const RECEIVE_GCP_FILE = 'RECEIVE_GCP_FILE';
-/*
-coordinate system description
-lng lat z1 pixelx1 pixely1 imagename1
-...
-*/
 export function receiveGcpFile(file_name, file_content) {
-  let now = Date.now();
+  const now = Date.now();
 
-  let delimiter = /\s|\t|,|\|/g;
-  let newline = /\r|\n/g;
+  const delimiter = /\s|\t|,|\|/g;
+  const newline = /\r|\n/g;
 
   let rows = file_content.split(newline).map(r => r.split(delimiter));
-  let projection = [...rows[0]]
+  let projection = rows.shift();
 
-  rows = rows.filter(r => r.length === 6);
-  rows = rows.map(r => {
-    return r.map(d => {
-      if (!isNaN(d)) {
-        d = +d;
-      }
-      return d;
-    });
+  rows = rows
+    .filter(r => r.length)
+    .map(r => {
+      return r.map(d => {
+        if (!isNaN(d)) {
+          d = +d;
+        }
+        return d;
+      });
   });
+
+  const max_columns = rows.reduce((acc,item) => {
+    return Math.max(acc, item.length);
+  }, 0);
 
   return {
     type: RECEIVE_GCP_FILE,
     receivedAt: now,
+    columns: [...Array(max_columns)].map((d,i) => i),
     projection,
     rows,
     file_name
+  }
+}
+
+export const GCP_FILE_PROCESSED = 'GCP_FILE_PROCESSED';
+export function gcpProcessed(filename, projection, rows) {
+  return {
+    type: GCP_FILE_PROCESSED,
+    filename,
+    projection,
+    rows
   }
 }
 

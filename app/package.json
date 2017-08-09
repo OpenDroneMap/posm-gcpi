@@ -1,6 +1,6 @@
 {
   "name": "gcpi",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Ground Control Point interface",
   "author": "Sean Connelley <connelley@stamen.com>",
   "dependencies": {
@@ -15,7 +15,8 @@
     "react-rangeslider": "^1.0.9",
     "react-redux": "^4.4.5",
     "react-window-resize-listener": "^1.1.0",
-    "redux": "^3.6.0"
+    "redux": "^3.6.0",
+    "shortid": "^2.2.8"
   },
   "devDependencies": {
     "autoprefixer": "6.5.1",

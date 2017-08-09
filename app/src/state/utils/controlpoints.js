@@ -1,3 +1,5 @@
+import shortid from 'shortid';
+
 export const CP_TYPES = {
   MAP: 'map',
   IMAGE: 'image'
@@ -10,13 +12,61 @@ export const CP_MODES = {
   DEFAULT: null
 }
 
-const generateID = (coord, img_name='') => {
-  return `${coord.join('_')}_${img_name}_${Date.now()}`;
+export const CONTROLFILE_SCHEMA = {
+  xcoord: 0,
+  ycoord: 1,
+  zcoord: 2,
+  xpoint: 3,
+  ypoint: 4,
+  img: 5
 }
 
-const validCoordinate = (coord) => {
-  if (Array.isArray(coord) !== true) return false;
-  return coord.length > 1 && !coord.some(isNaN);
+export const createRows = (schema, rows) => {
+  const keys = Object.keys(CONTROLFILE_SCHEMA).map(k => {
+    return {
+      key: k,
+      pos: CONTROLFILE_SCHEMA[k]
+    };
+  }).sort((a, b) => {
+    return a.pos - b.pos;
+  });
+
+  return rows.map(row => {
+    return keys.map(k => {
+      const valuePosition = (typeof schema[k.key] !== 'undefined') ? schema[k.key] : -1;
+      return (typeof row[valuePosition] !== 'undefined') ? row[valuePosition] : null;
+    });
+  }).filter(row => {
+    return row.some(d => d !== null);
+  });
+}
+
+const generateID = (coord, img_name='') => {
+  return `${coord.join('_')}_${img_name}_${shortid.generate()}`;
+}
+
+
+const isNumeric = (coord) => {
+  return coord.every(d => {
+    return !isNaN(parseFloat(d)) && isFinite(d);
+  });
+}
+
+const isBetween = (val, min, max) => {
+  return val >= min && val <= max;
+}
+
+// [x,y]
+const validImageCoordinate = (coord) => {
+  if (!Array.isArray(coord) || coord.length !== 2) return false;
+  return isNumeric(coord);
+}
+
+// [lat,lng,z]
+const validMapCoordinate = (coord) => {
+  if (!Array.isArray(coord) || coord.length !== 3) return false;
+  if (!isNumeric(coord)) return false;
+  return (isBetween(coord[1], -180, 180) && isBetween(coord[0], -90, 90));
 }
 
 export const getModeFromId = (id, points) => {
@@ -30,7 +80,7 @@ export const getModeFromId = (id, points) => {
 
 // returns image point object
 export const imagePoint = (coord, img_name, hasImage=true) => {
-  if (!validCoordinate(coord) || typeof img_name !== 'string') return null;
+  if (!validImageCoordinate(coord) || typeof img_name !== 'string') return null;
 
   return {
     img_name,
@@ -43,7 +93,7 @@ export const imagePoint = (coord, img_name, hasImage=true) => {
 
 // returns map point object
 export const mapPoint = (coord) => {
-  if (!validCoordinate(coord)) return null;
+  if (!validMapCoordinate(coord)) return null;
 
   return {
     type: CP_TYPES.MAP,

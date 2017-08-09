@@ -231,7 +231,7 @@ class ImagePanZoom extends Component {
     }
 
     if (mode === CP_MODES.ADDING) {
-      let [mx,my,center] = this.getCoordinatesFromMousePosition(evt);
+      let [mx, my, center] = this.getCoordinatesFromMousePosition(evt);
       addControlPoint([mx, my], image.name, true);
       return;
     }
@@ -436,9 +436,7 @@ class ImagePanZoom extends Component {
   }
 
   renderPoints() {
-    const { markers, selectedImage, markerDraggable, selectedMarker } = this.props;
-
-    let hasMapMarkers = markers.some(m => m.type === CP_TYPES.MAP);
+    const { markers, selectedImage, selectedMarker } = this.props;
 
     return markers.map((marker, i) => {
       if (marker.type === CP_TYPES.IMAGE && marker.img_name === selectedImage) {

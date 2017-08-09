@@ -3,7 +3,7 @@ const gcpiMiddleware = store => next => action => {
   let st = store.getState();
 
   // act on these action types
-  if (action.type === 'RECEIVE_GCP_FILE') {
+  if (action.type === 'GCP_FILE_PROCESSED') {
     store.dispatch({
       type: 'SYNC_LIST_TO_IMAGES',
       images: st.imagery.items,

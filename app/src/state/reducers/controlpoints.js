@@ -1,59 +1,9 @@
 import {createReducer} from '../utils/common';
 import * as actions from '../actions';
-import {validate, imagePoint, mapPoint, getModeFromId, CP_TYPES, CP_MODES} from '../utils/controlpoints';
 
+import {validate, imagePoint, mapPoint,
+        getModeFromId, CP_TYPES, CP_MODES} from '../utils/controlpoints';
 
-const onDeleteImage = (state, action) => {
-  let pts = state.points.filter(pt => {
-    return pt.type === CP_TYPES.IMAGE && pt.img_name === action.img_name;
-  });
-
-  if (!pts.length) return state;
-
-  let joins = {...joins};
-  pts.forEach(pt => {
-    joins = removeFromJoins(joins, pt);
-  });
-
-  let points = state.points.filter(pt => {
-    if (pt.type === CP_TYPES.MAP) return true;
-    return pt.img_name !== action.img_name;
-  });
-
-  return {
-    ...state,
-    mode: null,
-    selected: null,
-    points,
-    joins,
-    status: validate(points, joins)
-  }
-}
-
-const deletePoint = (state, action) => {
-  let pt = state.points.find(p => p.id === action.id);
-
-  if (pt === undefined) return state;
-
-  let st = {
-    ...state,
-    selected: null,
-    mode: null,
-    points: state.points.filter(p => {
-      return p.id !== action.id;
-    })
-  }
-
-  st.joins = removeFromJoins(st.joins, pt);
-  st.status = validate(st.points, st.joins);
-
-  return st;
-}
-
-const removeFromJoins = (joins, pt) => {
-  if (pt.type === CP_TYPES.MAP) return removeMapPointFromJoins(joins, pt.id);
-  return removeImagePointFromJoins(joins, pt.id);
-}
 
 const removeImagePointFromJoins = (joins,  img_id) => {
   let touched = false;
@@ -87,6 +37,11 @@ const removeMapPointFromJoins = (joins, map_id) => {
   if (keys.length === Object.keys(r).length) return joins;
 
   return r;
+}
+
+const removeFromJoins = (joins, pt) => {
+  if (pt.type === CP_TYPES.MAP) return removeMapPointFromJoins(joins, pt.id);
+  return removeImagePointFromJoins(joins, pt.id);
 }
 
 const joinPoints = (joins, img_id, map_id) => {
@@ -165,6 +120,54 @@ const setPosition = (state, action) => {
   }
 }
 
+const onDeleteImage = (state, action) => {
+  let pts = state.points.filter(pt => {
+    return pt.type === CP_TYPES.IMAGE && pt.img_name === action.img_name;
+  });
+
+  if (!pts.length) return state;
+
+  let joins = {...state.joins};
+
+  pts.forEach(pt => {
+    joins = removeFromJoins(joins, pt);
+  });
+
+  let points = state.points.filter(pt => {
+    if (pt.type === CP_TYPES.MAP) return true;
+    return pt.img_name !== action.img_name;
+  });
+
+  return {
+    ...state,
+    mode: null,
+    selected: null,
+    points,
+    joins,
+    status: validate(points, joins)
+  }
+}
+
+const deletePoint = (state, action) => {
+  let pt = state.points.find(p => p.id === action.id);
+
+  if (pt === undefined) return state;
+
+  let st = {
+    ...state,
+    selected: null,
+    mode: null,
+    points: state.points.filter(p => {
+      return p.id !== action.id;
+    })
+  }
+
+  st.joins = removeFromJoins(st.joins, pt);
+  st.status = validate(st.points, st.joins);
+
+  return st;
+}
+
 const toggleMode = (state, action) => {
   let selected = (action.id === state.selected) ? null : action.id;
   let mode = selected ? getModeFromId(action.id, state.points) : null;
@@ -214,8 +217,8 @@ const syncList = (state, action) => {
     let img_index = images.findIndex( img => img.name === img_name );
     let hasImage = img_index > -1;
 
-    let imgPt = imagePoint([x, y, z], img_name, hasImage);
-    let mapPt = mapPoint([lat, lng]);
+    let imgPt = imagePoint([x, y], img_name, hasImage);
+    let mapPt = mapPoint([lat, lng, z]);
 
     if (imgPt !== null) points.push(imgPt);
     if (mapPt !== null) points.push(mapPt);
@@ -224,7 +227,7 @@ const syncList = (state, action) => {
       joins = joinPoints(joins, imgPt.id, mapPt.id);
     }
 
-    if (!selected) selected = imgPt.id;
+    if (!selected && imgPt !== null) selected = imgPt.id;
   });
 
   return {

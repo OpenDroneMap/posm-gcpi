@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import Dropzone from 'react-dropzone';
 
+import FileColumns from './FileColumns';
+import { CONTROLFILE_SCHEMA, createRows } from '../state/utils/controlpoints';
+
+const SELECT_OPTIONS = Object.keys(CONTROLFILE_SCHEMA);
+
 const DROPZONE_STYLE_ACTIVE = {borderStyle: 'solid', backgroundColor: '#eee'};
 const DROPZONE_STYLE_REJECT = {borderStyle: 'solid', backgroundColor: '#ffdddd'};
 
@@ -9,8 +14,6 @@ class ImagesGetter extends Component {
     super(props);
     this.onImagesDrop = this.onImagesDrop.bind(this);
     this.onTextDrop = this.onTextDrop.bind(this);
-    this.submitLocalFiles = this.submitLocalFiles.bind(this);
-    this.onToggle = this.onToggle.bind(this);
   }
 
   onImagesDrop(acceptedFiles, rejectedFiles) {
@@ -40,20 +43,8 @@ class ImagesGetter extends Component {
     fReader.readAsText(acceptedFiles[0]);
 
     fReader.onload = () => {
-      receiveGcpFile(name, fReader.result)
+      receiveGcpFile(name, fReader.result);
     };
-  }
-
-  submitLocalFiles(evt) {
-    evt.preventDefault();
-
-    const {receiveImageFiles} = this.props;
-    receiveImageFiles(this.images, this.gcpText);
-  }
-
-  onToggle() {
-    this.gcpText = null;
-    this.images = null;
   }
 
   renderFileText() {
@@ -68,13 +59,23 @@ class ImagesGetter extends Component {
     return elm;
   }
 
+  onColumnsSubmit(schema) {
+    const { gcpProcessed, imagery } = this.props;
+    const { gcp_raw } = imagery;
+
+    const rows = createRows(schema, gcp_raw.rows);
+    if (gcpProcessed) gcpProcessed(gcp_raw.name, gcp_raw.projection, rows);
+  }
+
   render() {
+    const {imagery} = this.props;
     let gcpFileDropText = this.renderFileText();
 
     return (
       <div className='images-getter'>
         <aside className='images-form'>
           <div className='dropzone-wrapper'>
+            {!imagery.gcp_raw &&
             <Dropzone
               className='dropzone'
               disablePreview={true}
@@ -84,6 +85,12 @@ class ImagesGetter extends Component {
               accept='text/plain'>
               {gcpFileDropText}
             </Dropzone>
+            }
+            {imagery.gcp_raw &&
+            <div id='cpf-headers'>
+              <FileColumns columns={imagery.gcp_raw.columns} selectOptions={SELECT_OPTIONS} onColumnsSubmit={(columns) => {this.onColumnsSubmit(columns);}}/>
+            </div>
+            }
           </div>
           <div className='dropzone-wrapper'>
             <Dropzone

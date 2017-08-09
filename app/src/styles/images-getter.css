@@ -15,6 +15,7 @@
       margin-bottom: 1rem;
       width: 50%;
       padding-right: 5px;
+      vertical-align: top;
 
       &:last-child {
         margin-bottom: 0;
@@ -44,4 +45,65 @@
     }
   }
 
+  #cpf-headers {
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 0.75rem;
+      color: #666;
+      border: 2px solid #eee;
+    }
+  }
+}
+
+.file-col-editor {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  z-index: 0;
+  background-color: #f3f3f3;
+  border: 1px solid #efefef;
+  border-radius: 3px;
+  outline: none;
+}
+
+.file-col-editor--item {
+  height: 2.2rem;
+  line-height: 2.2rem;
+  padding: 0 0.5rem;
+  color: $text-light;
+  list-style: none;
+  background-color: #fff;
+  border-bottom: 1px solid #efefef;
+
+  * {
+    vertical-align: middle;
+  }
+
+  &.sorting-item {
+    z-index: 9999;
+    cursor: move;
+    opacity: 0.8;
+    cursor: move;
+  }
+
+  a {
+    position: absolute;
+    color: red;
+    text-decoration: none;
+    right: 0.5rem;
+    z-index: text;
+  }
+}
+
+.file-col-editor--handle {
+  display: inline-block;
+  font-size: 0;
+  line-height: 1;
+  margin-right: 10px;
+
+  svg {
+    fill: $text-light;
+  }
 }

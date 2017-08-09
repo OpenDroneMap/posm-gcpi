@@ -79,9 +79,20 @@ function imagery(state = INITIAL_STATE, action) {
     case actions.RECEIVE_GCP_FILE:
       return {
         ...state,
+        gcp_raw: {
+          projection: action.projection,
+          rows: action.rows,
+          columns: action.columns,
+          name: action.file_name
+        }
+      }
+    case actions.GCP_FILE_PROCESSED:
+      return {
+        ...state,
+        gcp_raw: null,
         projection: action.projection,
         gcp_list: action.rows,
-        gcp_list_name: action.file_name
+        gcp_list_name: action.filename
       }
 
     default:
