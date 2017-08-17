@@ -5,7 +5,11 @@ const Select = (props) => {
     <select>
       <option key='null' value=''/>
       {
-        props.selectOptions.map(d => {
+        props.selectOptions.map((d,i) => {
+
+          if (props.tryDefault && i === props.idx) {
+            return (<option key={d} value={d} selected='selected'>{d}</option>);
+          }
           return (<option key={d} value={d}>{d}</option>);
         })
       }
@@ -28,14 +32,18 @@ export default class FileColumns extends Component {
   renderColumns() {
     const {columns} = this.props;
 
+    const tryDefault = columns.length === 6;
+
     return columns.map((d,i) => {
       return (
-        <Column key={i} idx={i} {...this.props}/>
+        <Column key={i} idx={i} {...this.props} tryDefault={tryDefault}/>
       );
     });
   }
 
   onSubmit(evt) {
+    evt.preventDefault();
+
     const { onColumnsSubmit } = this.props;
     const selects = document.querySelector('.file-columns').querySelectorAll('select');
 

@@ -28,7 +28,8 @@ class LeafletZoomControls extends Component {
 
   componentDidMount() {}
 
-  onZoomIn() {
+  onZoomIn(evt) {
+    evt.preventDefault();
     const {leafletMap} = this.props;
 
     let max = leafletMap.getMaxZoom();
@@ -36,7 +37,8 @@ class LeafletZoomControls extends Component {
     if (z < max) leafletMap.setZoom(z + 1);
   }
 
-  onZoomOut() {
+  onZoomOut(evt) {
+    evt.preventDefault();
     const {leafletMap} = this.props;
 
     let min = leafletMap.getMinZoom();
@@ -44,7 +46,8 @@ class LeafletZoomControls extends Component {
     if (z > min) leafletMap.setZoom(z - 1);
   }
 
-  onFitMarkers() {
+  onFitMarkers(evt) {
+    evt.preventDefault();
     const {controlpoints} = this.props;
     const {leafletMap} = this.props;
     if (!controlpoints.points.length) return;
@@ -70,9 +73,9 @@ class LeafletZoomControls extends Component {
     return (
       <div className='leaflet-zoom-controls'>
         <div className='leaflet-control-zoom leaflet-bar leaflet-control'>
-          <a className='leaflet-control-zoom-in' href='#' title='Zoom in' onClick={()=>{this.onZoomIn();}} >+</a>
-          <a className='leaflet-control-zoom-out' href='#' title='Zoom out' onClick={()=>{this.onZoomOut();}} >-</a>
-          <a className='leaflet-control-fit-bounds' href='#' title='Fit markers' onClick={()=>{this.onFitMarkers();}} ><span className='icon fit-marker' role='presentation'/></a>
+          <a className='leaflet-control-zoom-in' href='#' title='Zoom in' onClick={(evt)=>{this.onZoomIn(evt);}} >+</a>
+          <a className='leaflet-control-zoom-out' href='#' title='Zoom out' onClick={(evt)=>{this.onZoomOut(evt);}} >-</a>
+          <a className='leaflet-control-fit-bounds' href='#' title='Fit markers' onClick={(evt)=>{this.onFitMarkers(evt);}} ><span className='icon fit-marker' role='presentation'/></a>
         </div>
       </div>
     );

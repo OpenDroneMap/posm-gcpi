@@ -64,7 +64,7 @@ const validImageCoordinate = (coord) => {
 
 // [lat,lng,z]
 const validMapCoordinate = (coord) => {
-  if (!Array.isArray(coord) || coord.length !== 3) return false;
+  if (!Array.isArray(coord) || coord.length < 2 || coord.length > 3) return false;
   if (!isNumeric(coord)) return false;
   return (isBetween(coord[1], -180, 180) && isBetween(coord[0], -90, 90));
 }
@@ -95,9 +95,11 @@ export const imagePoint = (coord, img_name, hasImage=true) => {
 export const mapPoint = (coord) => {
   if (!validMapCoordinate(coord)) return null;
 
+  const c = (coord.length !== 3) ? [...coord, 0] : [...coord];
+
   return {
     type: CP_TYPES.MAP,
-    coord: [...coord],
+    coord: c,
     id: generateID(coord)
   }
 }

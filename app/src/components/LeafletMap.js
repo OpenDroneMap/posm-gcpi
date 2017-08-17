@@ -41,8 +41,8 @@ class LeafletMap extends Component {
 
     pts.filter(p => p.type === 'map').forEach(p => {
       let ll = p.coord;
-      if (ll && ll.length === 2) {
-        bds.extend(ll);
+      if (p.coord && p.coord.length >= 2) {
+        bds.extend([p.coord[0], p.coord[1]]);
       }
     });
 
@@ -58,7 +58,7 @@ class LeafletMap extends Component {
 
     let mapContainer = this.refs.lmap;
     let map = L.map(mapContainer, config.map_options)
-                  .setView(config.map_options.initialCenter, config.map_options.initialZoom);
+                .setView(config.map_options.initialCenter, config.map_options.initialZoom);
 
 
     map.on('moveend', (evt) => {
@@ -79,7 +79,7 @@ class LeafletMap extends Component {
   onMapClick(evt) {
     const {controlpoints, addControlPoint} = this.props;
     if (controlpoints.mode === CP_MODES.ADDING) {
-      let ll = evt.latlng;
+      const ll = evt.latlng;
       addControlPoint([ll.lat, ll.lng]);
     }
   }
@@ -101,7 +101,6 @@ class LeafletMap extends Component {
       return setPointProperties(false, null, null, null, marker_id, [latlng.lat, latlng.lng]);
 
     } else if (controlpoints.mode === CP_MODES.IMAGE_EDIT) {
-      console.log('JOIN HERE: ', marker_id);
       return joinControlPoint(marker_id);
     }
 
