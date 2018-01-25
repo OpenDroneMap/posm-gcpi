@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import FileSaver from 'file-saver';
 import L from 'leaflet';
+import isEqual from 'lodash.isequal';
+import uniqWith from 'lodash.uniqwith';
 import {generateGcpOutput} from '../state/utils/controlpoints';
+import { getUtmDescriptor, getUtmZoneFromLatLng, getProj4Utm } from '../common/coordinate-systems';
 
 class ExportModal extends Component {
 
@@ -49,6 +52,8 @@ class ExportModal extends Component {
   renderText() {
     const {controlpoints, projection} = this.props;
     const {joins, points, status} = controlpoints;
+    let destinationProjection = projection;
+    let destinationProjectionDescriptor = destinationProjection;
 
     if (!status.valid) {
       return status.errors.map(err => {
@@ -56,9 +61,17 @@ class ExportModal extends Component {
       });
     }
 
-    let rows = generateGcpOutput(joins, points);
+    let utmZones = points.filter(p => p.type === 'map')
+      .map(p => getUtmZoneFromLatLng(p.coord[0], p.coord[1]));
+    utmZones = uniqWith(utmZones, isEqual);
+    if (utmZones.length === 1) {
+      const { zone, hemisphere } = utmZones[0];
+      destinationProjection = getProj4Utm(zone, hemisphere);
+      destinationProjectionDescriptor = getUtmDescriptor(zone, hemisphere);
+    }
 
-    let proj = (projection && projection.length) ? projection.join('\t') : 'EPSG:4326'; // Handle empty projection
+    let rows = generateGcpOutput(joins, points, projection[0], destinationProjection);
+    let proj = (destinationProjectionDescriptor ? destinationProjectionDescriptor : 'EPSG:4326') + '\t'; // Handle empty projection
     rows.unshift(proj);
 
     return rows.join('\n');

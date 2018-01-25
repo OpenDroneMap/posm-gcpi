@@ -1,3 +1,5 @@
+import proj4 from 'proj4';
+
 export const CP_TYPES = {
   MAP: 'map',
   IMAGE: 'image'
@@ -52,25 +54,26 @@ export const mapPoint = (coord) => {
   }
 }
 
-export const generateGcpOutput = (joins, points) => {
+export const generateGcpOutput = (joins, points, sourceProjection, destinationProjection) => {
   let rows = [];
 
   Object.keys(joins).forEach(k => {
-    let mapPt = points.find(p => p.id === k);
-    if (mapPt === undefined) return;
+    let mapPoint = points.find(p => p.id === k);
+    if (mapPoint === undefined) return;
 
-    let lat = mapPt.coord[0].toFixed(6);
-    let lng = mapPt.coord[1].toFixed(6);
+    const transformedMapPoint = proj4(sourceProjection, destinationProjection, mapPoint.coord.slice().reverse());
 
     joins[k].forEach(ptId => {
-      let pt = points.find(p => p.id === ptId);
-      if (pt === undefined) return;
-
-      let name = pt.img_name;
-      let x = pt.coord[0];
-      let y = pt.coord[1];
-      let z = pt.coord[2] || 0;
-      rows.push( [lng, lat, z, x, y, name].join('\t') );
+      let point = points.find(p => p.id === ptId);
+      if (point === undefined) return;
+      rows.push([
+        transformedMapPoint[0].toFixed(2),
+        transformedMapPoint[1].toFixed(2),
+        point.coord[2] || 0,
+        point.coord[0],
+        point.coord[1],
+        point.img_name
+      ].join('\t') );
     });
 
   });
