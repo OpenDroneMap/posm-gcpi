@@ -78,7 +78,7 @@ class ImagesGridThumb extends Component {
   }
 
   render() {
-    const {points, src, filename} = this.props;
+    const {points, filename} = this.props;
 
     return (
       <div className={this.getThumbClass()} onClick={(evt) => {this.onClickHandler(evt);}}>

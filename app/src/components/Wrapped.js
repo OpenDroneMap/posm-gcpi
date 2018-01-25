@@ -62,19 +62,9 @@ function WrappedApp(WrappedComponent) {
       }
 
       setControlPoint() {
-        const {addControlPoint} = this.props;
-
         if ( (this._pointProperties.img || this._pointProperties.map_loc) &&
               this._pointProperties.img_loc) {
           console.log('Set Control Point!');
-
-        /*
-        addControlPoint({
-          image: this._pointProperties.img_loc,
-          map: this._pointProperties.map_loc
-        }, this._pointProperties.img);
-        */
-
         } else {
           console.warn('Not enough properties: ', this._pointProperties);
         }

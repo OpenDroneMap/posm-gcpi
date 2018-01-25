@@ -136,7 +136,7 @@ class PointMarkersMap extends Component {
   }
 
   componentDidUpdate() {
-    const {selectedMarker, selectedImage} = this.props;
+    const {selectedMarker} = this.props;
     const {markers} = this.state;
 
     markers.forEach((m,i) => {

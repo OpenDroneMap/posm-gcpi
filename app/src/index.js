@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './connectors/App';
 import WrappedApp from './connectors/Wrapped';
 
 // Redux

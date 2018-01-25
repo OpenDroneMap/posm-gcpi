@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import ImagePanZoom from './ImagePanZoom';
 import {CP_MODES} from '../state/utils/controlpoints';
 
@@ -53,7 +53,7 @@ class ImageEditor extends Component {
   }
 
   render() {
-    const {controlpoints, imagery, height, addControlPoint, joinControlPoint} = this.props;
+    const {controlpoints, imagery, height, addControlPoint} = this.props;
 
     return (
       <div className='image-editor'>

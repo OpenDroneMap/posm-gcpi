@@ -80,7 +80,6 @@ export const generateGcpOutput = (joins, points) => {
 
 // TODO(seanc): Not accounting for control objects having points from 3 different images
 export const validate = (points, joins) => {
-  let valid = true;
   let errors = [];
 
   if (points.length < 15) {

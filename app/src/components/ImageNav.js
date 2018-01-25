@@ -21,11 +21,11 @@ class ImageNav extends Component {
   }
 
   onFinishAddPoint(evt) {
+    /*
     const {setControlPoint} = this.props;
-
-    return;
     evt.preventDefault();
     setControlPoint();
+    */
   }
 
   isEditable() {

@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 
-const MIN_POINTS = 5;
-
 class ControlPoints extends Component {
 
   renderPoints() {

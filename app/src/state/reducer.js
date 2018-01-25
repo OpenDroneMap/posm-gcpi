@@ -1,6 +1,5 @@
 import {combineReducers} from 'redux';
 import * as actions from './actions';
-import gcpValidator from '../common/gcp-validator';
 
 import controlPointReducer from './reducers/controlpoints';
 

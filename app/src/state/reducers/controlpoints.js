@@ -3,6 +3,45 @@ import * as actions from '../actions';
 import {validate, imagePoint, mapPoint, getModeFromId, CP_TYPES, CP_MODES} from '../utils/controlpoints';
 
 
+const removeMapPointFromJoins = (joins, map_id) => {
+  let r = {};
+  let keys = Object.keys(joins);
+
+  keys.forEach(k => {
+    if (joins.hasOwnProperty(k) && k !== map_id) {
+      r[k] = [...joins[k]];
+    }
+  });
+
+  // nothing was changed, return orignial
+  if (keys.length === Object.keys(r).length) return joins;
+
+  return r;
+}
+
+const removeImagePointFromJoins = (joins,  img_id) => {
+  let touched = false;
+
+  Object.keys(joins).forEach(k => {
+    if (joins.hasOwnProperty(k) && joins[k].indexOf(img_id) > -1) {
+      joins[k] = joins[k].filter(d => d !== img_id);
+      touched = true;
+    }
+  });
+
+  // nothing was changed, return orignial
+  if (!touched) return joins;
+
+  return {
+    ...joins
+  };
+}
+
+const removeFromJoins = (joins, pt) => {
+  if (pt.type === CP_TYPES.MAP) return removeMapPointFromJoins(joins, pt.id);
+  return removeImagePointFromJoins(joins, pt.id);
+}
+
 const onDeleteImage = (state, action) => {
   let pts = state.points.filter(pt => {
     return pt.type === CP_TYPES.IMAGE && pt.img_name === action.img_name;
@@ -10,7 +49,7 @@ const onDeleteImage = (state, action) => {
 
   if (!pts.length) return state;
 
-  let joins = {...joins};
+  let joins; // = {...joins};
   pts.forEach(pt => {
     joins = removeFromJoins(joins, pt);
   });
@@ -48,45 +87,6 @@ const deletePoint = (state, action) => {
   st.status = validate(st.points, st.joins);
 
   return st;
-}
-
-const removeFromJoins = (joins, pt) => {
-  if (pt.type === CP_TYPES.MAP) return removeMapPointFromJoins(joins, pt.id);
-  return removeImagePointFromJoins(joins, pt.id);
-}
-
-const removeImagePointFromJoins = (joins,  img_id) => {
-  let touched = false;
-
-  Object.keys(joins).forEach(k => {
-    if (joins.hasOwnProperty(k) && joins[k].indexOf(img_id) > -1) {
-      joins[k] = joins[k].filter(d => d !== img_id);
-      touched = true;
-    }
-  });
-
-  // nothing was changed, return orignial
-  if (!touched) return joins;
-
-  return {
-    ...joins
-  };
-}
-
-const removeMapPointFromJoins = (joins, map_id) => {
-  let r = {};
-  let keys = Object.keys(joins);
-
-  keys.forEach(k => {
-    if (joins.hasOwnProperty(k) && k !== map_id) {
-      r[k] = [...joins[k]];
-    }
-  });
-
-  // nothing was changed, return orignial
-  if (keys.length === Object.keys(r).length) return joins;
-
-  return r;
 }
 
 const joinPoints = (joins, img_id, map_id) => {
