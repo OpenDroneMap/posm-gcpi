@@ -1,5 +1,3 @@
-
-
 export const getUtmZoneFromLatLng = (lat, lng) => {
   // Standard UTM zones don't apply to polar regions
   if (lat < -80 || lat > 84) return null;
@@ -15,4 +13,13 @@ export const getProj4Utm = (zone, hemisphere) => {
 
 export const getUtmDescriptor = (zone, hemisphere) => {
   return `WGS84 UTM ${zone}${hemisphere === 'north' ? 'N' : 'S'}`;
+}
+
+export const parseUtmDescriptor = (descriptor) => {
+  if (descriptor.indexOf('WGS84 UTM') !== 0) return null;
+  const zoneCode = descriptor.split(' ').slice('-1')[0].trim();
+  return {
+    zone: zoneCode.slice(0, -1),
+    hemisphere: zoneCode.slice(-1) === 'N' ? 'north' : 'south'
+  };
 }

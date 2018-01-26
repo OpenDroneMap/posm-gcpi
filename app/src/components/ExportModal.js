@@ -52,7 +52,8 @@ class ExportModal extends Component {
   renderText() {
     const {controlpoints, projection} = this.props;
     const {joins, points, status} = controlpoints;
-    let destinationProjection = projection;
+    let sourceProjection = projection ? projection : 'EPSG:4326';
+    let destinationProjection = sourceProjection;
     let destinationProjectionDescriptor = destinationProjection;
 
     if (!status.valid) {
@@ -70,7 +71,7 @@ class ExportModal extends Component {
       destinationProjectionDescriptor = getUtmDescriptor(zone, hemisphere);
     }
 
-    let rows = generateGcpOutput(joins, points, projection[0], destinationProjection);
+    let rows = generateGcpOutput(joins, points, sourceProjection, destinationProjection);
     let proj = (destinationProjectionDescriptor ? destinationProjectionDescriptor : 'EPSG:4326') + '\t'; // Handle empty projection
     rows.unshift(proj);
 
