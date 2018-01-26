@@ -70,8 +70,8 @@ export const generateGcpOutput = (joins, points, sourceProjection, destinationPr
         transformedMapPoint[0].toFixed(2),
         transformedMapPoint[1].toFixed(2),
         point.coord[2] || 0,
-        point.coord[0],
-        point.coord[1],
+        point.coord[0].toFixed(2),
+        point.coord[1].toFixed(2),
         point.img_name
       ].join('\t') );
     });
