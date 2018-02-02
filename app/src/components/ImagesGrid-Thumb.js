@@ -55,9 +55,9 @@ class ImagesGridThumb extends Component {
   }
 
   onClickHandler(evt) {
-    const {onThumbClick, src} = this.props;
+    const {onThumbClick, src, selected} = this.props;
     evt.preventDefault();
-    onThumbClick(src);
+    onThumbClick(src, selected);
   }
 
   onDeleteHandler(evt) {

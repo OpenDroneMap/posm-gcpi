@@ -18,11 +18,17 @@ class ImagesGrid extends Component {
     this.onDeleteImage = this.onDeleteImage.bind(this);
   }
 
-  onImageClick(file) {
-    const {selectImageFile} = this.props;
+  onImageClick(file, selected) {
+    const {selectImageFile, toggleMenu} = this.props;
     if (!file) return;
 
-    selectImageFile(file.name);
+    // If already selected, open menu
+    if (selected) {
+      toggleMenu();
+    }
+    else {
+      selectImageFile(file.name);
+    }
   }
 
   onDeleteImage(filename) {
