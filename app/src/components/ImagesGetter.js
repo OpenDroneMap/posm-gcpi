@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import Dropzone from 'react-dropzone';
 
-const DROPZONE_STYLE_ACTIVE = {borderStyle: 'solid', backgroundColor: '#eee'};
-const DROPZONE_STYLE_REJECT = {borderStyle: 'solid', backgroundColor: '#ffdddd'};
+const DROPZONE_STYLE_ACTIVE = { borderStyle: 'solid', backgroundColor: '#eee' };
+const DROPZONE_STYLE_REJECT = { borderStyle: 'solid', backgroundColor: '#ffdddd' };
 
 class ImagesGetter extends Component {
   constructor(props) {
@@ -14,7 +14,7 @@ class ImagesGetter extends Component {
   }
 
   onImagesDrop(acceptedFiles, rejectedFiles) {
-    const {receiveImageFiles, imagery} = this.props;
+    const { receiveImageFiles, imagery } = this.props;
 
     let items = [];
 
@@ -33,7 +33,7 @@ class ImagesGetter extends Component {
 
   onTextDrop(acceptedFiles, rejectedFiles) {
     if (!acceptedFiles.length) return;
-    const {receiveGcpFile} = this.props;
+    const { receiveGcpFile } = this.props;
 
     let name = acceptedFiles[0].name;
     let fReader = new FileReader();
@@ -47,7 +47,7 @@ class ImagesGetter extends Component {
   submitLocalFiles(evt) {
     evt.preventDefault();
 
-    const {receiveImageFiles} = this.props;
+    const { receiveImageFiles } = this.props;
     receiveImageFiles(this.images, this.gcpText);
   }
 
@@ -57,7 +57,7 @@ class ImagesGetter extends Component {
   }
 
   renderFileText() {
-    const {imagery} = this.props;
+    const { imagery } = this.props;
 
     let hasGCPFile = imagery.gcp_list_name ? true : false;
     let elm = <div>Load existing Control Point File</div>;

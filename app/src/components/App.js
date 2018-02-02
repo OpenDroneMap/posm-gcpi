@@ -48,7 +48,7 @@ class App extends Component {
   }
 
   onAddHandler(evt) {
-    const {getPositions, imagery, addControlPoint} = this.props;
+    const { getPositions, imagery, addControlPoint } = this.props;
     let positions = getPositions();
 
     addControlPoint({
@@ -58,7 +58,7 @@ class App extends Component {
   }
 
   render() {
-    const {exporter, controlpoints, imagery, imagepanel} = this.props;
+    const { exporter, controlpoints, imagery, imagepanel } = this.props;
     let [panelHeight, imageHeight] = this.getLeftDimensions();
 
     return (
@@ -74,7 +74,7 @@ class App extends Component {
         <main className='main'>
           <section className='inner'>
             <div className='panel left'>
-              <div style={{height: panelHeight}}>
+              <div style={{ height: panelHeight }}>
 
                 <div className='image-nav-container' ref={(el) => {this.imageNavElm = el;}}>
                   <ImageNav setControlPoint={this.props.setControlPoint}/>

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import L from 'leaflet';
-import {CP_TYPES} from '../state/utils/controlpoints';
+import { CP_TYPES } from '../state/utils/controlpoints';
 
 
 class LeafletZoomControls extends Component {
@@ -29,7 +29,7 @@ class LeafletZoomControls extends Component {
   componentDidMount() {}
 
   onZoomIn() {
-    const {leafletMap} = this.props;
+    const { leafletMap } = this.props;
 
     let max = leafletMap.getMaxZoom();
     let z = leafletMap.getZoom();
@@ -37,7 +37,7 @@ class LeafletZoomControls extends Component {
   }
 
   onZoomOut() {
-    const {leafletMap} = this.props;
+    const { leafletMap } = this.props;
 
     let min = leafletMap.getMinZoom();
     let z = leafletMap.getZoom();
@@ -45,8 +45,8 @@ class LeafletZoomControls extends Component {
   }
 
   onFitMarkers() {
-    const {controlpoints} = this.props;
-    const {leafletMap} = this.props;
+    const { controlpoints } = this.props;
+    const { leafletMap } = this.props;
     if (!controlpoints.points.length) return;
 
     let bds = L.latLngBounds();
@@ -64,7 +64,7 @@ class LeafletZoomControls extends Component {
 
 
   render() {
-    const {leafletMap} = this.props;
+    const { leafletMap } = this.props;
     if (!leafletMap) return null;
 
     return (

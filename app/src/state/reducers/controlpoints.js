@@ -1,6 +1,6 @@
-import {createReducer} from '../utils/common';
+import { createReducer } from '../utils/common';
 import * as actions from '../actions';
-import {validate, imagePoint, mapPoint, getModeFromId, CP_TYPES, CP_MODES} from '../utils/controlpoints';
+import { validate, imagePoint, mapPoint, getModeFromId, CP_TYPES, CP_MODES } from '../utils/controlpoints';
 
 
 const removeMapPointFromJoins = (joins, map_id) => {
@@ -200,7 +200,7 @@ const syncList = (state, action) => {
   if (!list.length) return state;
 
   let points = [...state.points];
-  let joins = {...state.joins};
+  let joins = { ...state.joins };
   let selected = state.selected;
 
   list.forEach((r,i) => {

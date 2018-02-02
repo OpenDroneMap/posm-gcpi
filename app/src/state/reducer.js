@@ -1,4 +1,4 @@
-import {combineReducers} from 'redux';
+import { combineReducers } from 'redux';
 import * as actions from './actions';
 
 import controlPointReducer from './reducers/controlpoints';

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import Image from './Image';
-import {CP_TYPES, CP_MODES} from '../state/utils/controlpoints';
+import { CP_TYPES, CP_MODES } from '../state/utils/controlpoints';
 import config from '../config';
 
 // https://github.com/rexxars/react-element-pan/blob/master/src/element-pan.js
@@ -107,7 +107,7 @@ class ImagePanZoom extends Component {
   }
 
   onDoubleClick(evt) {
-    const {doubleClickZoom} = this.props;
+    const { doubleClickZoom } = this.props;
     if (!doubleClickZoom) return;
 
     const { scale, minScale, imageData } = this.state;
@@ -126,7 +126,7 @@ class ImagePanZoom extends Component {
   onWheel(evt) {
     evt.preventDefault();
 
-    const {scrollWheelZoom} = this.props;
+    const { scrollWheelZoom } = this.props;
     if (!scrollWheelZoom) return;
 
     const { scale, minScale, imageData } = this.state;
@@ -212,7 +212,7 @@ class ImagePanZoom extends Component {
   }
 
   onDownHandler(evt) {
-    const {mode, addControlPoint, image} = this.props;
+    const { mode, addControlPoint, image } = this.props;
     evt.preventDefault();
 
     if (!evt.target) return;
@@ -319,7 +319,7 @@ class ImagePanZoom extends Component {
   }
 
   onDragStop(evt) {
-    const {mode} = this.props;
+    const { mode } = this.props;
 
     this.removePanningEvents();
 
@@ -358,7 +358,7 @@ class ImagePanZoom extends Component {
 
     let scale = value;
     let [imageWidth, imageHeight, scrollLeft, scrollTop] = this.scaleImage(imageData.width, imageData.height, scale);
-    this.setState({scale, imageWidth, imageHeight, scrollLeft, scrollTop});
+    this.setState({ scale, imageWidth, imageHeight, scrollLeft, scrollTop });
   }
 
   getNativeCenter(left, top, scale) {
@@ -419,18 +419,18 @@ class ImagePanZoom extends Component {
     let pos = this.getNativeCenter(scrollLeft, scrollTop, scale)
     this.props.onImageDragged(pos);
 
-    this.setState({imageData, scale, imageWidth, imageHeight, minScale, scrollLeft, scrollTop});
+    this.setState({ imageData, scale, imageWidth, imageHeight, minScale, scrollLeft, scrollTop });
   }
 
   onActionDelete(evt, marker) {
     evt.preventDefault();
-    const {onMarkerDelete} = this.props;
+    const { onMarkerDelete } = this.props;
     onMarkerDelete(marker.id);
   }
 
   onActionLock(evt, marker) {
     evt.preventDefault();
-    const {onMarkerToggle} = this.props;
+    const { onMarkerToggle } = this.props;
 
     onMarkerToggle(marker.id);
   }
@@ -490,8 +490,8 @@ class ImagePanZoom extends Component {
           onTouchStart={this.onDownHandler}
           onWheel={this.onWheel}
           onDoubleClick={this.onDoubleClick}
-          style={{height: height}}>
-          <div className='points-layer' style={{width: `${pointsWidth}px`, height: `${pointsHeight}px`}}>
+          style={{ height: height }}>
+          <div className='points-layer' style={{ width: `${pointsWidth}px`, height: `${pointsHeight}px` }}>
             {this.renderPoints()}
           </div>
           <Image

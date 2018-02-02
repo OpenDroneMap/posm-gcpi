@@ -3,7 +3,7 @@ import FileSaver from 'file-saver';
 import L from 'leaflet';
 import isEqual from 'lodash.isequal';
 import uniqWith from 'lodash.uniqwith';
-import {generateGcpOutput} from '../state/utils/controlpoints';
+import { generateGcpOutput } from '../state/utils/controlpoints';
 import { getUtmDescriptor, getUtmZoneFromLatLng, getProj4Utm } from '../common/coordinate-systems';
 
 class ExportModal extends Component {
@@ -45,13 +45,13 @@ class ExportModal extends Component {
 
   saveText(evt) {
     evt.preventDefault();
-    var blob = new Blob([this.txtarea.value], {type: "text/plain;charset=utf-8"});
+    var blob = new Blob([this.txtarea.value], { type: "text/plain;charset=utf-8" });
     FileSaver.saveAs(blob, `gcp_file_${Date.now()}.txt`);
   }
 
   renderText() {
-    const {controlpoints, projection} = this.props;
-    const {joins, points, status} = controlpoints;
+    const { controlpoints, projection } = this.props;
+    const { joins, points, status } = controlpoints;
     let sourceProjection = projection ? projection : 'EPSG:4326';
     let destinationProjection = sourceProjection;
     let destinationProjectionDescriptor = destinationProjection;
@@ -79,8 +79,8 @@ class ExportModal extends Component {
   }
 
   render() {
-    const {controlpoints} = this.props;
-    const {status} = controlpoints;
+    const { controlpoints } = this.props;
+    const { status } = controlpoints;
 
     let exportText = this.renderText();
     let klass = (!status.valid) ? ' no-pts' : '';

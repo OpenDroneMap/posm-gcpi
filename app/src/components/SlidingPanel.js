@@ -10,7 +10,7 @@ class SlidingPanel extends Component {
   }
 
   panelClass() {
-    const {panelOpen} = this.props;
+    const { panelOpen } = this.props;
     let klass = 'sliding-panel';
 
     if (!panelOpen) return klass;
@@ -19,9 +19,9 @@ class SlidingPanel extends Component {
   }
 
   render() {
-    const {height} = this.props;
+    const { height } = this.props;
     return (
-      <div className={this.panelClass()} style={{height: height}}>
+      <div className={this.panelClass()} style={{ height: height }}>
         {this.props.children}
       </div>
     );

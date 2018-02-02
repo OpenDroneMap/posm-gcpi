@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ImagePanZoom from './ImagePanZoom';
-import {CP_MODES} from '../state/utils/controlpoints';
+import { CP_MODES } from '../state/utils/controlpoints';
 
 class ImageEditor extends Component {
   static propTypes = {};
@@ -16,22 +16,22 @@ class ImageEditor extends Component {
   }
 
   onImageDragged(center) {
-    const {onImagePositionChange} = this.props;
+    const { onImagePositionChange } = this.props;
     onImagePositionChange(center);
   }
 
   onMarkerDragged(marker_id, pos) {
-    const {setControlPointPosition} = this.props;
+    const { setControlPointPosition } = this.props;
     setControlPointPosition('image', marker_id, pos);
   }
 
   onMarkerDelete(marker_id) {
-    const {deleteControlPoint} = this.props;
+    const { deleteControlPoint } = this.props;
     deleteControlPoint(marker_id);
   }
 
   onMarkerToggle(marker_id) {
-    const {controlpoints, toggleControlPointMode, joinControlPoint} = this.props;
+    const { controlpoints, toggleControlPointMode, joinControlPoint } = this.props;
 
     if (controlpoints.mode === CP_MODES.MAP_EDIT) {
         return joinControlPoint(marker_id);
@@ -41,7 +41,7 @@ class ImageEditor extends Component {
   }
 
   getImageFile() {
-    const {imagery} = this.props;
+    const { imagery } = this.props;
 
     let image = null;
     if (imagery.items) {
@@ -53,7 +53,7 @@ class ImageEditor extends Component {
   }
 
   render() {
-    const {controlpoints, imagery, height, addControlPoint} = this.props;
+    const { controlpoints, imagery, height, addControlPoint } = this.props;
 
     return (
       <div className='image-editor'>

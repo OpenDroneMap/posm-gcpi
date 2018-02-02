@@ -12,7 +12,7 @@ class Images extends Component {
   componentDidMount() {}
 
   onImageSelect(idx) {
-    const {selectImageFile, imagery} = this.props;
+    const { selectImageFile, imagery } = this.props;
     if (imagery.selected === idx) return;
     selectImageFile(idx);
   }
@@ -20,14 +20,14 @@ class Images extends Component {
   onImageDelete(id) {
     if (!id) return;
 
-    const {controlpoints, deleteImageFile} = this.props;
+    const { controlpoints, deleteImageFile } = this.props;
     if (controlpoints.active) return;
 
     deleteImageFile(id);
   }
 
   onImagePositionChange(center, xy, markerId) {
-    const {controlpoints, onImagePositionChange, setControlPointPosition} = this.props;
+    const { controlpoints, onImagePositionChange, setControlPointPosition } = this.props;
     onImagePositionChange(center);
 
     // update control point if in edit mode
@@ -53,7 +53,7 @@ class Images extends Component {
   }
 
   renderPoints(imgIndex, imgName, isSelected) {
-    const {controlpoints} = this.props;
+    const { controlpoints } = this.props;
     let klass;
     let points = [];
 
@@ -82,10 +82,10 @@ class Images extends Component {
   }
 
   renderImages() {
-    const {imagery, controlpoints, windowSize} = this.props;
+    const { imagery, controlpoints, windowSize } = this.props;
     let imageryItems = imagery.items ? imagery.items : [];
     let imagesLength = Math.max(imageryItems.length, 5);
-    let range = Array.from({length: imagesLength}, (value, key) => key);
+    let range = Array.from({ length: imagesLength }, (value, key) => key);
 
     return range.map(idx => {
       let image = imageryItems[idx];

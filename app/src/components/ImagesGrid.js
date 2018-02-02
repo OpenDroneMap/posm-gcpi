@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import ImagesGridThumb from './ImagesGrid-Thumb';
-import {CP_TYPES} from '../state/utils/controlpoints';
+import { CP_TYPES } from '../state/utils/controlpoints';
 
 class ImagesGrid extends Component {
   static propTypes = {
@@ -19,7 +19,7 @@ class ImagesGrid extends Component {
   }
 
   onImageClick(file, selected) {
-    const {selectImageFile, toggleMenu} = this.props;
+    const { selectImageFile, toggleMenu } = this.props;
     if (!file) return;
 
     // If already selected, open menu
@@ -32,12 +32,12 @@ class ImagesGrid extends Component {
   }
 
   onDeleteImage(filename) {
-    const {deleteImageFile} = this.props;
+    const { deleteImageFile } = this.props;
     deleteImageFile(filename);
   }
 
   renderImages() {
-    const {imagery, controlpoints} = this.props;
+    const { imagery, controlpoints } = this.props;
     const selected = imagery.selected;
 
     let images = imagery.items || [];

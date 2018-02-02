@@ -25,7 +25,7 @@ const gcpValidator = (points) => {
 
     let k = loc.map.join(':');
 
-    if (!uniques[k]) uniques[k] = {ct: 0, imgs: []};
+    if (!uniques[k]) uniques[k] = { ct: 0, imgs: [] };
     uniques[k].ct++;
     uniques[k].imgs.push(pt.img);
   });

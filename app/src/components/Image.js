@@ -32,7 +32,7 @@ class Image extends Component {
 
   loadImage(src) {
     if (!src) return;
-    const {onImageLoad} = this.props;
+    const { onImageLoad } = this.props;
     const needsRevoking = (ImageLoader.isInstanceOf('Blob', src) || ImageLoader.isInstanceOf('File', src));
     ImageLoader(
         src,
@@ -55,7 +55,7 @@ class Image extends Component {
           }
 
         },
-        {meta: true, noRevoke:true} // Options
+        { meta: true, noRevoke:true } // Options
     );
   }
 
@@ -78,11 +78,11 @@ class Image extends Component {
   }
 
   render() {
-    const {srcToDisplay, width, height, orientation} = this.props;
+    const { srcToDisplay, width, height, orientation } = this.props;
     if (!srcToDisplay) return null;
 
     return (
-      <img src={srcToDisplay} className={`image-panzoom orientation${orientation}`} width={width} height={height} style={{width: width + 'px', height: height +'px'}} alt='selected' onLoad={this.onInternalImageLoad}/>
+      <img src={srcToDisplay} className={`image-panzoom orientation${orientation}`} width={width} height={height} style={{ width: width + 'px', height: height +'px' }} alt='selected' onLoad={this.onInternalImageLoad}/>
     );
   }
 }

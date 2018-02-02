@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import L from 'leaflet';
-import {CP_TYPES} from '../state/utils/controlpoints';
+import { CP_TYPES } from '../state/utils/controlpoints';
 
 const ICON = {
   className: 'image-point',
@@ -97,12 +97,12 @@ class PointMarkersMap extends Component {
 
     this.onMarkerDragEnd = this.onMarkerDragEnd.bind(this);
 
-    this.state = {markers: []};
+    this.state = { markers: [] };
   }
 
   // Determine if an update is needed
   dirty(np) {
-    const {points, selectedMarker, selectedImage} = this.props;
+    const { points, selectedMarker, selectedImage } = this.props;
 
     return (
       (np.points !== points) ||
@@ -117,7 +117,7 @@ class PointMarkersMap extends Component {
 
     if (!this._dirty) return;
 
-    let {markers} = this.state;
+    let { markers } = this.state;
 
     let points = this.getValidPoints(np.points);
 
@@ -127,7 +127,7 @@ class PointMarkersMap extends Component {
       markers = this.addMarkers(markers, points);
     }
 
-    this.setState({markers: this.updateMarkersAttributes(markers, points)});
+    this.setState({ markers: this.updateMarkersAttributes(markers, points) });
   }
 
   // dirty flag set in componentWillReceiveProps
@@ -136,8 +136,8 @@ class PointMarkersMap extends Component {
   }
 
   componentDidUpdate() {
-    const {selectedMarker} = this.props;
-    const {markers} = this.state;
+    const { selectedMarker } = this.props;
+    const { markers } = this.state;
 
     markers.forEach((m,i) => {
       m.marker.removeClass('active');
@@ -165,7 +165,7 @@ class PointMarkersMap extends Component {
   }
 
   shouldHighlightMarker(marker_id) {
-    const {joins, selectedImage} = this.props;
+    const { joins, selectedImage } = this.props;
 
     if (!joins.hasOwnProperty(marker_id)) return false;
 
@@ -200,7 +200,7 @@ class PointMarkersMap extends Component {
   }
 
   deleteMarkers(markers, points) {
-    const {leafletMap} = this.props;
+    const { leafletMap } = this.props;
     if (!leafletMap) return;
 
     const hash = this.createLookup(points);
@@ -218,7 +218,7 @@ class PointMarkersMap extends Component {
   }
 
   addMarkers(markers, points) {
-    const {leafletMap} = this.props;
+    const { leafletMap } = this.props;
     if (!leafletMap) return;
 
     const hash = this.createLookup(markers);
@@ -239,7 +239,7 @@ class PointMarkersMap extends Component {
     let action = evt.target.dataset.action;
     if (!action) return;
 
-    const {onMarkerDelete, onMarkerToggle} = this.props;
+    const { onMarkerDelete, onMarkerToggle } = this.props;
 
     if (action === 'delete') {
       onMarkerDelete(id);
@@ -249,7 +249,7 @@ class PointMarkersMap extends Component {
   }
 
   onMarkerDragEnd(marker) {
-    const {onMarkerDragged} = this.props;
+    const { onMarkerDragged } = this.props;
     let pos = marker.getLatLng();
     onMarkerDragged(marker._pointid, [pos.lat, pos.lng]);
   }
@@ -257,8 +257,8 @@ class PointMarkersMap extends Component {
   onMarkerClicked(marker) {
     if (marker.dragging.enabled()) return;
 
-    const {onMarkerToggle} = this.props;
-    const {markers} = this.state;
+    const { onMarkerToggle } = this.props;
+    const { markers } = this.state;
 
     let match = markers.find(m => m.id === marker._pointid);
     //if (!match || !match.hasImage) return;
@@ -268,7 +268,7 @@ class PointMarkersMap extends Component {
   }
 
   renderMarker(pt) {
-    const {leafletMap} = this.props;
+    const { leafletMap } = this.props;
     if (!leafletMap) return;
 
     let me = this;
@@ -304,7 +304,7 @@ class PointMarkersMap extends Component {
   }
 
   render() {
-    const {leafletMap} = this.props;
+    const { leafletMap } = this.props;
     if (!leafletMap) return null;
 
     return (

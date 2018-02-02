@@ -4,7 +4,7 @@ import LeafletSearch from './Leaflet-Search';
 import LeafletMapProviders from './LeafletMap-Providers';
 import PointMarkersMap from './PointMarkersMap';
 import LeafletZoomControls from './Leaflet-ZoomControls.js';
-import {CP_MODES} from '../state/utils/controlpoints';
+import { CP_MODES } from '../state/utils/controlpoints';
 
 import config from '../config';
 
@@ -35,7 +35,7 @@ class LeafletMap extends Component {
   }
 
   zoomMapToList(pts) {
-    const {leafletMap} = this.state;
+    const { leafletMap } = this.state;
     if (!leafletMap) return;
     let bds = L.latLngBounds();
 
@@ -52,8 +52,8 @@ class LeafletMap extends Component {
   }
 
   initializeMap() {
-    const {leafletMap} = this.state;
-    const {onMapPositionChange} = this.props;
+    const { leafletMap } = this.state;
+    const { onMapPositionChange } = this.props;
     if (leafletMap) return;
 
     let mapContainer = this.refs.lmap;
@@ -77,7 +77,7 @@ class LeafletMap extends Component {
   }
 
   onMapClick(evt) {
-    const {controlpoints, addControlPoint} = this.props;
+    const { controlpoints, addControlPoint } = this.props;
     if (controlpoints.mode === CP_MODES.ADDING) {
       let ll = evt.latlng;
       addControlPoint([ll.lat, ll.lng]);
@@ -85,17 +85,17 @@ class LeafletMap extends Component {
   }
 
   onMarkerDragged(marker_id, pos) {
-    const {setControlPointPosition} = this.props;
+    const { setControlPointPosition } = this.props;
     setControlPointPosition('map', marker_id, pos);
   }
 
   onMarkerDelete(marker_id) {
-    const {deleteControlPoint} = this.props;
+    const { deleteControlPoint } = this.props;
     deleteControlPoint(marker_id);
   }
 
   onMarkerToggle(marker_id, marker_img, latlng) {
-    const {toggleControlPointMode, controlpoints, setPointProperties, joinControlPoint} = this.props;
+    const { toggleControlPointMode, controlpoints, setPointProperties, joinControlPoint } = this.props;
 
     if (controlpoints.mode === CP_MODES.ADDING) {
       return setPointProperties(false, null, null, null, marker_id, [latlng.lat, latlng.lng]);
@@ -109,8 +109,8 @@ class LeafletMap extends Component {
   }
 
   render() {
-    const {leafletMap} = this.state;
-    const {controlpoints, imagery} = this.props;
+    const { leafletMap } = this.state;
+    const { controlpoints, imagery } = this.props;
 
     return (
       <div className='leaflet-map-wrapper'>

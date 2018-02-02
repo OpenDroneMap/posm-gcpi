@@ -3,13 +3,13 @@ import React, { Component } from 'react';
 class Directions extends Component {
   constructor(props) {
     super(props);
-    this.state = {isOpen: false};
+    this.state = { isOpen: false };
     this.onClick = this.onClick.bind(this);
   }
 
   onClick(evt) {
     evt.preventDefault();
-    this.setState({isOpen: !this.state.isOpen});
+    this.setState({ isOpen: !this.state.isOpen });
   }
 
   render() {

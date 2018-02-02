@@ -55,20 +55,20 @@ class ImagesGridThumb extends Component {
   }
 
   onClickHandler(evt) {
-    const {onThumbClick, src, selected} = this.props;
+    const { onThumbClick, src, selected } = this.props;
     evt.preventDefault();
     onThumbClick(src, selected);
   }
 
   onDeleteHandler(evt) {
-    const {onDeleteImage, filename} = this.props;
+    const { onDeleteImage, filename } = this.props;
     evt.preventDefault();
     evt.stopPropagation();
     onDeleteImage(filename);
   }
 
   getThumbClass() {
-    const {selected, src} = this.props;
+    const { selected, src } = this.props;
     let klass = 'thumb';
 
     if (!src) klass += ' no-img';
@@ -78,7 +78,7 @@ class ImagesGridThumb extends Component {
   }
 
   render() {
-    const {points, filename} = this.props;
+    const { points, filename } = this.props;
 
     return (
       <div className={this.getThumbClass()} onClick={(evt) => {this.onClickHandler(evt);}}>

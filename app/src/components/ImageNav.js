@@ -29,17 +29,17 @@ class ImageNav extends Component {
   }
 
   isEditable() {
-    const {imagery, imagepanel} = this.props;
+    const { imagery, imagepanel } = this.props;
     return ((imagery.items && imagery.items.length) && !imagepanel.menu_active);
   }
 
   hasImages() {
-    const {imagery} = this.props;
+    const { imagery } = this.props;
     return (imagery.items && imagery.items.length);
   }
 
   render() {
-    const {controlpoints} = this.props;
+    const { controlpoints } = this.props;
     let editable = this.isEditable();
     let klass = editable ? ' editable' : '';
 

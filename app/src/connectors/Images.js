@@ -1,9 +1,9 @@
-import {connect} from 'react-redux';
-import {selectImageFile,
+import { connect } from 'react-redux';
+import { selectImageFile,
         deleteImageFile,
         toggleControlPointMode,
         setControlPointPosition,
-        deleteControlPoint} from '../state/actions';
+        deleteControlPoint } from '../state/actions';
 
 import Images from '../components/Images';
 
