@@ -55,20 +55,20 @@ const GCPMarker = L.Marker.extend({
 
 const GCPIcon = L.DivIcon.extend({
   createIcon: function (oldIcon) {
-      let div = L.DivIcon.prototype.createIcon.call(this, oldIcon);
+    let div = L.DivIcon.prototype.createIcon.call(this, oldIcon);
 
-      let actions = L.DomUtil.create('div', 'actions', div);
-      let ul = L.DomUtil.create('ul', '', actions);
-      ['Delete', 'Lock'].forEach(d => {
-        let li = L.DomUtil.create('li', '', ul);
-        let a = L.DomUtil.create('a', '', li);
-        a.setAttribute('data-action', d.toLowerCase());
-        a.innerHTML = d;
-        a.href = '#';
-      });
+    let actions = L.DomUtil.create('div', 'actions', div);
+    let ul = L.DomUtil.create('ul', '', actions);
+    ['Delete', 'Lock'].forEach(d => {
+      let li = L.DomUtil.create('li', '', ul);
+      let a = L.DomUtil.create('a', '', li);
+      a.setAttribute('data-action', d.toLowerCase());
+      a.innerHTML = d;
+      a.href = '#';
+    });
 
-      return div;
-    }
+    return div;
+  }
 });
 
 class PointMarkersMap extends Component {
