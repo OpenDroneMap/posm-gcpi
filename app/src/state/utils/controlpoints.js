@@ -1,4 +1,7 @@
 import proj4 from 'proj4';
+import flattenDeep from 'lodash.flattendeep';
+import toPairs from 'lodash.topairs';
+import uniq from 'lodash.uniq';
 
 export const CP_TYPES = {
   MAP: 'map',
@@ -79,6 +82,13 @@ export const generateGcpOutput = (joins, points, sourceProjection, destinationPr
   });
 
   return rows;
+}
+
+/*
+ * Get ids of all joined points given an id, including the passed id
+ */
+export const joinedPoints = (joins, id) => {
+  return uniq(flattenDeep(toPairs(joins).filter(([key, values]) => id === key || values.indexOf(id) >= 0)));
 }
 
 // TODO(seanc): Not accounting for control objects having points from 3 different images

@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import classNames from 'classnames';
 import Image from './Image';
 import { CP_TYPES, CP_MODES } from '../state/utils/controlpoints';
 import config from '../config';
@@ -14,6 +15,8 @@ class ImagePanZoom extends Component {
     onImageDragged: PropTypes.func,
     onMarkerToggle: PropTypes.func,
     onMarkerDelete: PropTypes.func,
+    highlightedControlPoints: PropTypes.array,
+    highlightControlPoint: PropTypes.func,
     addControlPoint: PropTypes.func,
 
     markerDraggable: PropTypes.bool,
@@ -30,6 +33,7 @@ class ImagePanZoom extends Component {
     onImageDragged: () => {},
     onMarkerToggle: () => {},
     onMarkerDelete: () => {},
+    highlightControlPoint: () => {},
     addControlPoint: () => {},
 
     markerDraggable: false,
@@ -436,7 +440,7 @@ class ImagePanZoom extends Component {
   }
 
   renderPoints() {
-    const { markers, selectedImage, selectedMarker } = this.props;
+    const { highlightControlPoint, highlightedControlPoints, markers, selectedImage, selectedMarker } = this.props;
 
     return markers.map((marker, i) => {
       if (marker.type === CP_TYPES.IMAGE && marker.img_name === selectedImage) {
@@ -447,12 +451,20 @@ class ImagePanZoom extends Component {
           top: `${y}px`
         };
 
-
         let selected = selectedMarker === marker.id ? 1 : 0;
-        let klass = selected ? ' draggable' : '';
 
         return (
-          <div key={`ip${i}`} className={`image-point active${klass}`} data-selected={selected} data-id={marker.id} style={style}>
+          <div key={`ip${i}`}
+            className={classNames('image-point', 'active', {
+              'draggable': selected,
+              'highlighted': highlightedControlPoints.indexOf(marker.id) >= 0
+            })}
+            data-selected={selected}
+            data-id={marker.id}
+            style={style}
+            onMouseOver={() => highlightControlPoint(marker.id)}
+            onMouseOut={() => highlightControlPoint(null)}
+          >
             <div className='actions'>
               <ul>
                 <li>

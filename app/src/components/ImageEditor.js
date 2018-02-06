@@ -53,7 +53,7 @@ class ImageEditor extends Component {
   }
 
   render() {
-    const { controlpoints, imagery, height, addControlPoint } = this.props;
+    const { controlpoints, imagery, height, highlightControlPoint, addControlPoint } = this.props;
 
     return (
       <div className='image-editor'>
@@ -68,8 +68,10 @@ class ImageEditor extends Component {
           selectedMarker={controlpoints.selected}
           image={this.getImageFile()}
           selectedImage={imagery.selected}
+          highlightedControlPoints={controlpoints.highlighted}
+          highlightControlPoint={highlightControlPoint}
           addControlPoint={addControlPoint}
-          />
+        />
       </div>
     );
   }

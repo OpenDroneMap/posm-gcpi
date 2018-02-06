@@ -33,9 +33,10 @@
   cursor: pointer;
 
   .imagepanzoom & {
-    width: 20px;
-    height: 20px;
-    margin: -10px 0 0 -10px;
+    $point-size: 20px;
+    height: $point-size;
+    width: $point-size;
+    margin: -resolve($point-size / 2) 0 0 -resolve($point-size / 2);
   }
 
   .actions {
@@ -100,6 +101,13 @@
   &.active,
   &.active {
     background-image: url('../assets/icons/gcp-green.png');
+  }
+
+  &.highlighted {
+    $point-size: 40px;
+    height: $point-size;
+    width: $point-size;
+    margin: -resolve($point-size / 2) 0 0 -resolve($point-size / 2);
   }
 
   &.active.draggable,

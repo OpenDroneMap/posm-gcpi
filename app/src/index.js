@@ -15,7 +15,7 @@ import './styles/main.css';
 const DEFAULT_STATE = {
   imagepanel: { menu_active: true },
   imagery: {},
-  controlpoints:{ points:[], joins: {} }
+  controlpoints:{ highlighted: [], points:[], joins: {} }
 };
 
 // create store

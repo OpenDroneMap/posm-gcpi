@@ -15,6 +15,8 @@ class LeafletMap extends Component {
 
     this.onMarkerDragged = this.onMarkerDragged.bind(this);
     this.onMarkerDelete = this.onMarkerDelete.bind(this);
+    this.onMarkerMouseOut = this.onMarkerMouseOut.bind(this);
+    this.onMarkerMouseOver = this.onMarkerMouseOver.bind(this);
     this.onMarkerToggle = this.onMarkerToggle.bind(this);
     this.onMapClick = this.onMapClick.bind(this);
 
@@ -94,6 +96,16 @@ class LeafletMap extends Component {
     deleteControlPoint(marker_id);
   }
 
+  onMarkerMouseOut() {
+    this.props.highlightControlPoint(null);
+  }
+
+  onMarkerMouseOver(marker_id) {
+    if (this.props.controlpoints.highlighted.indexOf(marker_id) < 0) {
+      this.props.highlightControlPoint(marker_id);
+    }
+  }
+
   onMarkerToggle(marker_id, marker_img, latlng) {
     const { toggleControlPointMode, controlpoints, setPointProperties, joinControlPoint } = this.props;
 
@@ -119,6 +131,7 @@ class LeafletMap extends Component {
         <LeafletMapProviders leafletMap={leafletMap} />
         <LeafletZoomControls leafletMap={leafletMap} controlpoints={controlpoints} />
         <PointMarkersMap
+          highlightedControlPoints={controlpoints.highlighted}
           leafletMap={leafletMap}
           selectedMarker={controlpoints.selected}
           selectedImage={imagery.selected}
@@ -127,6 +140,8 @@ class LeafletMap extends Component {
           mode={controlpoints.mode}
           onMarkerDragged={this.onMarkerDragged}
           onMarkerDelete={this.onMarkerDelete}
+          onMarkerMouseOut={this.onMarkerMouseOut}
+          onMarkerMouseOver={this.onMarkerMouseOver}
           onMarkerToggle={this.onMarkerToggle}
         />
       </div>

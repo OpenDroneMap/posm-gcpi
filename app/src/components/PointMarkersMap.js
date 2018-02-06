@@ -4,11 +4,17 @@ import { CP_TYPES } from '../state/utils/controlpoints';
 
 const ICON = {
   className: 'image-point',
-  iconSize: [38,38]
+  iconSize: [38, 38]
+};
+
+const HIGHLIGHTED_ICON = {
+  className: 'image-point image-point-highlighted',
+  iconSize: [55, 55]
 };
 
 const Z_INDEXES = {
   ACTIVE: 5000,
+  HIGHLIGHTED: 7500,
   EDITABLE: 10000
 };
 
@@ -73,22 +79,28 @@ const GCPIcon = L.DivIcon.extend({
 
 class PointMarkersMap extends Component {
   static propTypes = {
+    highlightedControlPoints: PropTypes.array,
     leafletMap: PropTypes.object,
     points: PropTypes.array,
     selectedMarker: PropTypes.any,
     selectedImage: PropTypes.any,
     onMarkerDragged: PropTypes.func,
     onMarkerDelete: PropTypes.func,
+    onMarkerMouseOut: PropTypes.func,
+    onMarkerMouseOver: PropTypes.func,
     onMarkerToggle: PropTypes.func
   }
 
   static defaultProps = {
+    highlightedControlPoints: [],
     leafletMap: null,
     points: [],
     selectedMarker: null,
     selectedImage: null,
     onMarkerDragged: () => {},
     onMarkerDelete: () => {},
+    onMarkerMouseOut: () => {},
+    onMarkerMouseOver: () => {},
     onMarkerToggle: () => {}
   }
 
@@ -102,9 +114,10 @@ class PointMarkersMap extends Component {
 
   // Determine if an update is needed
   dirty(np) {
-    const { points, selectedMarker, selectedImage } = this.props;
+    const { highlightedControlPoints, points, selectedMarker, selectedImage } = this.props;
 
     return (
+      (np.highlightedControlPoints !== highlightedControlPoints) ||
       (np.points !== points) ||
       (np.selectedMarker !== selectedMarker) ||
       (np.selectedImage !== selectedImage)
@@ -123,7 +136,8 @@ class PointMarkersMap extends Component {
 
     if (markers.length > points.length) { // if markers > points, delete
       markers = this.deleteMarkers(markers, points);
-    } else if (points.length > markers.length) { // if markers < points, add
+    }
+    else if (points.length > markers.length) { // if markers < points, add
       markers = this.addMarkers(markers, points);
     }
 
@@ -136,10 +150,11 @@ class PointMarkersMap extends Component {
   }
 
   componentDidUpdate() {
-    const { selectedMarker } = this.props;
+    const { highlightedControlPoints, selectedMarker } = this.props;
     const { markers } = this.state;
 
     markers.forEach((m,i) => {
+      m.marker.setIcon(new GCPIcon(ICON));
       m.marker.removeClass('active');
       m.marker.dragging.disable();
 
@@ -147,12 +162,22 @@ class PointMarkersMap extends Component {
         m.marker.addClass('active');
         m.marker.dragging.enable();
         m.marker.setZIndexOffset(Z_INDEXES.EDITABLE);
-      } else {
+      }
+      else {
         if (this.shouldHighlightMarker(m.id)){
           m.marker.addClass('active');
           m.marker.setZIndexOffset(Z_INDEXES.ACTIVE);
-        } else {
+        }
+        else {
           m.marker.setZIndexOffset(0);
+        }
+      }
+
+      if (highlightedControlPoints.indexOf(m.id) >= 0) {
+        m.marker.setIcon(new GCPIcon(HIGHLIGHTED_ICON));
+        m.marker.setZIndexOffset(Z_INDEXES.HIGHLIGHTED);
+        if (m.id === selectedMarker || this.shouldHighlightMarker(m.id)) {
+          m.marker.addClass('active');
         }
       }
     });
@@ -239,12 +264,13 @@ class PointMarkersMap extends Component {
     let action = evt.target.dataset.action;
     if (!action) return;
 
-    const { onMarkerDelete, onMarkerToggle } = this.props;
+    const { onMarkerDelete, onMarkerMouseOut, onMarkerToggle } = this.props;
 
     if (action === 'delete') {
       onMarkerDelete(id);
     } else if (action === 'lock') {
       onMarkerToggle(id);
+      onMarkerMouseOut();
     }
   }
 
@@ -268,7 +294,7 @@ class PointMarkersMap extends Component {
   }
 
   renderMarker(pt) {
-    const { leafletMap } = this.props;
+    const { leafletMap, onMarkerMouseOut, onMarkerMouseOver } = this.props;
     if (!leafletMap) return;
 
     let me = this;
@@ -294,6 +320,9 @@ class PointMarkersMap extends Component {
     m.on('click', function(evt) {
       me.onMarkerClicked(this);
     });
+
+    m.on('mouseout', () => onMarkerMouseOut(pt.id));
+    m.on('mouseover', () => onMarkerMouseOver(pt.id));
 
     return {
       marker: m,

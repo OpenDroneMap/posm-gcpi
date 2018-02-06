@@ -39,6 +39,14 @@ export function deleteControlPoint(id) {
   }
 }
 
+export const HIGHLIGHT_CONTROL_POINT = 'HIGHLIGHT_CONTROL_POINT';
+export function highlightControlPoint(id) {
+  return {
+    type: HIGHLIGHT_CONTROL_POINT,
+    id
+  }
+}
+
 export const AWAIT_CONTROL_POINT = 'AWAIT_CONTROL_POINT';
 export function awaitControlPoint(image_loc) {
   return {

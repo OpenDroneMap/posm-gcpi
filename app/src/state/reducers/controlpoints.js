@@ -1,6 +1,6 @@
 import { createReducer } from '../utils/common';
 import * as actions from '../actions';
-import { validate, imagePoint, mapPoint, getModeFromId, CP_TYPES, CP_MODES } from '../utils/controlpoints';
+import { validate, imagePoint, joinedPoints, mapPoint, getModeFromId, CP_TYPES, CP_MODES } from '../utils/controlpoints';
 
 
 const removeMapPointFromJoins = (joins, map_id) => {
@@ -131,6 +131,17 @@ const joinPoint = (state, action) => {
   }
 }
 
+const highlightPoint = (state, action) => {
+  let highlighted = [];
+  if (action.id) {
+    highlighted = joinedPoints(state.joins, action.id);
+  }
+  return {
+    ...state,
+    highlighted: highlighted
+  };
+}
+
 // img_name, img_coord, map_coord
 const addPoint = (state, action) => {
   let pt = action.isImage ? imagePoint(action.img_coord, action.img_name) :
@@ -249,6 +260,7 @@ const awaitPoint = (state, action) => {
 const controlPointReducer = (state) => {
   return createReducer(state, {
     [actions.DELETE_CONTROL_POINT]: deletePoint,
+    [actions.HIGHLIGHT_CONTROL_POINT]: highlightPoint,
     [actions.ADD_CONTROL_POINT]: addPoint,
     [actions.SET_CONTROL_POINT_POSITION]: setPosition,
     [actions.TOGGLE_CONTROL_POINT_MODE]: toggleMode,
