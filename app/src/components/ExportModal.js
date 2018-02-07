@@ -4,10 +4,9 @@ import L from 'leaflet';
 import isEqual from 'lodash.isequal';
 import uniqWith from 'lodash.uniqwith';
 import { generateGcpOutput } from '../state/utils/controlpoints';
-import { getUtmDescriptor, getUtmZoneFromLatLng, getProj4Utm } from '../common/coordinate-systems';
+import { getUtmZoneFromLatLng, getProj4Utm } from '../common/coordinate-systems';
 
 class ExportModal extends Component {
-
   constructor(props) {
     super(props);
 
@@ -18,10 +17,16 @@ class ExportModal extends Component {
         /*eslint-enable */
     } catch (e) {}
 
+    this.state = {
+      destinationProjection: '',
+      exportText: '',
+      error: null
+    };
   }
 
   componentDidMount() {
     L.DomUtil.addClass(document.body, 'prevent-overflow');
+    this.updateProps(this.props);
   }
 
   componentWillUnmount() {
@@ -38,7 +43,7 @@ class ExportModal extends Component {
         this.txtarea.blur();
       }
       catch (err) {
-        alert('sorry not working, please use Ctrl/Cmd+C to copy');
+        alert('Sorry copy is not working, please use Ctrl/Cmd+C to copy');
       }
     }
   }
@@ -49,18 +54,9 @@ class ExportModal extends Component {
     FileSaver.saveAs(blob, `gcp_file_${Date.now()}.txt`);
   }
 
-  renderText() {
-    const { controlpoints, projection } = this.props;
-    const { joins, points, status } = controlpoints;
-    let sourceProjection = projection ? projection : 'EPSG:4326';
-    let destinationProjection = sourceProjection;
-    let destinationProjectionDescriptor = destinationProjection;
-
-    if (!status.valid) {
-      return status.errors.map(err => {
-        return <p dangerouslySetInnerHTML={{ __html: err }} />
-      });
-    }
+  updateProps(props) {
+    let destinationProjection = 'EPSG:4326';
+    const { points, status } = props.controlpoints;
 
     let utmZones = points.filter(p => p.type === 'map')
       .map(p => getUtmZoneFromLatLng(p.coord[0], p.coord[1]));
@@ -68,21 +64,50 @@ class ExportModal extends Component {
     if (utmZones.length === 1) {
       const { zone, hemisphere } = utmZones[0];
       destinationProjection = getProj4Utm(zone, hemisphere);
-      destinationProjectionDescriptor = getUtmDescriptor(zone, hemisphere);
     }
 
-    let rows = generateGcpOutput(joins, points, sourceProjection, destinationProjection);
-    let proj = (destinationProjectionDescriptor ? destinationProjectionDescriptor : 'EPSG:4326') + '\t'; // Handle empty projection
-    rows.unshift(proj);
+    let error;
+    if (!status.valid) {
+      error = status.errors.map((err, index) => {
+        return <p key={index} dangerouslySetInnerHTML={{ __html: err }} />
+      });
+    }
 
+    const exportText = this.renderGcpOutput(destinationProjection);
+    this.setState({ destinationProjection, error, exportText });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.updateProps(nextProps);
+  }
+
+  updateDestinationProjection(destinationProjection) {
+    let exportText = '';
+    let error;
+    try {
+      exportText = this.renderGcpOutput(destinationProjection);
+    }
+    catch (e) {
+      error = <p>Invalid coordinate reference system. Please enter a valid <a href="http://proj4.org/">proj.4</a> string.</p>;
+    }
+    this.setState({ destinationProjection, error, exportText });
+  }
+
+  renderGcpOutput(destinationProjection) {
+    const { controlpoints, projection } = this.props;
+    let sourceProjection = projection ? projection : 'EPSG:4326';
+
+    const rows = generateGcpOutput(controlpoints.joins, controlpoints.points, sourceProjection, destinationProjection);
+    const proj = `${destinationProjection}\t`;
+    rows.unshift(proj);
     return rows.join('\n');
   }
 
   render() {
     const { controlpoints } = this.props;
     const { status } = controlpoints;
+    const { destinationProjection, error, exportText } = this.state;
 
-    let exportText = this.renderText();
     let klass = (!status.valid) ? ' no-pts' : '';
 
     return (
@@ -94,34 +119,27 @@ class ExportModal extends Component {
             <span className='icon' onClick={(evt) => {this.props.onClick(evt);} }><span>&times;</span></span>
           </div>
           <div className='output'>
-            {status.valid &&
+            {error &&
+              <div className='errors'>{error}</div>
+            }
+            <div>
               <div>
-                <table>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <p>Here is your text</p>
-                      </td>
-                      <td>
-                        <textarea ref={el => {this.txtarea = el;}} readOnly value={exportText}/>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div className='actions'>
-                  <p>Copy text with <strong>Ctrl / Cmd+C</strong> or </p>
-                  <button onClick={e => {this.copyText(e);}} disabled={!status.valid}>Copy</button>
-                  { this.isFileSaverSupported &&
-                  <button onClick={e => {this.saveText(e);}} disabled={!status.valid}>Save</button>
-                  }
-                </div>
+                <input
+                  className='destination-projection'
+                  type="text"
+                  value={destinationProjection}
+                  onChange={(e) => this.updateDestinationProjection(e.target.value)}
+                />
+                <textarea ref={el => {this.txtarea = el;}} readOnly value={exportText}/>
               </div>
-            }
-            {!status.valid &&
-              <div className='errors'>
-                {exportText}
+              <div className='actions'>
+                <p>Copy text with <strong>Ctrl / Cmd+C</strong> or </p>
+                <button onClick={e => {this.copyText(e);}} disabled={!status.valid}>Copy</button>
+                { this.isFileSaverSupported &&
+                <button onClick={e => {this.saveText(e);}} disabled={!status.valid}>Save</button>
+                }
               </div>
-            }
+            </div>
           </div>
         </div>
       </div>

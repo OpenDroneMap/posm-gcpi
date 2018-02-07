@@ -135,4 +135,8 @@
     }
 
   }
+
+  .destination-projection {
+    width: 100%;
+  }
 }
