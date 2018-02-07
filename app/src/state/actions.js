@@ -132,7 +132,7 @@ export function receiveGcpFile(file_name, file_content) {
   let newline = /\r|\n/g;
 
   let lines = file_content.split(newline);
-  let rows = lines.map(r => r.split(delimiter));
+  let rows = lines.slice(1).map(r => r.split(delimiter));
   let projection = lines[0];
   let utmProjection = parseUtmDescriptor(projection);
   if (utmProjection) projection = getProj4Utm(utmProjection.zone, utmProjection.hemisphere);
