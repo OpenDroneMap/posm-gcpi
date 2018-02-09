@@ -96,6 +96,7 @@ function imagery(state = INITIAL_STATE, action) {
     case actions.RECEIVE_GCP_FILE:
       return {
         ...state,
+        sourceProjection: action.sourceProjection,
         projection: action.projection,
         gcp_list: action.rows,
         gcp_list_preview: false,

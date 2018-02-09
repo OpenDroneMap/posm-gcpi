@@ -1,3 +1,5 @@
+import proj4 from 'proj4';
+
 export const getUtmZoneFromLatLng = (lat, lng) => {
   // Standard UTM zones don't apply to polar regions
   if (lat < -80 || lat > 84) return null;
@@ -22,4 +24,17 @@ export const parseUtmDescriptor = (descriptor) => {
     zone: zoneCode.slice(0, -1),
     hemisphere: zoneCode.slice(-1) === 'N' ? 'north' : 'south'
   };
+}
+
+export const isProjectionString = (s) => {
+  const testString = s.toLowerCase();
+  if (['epsg', '+proj', 'utm'].some(match => testString.indexOf(match) >= 0)) return true;
+  try {
+    new proj4.Proj(s);
+    return true;
+  }
+  catch (e) {
+    // Failed to get Proj for s, almost definitely not a valid projection
+  }
+  return false;
 }

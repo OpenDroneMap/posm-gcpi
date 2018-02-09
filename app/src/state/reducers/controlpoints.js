@@ -1,3 +1,6 @@
+import proj4 from 'proj4';
+import { getProj4Utm, parseUtmDescriptor } from '../../common/coordinate-systems';
+
 import { createReducer } from '../utils/common';
 import * as actions from '../actions';
 import { validate, imagePoint, joinedPoints, mapPoint, getModeFromId, CP_TYPES, CP_MODES } from '../utils/controlpoints';
@@ -205,37 +208,67 @@ const syncImages = (state, action) => {
   }
 }
 
+const parseRow = (row) => {
+  let img_name, lat, lng, x, y, z, mapPointLabel;
+
+  if (row.length === 6) {
+    // If row length is 6, both image and coordinates are present
+    [lng, lat, z, x, y, img_name] = row;
+  }
+  else if (row.length === 4) {
+    // Just map points, no image
+    [mapPointLabel, lng, lat, z] = row;
+  }
+  else if (row.length === 3) {
+    // Just image points, no map coordinates
+    [x, y, img_name] = row;
+  }
+
+  return { img_name, lat, lng, x, y, z, mapPointLabel };
+}
+
 const syncList = (state, action) => {
   let images = action.images || [];
-  let list = action.list || []; // gcp file
-  if (!list.length) return state;
+  let rows = action.rows || []; // gcp file
+  if (!rows.length) return state;
 
   let points = [...state.points];
   let joins = { ...state.joins };
   let selected = state.selected;
 
-  list.forEach((r,i) => {
-    let img_name = r[5];
-    let lat = r[1];
-    let lng = r[0];
-    let x = r[3];
-    let y = r[4];
-    let z = r[2];
+  let projection = action.sourceProjection;
+  if (projection) {
+    let utmProjection = parseUtmDescriptor(projection);
+    if (utmProjection) projection = getProj4Utm(utmProjection.zone, utmProjection.hemisphere);
+  }
+
+  rows.forEach((r, i) => {
+    let { img_name, lat, lng, x, y, mapPointLabel } = parseRow(r);
 
     let img_index = images.findIndex( img => img.name === img_name );
     let hasImage = img_index > -1;
+    let imgPt, mapPt;
 
-    let imgPt = imagePoint([x, y, z], img_name, hasImage);
-    let mapPt = mapPoint([lat, lng]);
+    if (x && y && img_name) {
+      imgPt = imagePoint([x, y], img_name, hasImage);
+    }
 
-    if (imgPt !== null) points.push(imgPt);
-    if (mapPt !== null) points.push(mapPt);
+    if (lat && lng) {
+      if (projection !== 'EPSG:4326') {
+        // Transform into EPSG:4326
+        [lng, lat] = proj4(projection, 'EPSG:4326', [lng, lat]);
+      }
+      mapPt = mapPoint([lat, lng], mapPointLabel);
+    }
 
-    if (imgPt !== null && mapPt !== null) {
+    if (imgPt) points.push(imgPt);
+    if (mapPt) points.push(mapPt);
+
+    if (imgPt && mapPt) {
       joins = joinPoints(joins, imgPt.id, mapPt.id);
     }
 
-    if (!selected) selected = imgPt.id;
+    if (!selected && imgPt) selected = imgPt.id;
   });
 
   return {

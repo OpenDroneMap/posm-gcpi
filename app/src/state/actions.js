@@ -1,5 +1,4 @@
-import proj4 from 'proj4';
-import { getProj4Utm, parseUtmDescriptor } from '../common/coordinate-systems';
+import { isProjectionString } from '../common/coordinate-systems';
 
 export const ON_WINDOW_RESIZE = 'ON_WINDOW_RESIZE';
 export function onWindowResize(size) {
@@ -140,42 +139,29 @@ export function previewGcpFileCancel() {
 
 
 export const RECEIVE_GCP_FILE = 'RECEIVE_GCP_FILE';
-/*
-coordinate system description
-lng lat z1 pixelx1 pixely1 imagename1
-...
-*/
-export function receiveGcpFile(file_name, file_content) {
-  let now = Date.now();
 
-  let delimiter = /\s|\t|,|\|/g;
+export function receiveGcpFile(file_name, file_content) {
   let newline = /\r|\n/g;
+  let delimiter = /\s|\t|,|\|/g;
 
   let lines = file_content.split(newline);
-  let rows = lines.slice(1).map(r => r.split(delimiter));
-  let projection = lines[0];
-  let utmProjection = parseUtmDescriptor(projection);
-  if (utmProjection) projection = getProj4Utm(utmProjection.zone, utmProjection.hemisphere);
+  let rows = lines;
+  let sourceProjection;
 
-  rows = rows.filter(r => r.length === 6)
-    .map(r => r.map(d => !isNaN(d) ? +d : d))
-    .map(r => {
-      if (projection === 'EPSG:4326') return r;
-
-      // Transform into EPSG:4326
-      const transformedMapPoint = proj4(projection, 'EPSG:4326', r.slice(0, 2));
-      r[0] = transformedMapPoint[0];
-      r[1] = transformedMapPoint[1];
-      return r;
-    });
+  if (isProjectionString(lines[0])) {
+    sourceProjection = lines[0];
+    rows = lines.slice(1);
+  }
+  rows = rows
+    .map(r => r.split(delimiter))
+    .map(r => r.map(d => !isNaN(d) ? +d : d));
 
   return {
     type: RECEIVE_GCP_FILE,
-    receivedAt: now,
+    receivedAt: Date.now(),
     projection: 'EPSG:4326',
     rows,
+    sourceProjection,
     file_name
   }
 }
-
-

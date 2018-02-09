@@ -7,7 +7,8 @@ const gcpiMiddleware = store => next => action => {
     store.dispatch({
       type: 'SYNC_LIST_TO_IMAGES',
       images: st.imagery.items,
-      list: action.rows
+      rows: action.rows,
+      sourceProjection: action.sourceProjection
     });
   } else if (action.type === 'RECEIVE_IMAGE_FILES') {
     store.dispatch({

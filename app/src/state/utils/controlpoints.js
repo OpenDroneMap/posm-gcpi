@@ -47,14 +47,15 @@ export const imagePoint = (coord, img_name, hasImage=true) => {
 }
 
 // returns map point object
-export const mapPoint = (coord) => {
+export const mapPoint = (coord, label) => {
   if (!validCoordinate(coord)) return null;
 
   return {
     type: CP_TYPES.MAP,
     coord: [...coord],
-    id: generateID(coord)
-  }
+    id: generateID(coord),
+    label
+  };
 }
 
 export const generateGcpOutput = (joins, points, sourceProjection, destinationProjection) => {
