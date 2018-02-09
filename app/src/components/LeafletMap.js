@@ -26,8 +26,8 @@ class LeafletMap extends Component {
   }
 
   componentWillReceiveProps(np) {
-      let currentList = this.props.imagery.gcp_list_name;
-      if (np.imagery.gcp_list_name && currentList !== np.imagery.gcp_list_name) {
+      let currentList = this.props.imagery.gcp_list;
+      if (np.imagery.gcp_list && currentList !== np.imagery.gcp_list) {
         this.zoomMapToList(np.controlpoints.points);
       }
   }

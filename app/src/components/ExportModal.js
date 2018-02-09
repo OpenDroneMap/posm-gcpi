@@ -111,7 +111,7 @@ class ExportModal extends Component {
     let klass = (!status.valid) ? ' no-pts' : '';
 
     return (
-      <div className={`export-modal${klass}`}>
+      <div className={`export-modal modal-dialog ${klass}`}>
         <div className='bk' onClick={(evt) => {this.props.onClick(evt);} }/>
         <div className='inner'>
           <div className='head'>

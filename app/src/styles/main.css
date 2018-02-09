@@ -20,6 +20,8 @@
 @import "controlpoints.css";
 @import "export_button.css";
 @import "export-modal.css";
+@import "file-preview.css";
+@import "modal-dialog.css";
 @import "sliding-panel.css";
 @import "image-nav.css";
 @import "image-editor.css";

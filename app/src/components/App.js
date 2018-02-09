@@ -3,6 +3,7 @@ import { WindowResizeListener } from 'react-window-resize-listener'
 import Header from './Header';
 import LeafletMap from '../connectors/LeafletMap';
 import ExportModal from './ExportModal';
+import FilePreview from '../connectors/FilePreview';
 import ImageEditor from '../connectors/ImageEditor';
 
 import SlidingPanel from './SlidingPanel';
@@ -64,6 +65,9 @@ class App extends Component {
     return (
       <div className='app'>
         <WindowResizeListener onResize={ (w) => {this.onResize(w);} } />
+        {imagery.gcp_list_preview &&
+          <FilePreview />
+        }
         {exporter.active &&
           <ExportModal
             projection={imagery.projection}

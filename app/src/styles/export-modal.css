@@ -1,68 +1,4 @@
 .export-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 9999;
-
-  p {
-    margin: 0;
-    padding: 0;
-  }
-
-  .bk {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.1);
-    z-index: 1;
-  }
-
-  .inner {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    min-width: 500px;
-    background: $clr-white;
-    transform: translateX(-50%) translateY(-50%);
-    z-index: 2;
-  }
-
-  .head {
-    background: $clr-grey;
-    color: $clr-white;
-    text-align: center;
-    text-transform: uppercase;
-
-    h3 {
-      margin: 0;
-      padding: 0;
-      line-height: 2.8rem;
-      font-size: 1rem;
-    }
-
-  }
-
-  .icon {
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 2.8rem;
-    height: 2.8rem;
-    font-size: 0;
-    line-height: 1;
-    cursor: pointer;
-
-    span {
-      position: absolute;
-      top: 50%;
-      margin-top: -.8rem;
-      font-size: 1.2rem;
-    }
-  }
 
   .output {
     padding: 1rem 1.5rem;
@@ -98,42 +34,6 @@
       width: 100%;
       min-height: 200px;
     }
-  }
-
-  .actions {
-    text-align: right;
-
-    p {
-      margin-right: 0;
-      font-size: 0.75rem;
-    }
-
-    button {
-      margin-left: 0.5rem;
-      border: 0;
-      background: #999;
-      color: $clr-white;
-      border-radius: 11px;
-      padding: 4px 10px;
-      outline: 0;
-      cursor: pointer;
-      user-select: none;
-
-      &:hover {
-        color: yellow;
-      }
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: default;
-        pointer-events: none;
-      }
-
-      &:disabled:hover {
-        color: $clr-white;
-      }
-    }
-
   }
 
   .destination-projection {

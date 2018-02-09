@@ -33,14 +33,14 @@ class ImagesGetter extends Component {
 
   onTextDrop(acceptedFiles, rejectedFiles) {
     if (!acceptedFiles.length) return;
-    const { receiveGcpFile } = this.props;
+    const { previewGcpFile } = this.props;
 
     let name = acceptedFiles[0].name;
     let fReader = new FileReader();
     fReader.readAsText(acceptedFiles[0]);
 
     fReader.onload = () => {
-      receiveGcpFile(name, fReader.result)
+      previewGcpFile(name, fReader.result)
     };
   }
 

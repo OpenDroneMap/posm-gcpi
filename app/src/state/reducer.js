@@ -75,11 +75,31 @@ function imagery(state = INITIAL_STATE, action) {
         selected: state.selected || action.items[0].name
       };
 
+    case actions.PREVIEW_GCP_FILE:
+      return {
+        ...state,
+        receivedAt: action.receivedAt,
+        gcp_list: null,
+        gcp_list_preview: true,
+        gcp_list_text: action.gcp_list_text,
+        gcp_list_name: action.file_name
+      }
+
+    case actions.PREVIEW_GCP_FILE_CANCEL:
+      return {
+        ...state,
+        gcp_list_preview: false,
+        gcp_list_text: null,
+        gcp_list_name: null
+      }
+
     case actions.RECEIVE_GCP_FILE:
       return {
         ...state,
         projection: action.projection,
         gcp_list: action.rows,
+        gcp_list_preview: false,
+        gcp_list_text: null,
         gcp_list_name: action.file_name
       }
 

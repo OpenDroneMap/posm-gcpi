@@ -119,6 +119,26 @@ export function receiveImageFiles(files) {
   }
 }
 
+export const PREVIEW_GCP_FILE = 'PREVIEW_GCP_FILE';
+
+export function previewGcpFile(name, content) {
+  return {
+    type: PREVIEW_GCP_FILE,
+    receivedAt: Date.now(),
+    file_name: name,
+    gcp_list_text: content
+  };
+}
+
+export const PREVIEW_GCP_FILE_CANCEL = 'PREVIEW_GCP_FILE_CANCEL';
+
+export function previewGcpFileCancel() {
+  return {
+    type: PREVIEW_GCP_FILE_CANCEL
+  };
+}
+
+
 export const RECEIVE_GCP_FILE = 'RECEIVE_GCP_FILE';
 /*
 coordinate system description
