@@ -97,7 +97,7 @@ export const validate = (points, joins) => {
   let errors = [];
 
   if (points.length < 15) {
-    errors.push('A ground control point file must have a minimum of 15 points. There needs to 5 control objects and each control object must have 3 image points referenced. Please see this <a href="https://github.com/OpenDroneMap/OpenDroneMap/wiki/Running-OpenDroneMap#running-odm-with-ground-control" target="_blank">article</a> for more information.');
+    errors.push('A ground control point file must have a minimum of 15 points. There needs to be 5 control objects and each control object must have 3 image points referenced. Please see this <a href="https://github.com/OpenDroneMap/OpenDroneMap/wiki/Running-OpenDroneMap#running-odm-with-ground-control" target="_blank">article</a> for more information.');
   }
 
   if (errors.length) {
