@@ -3,7 +3,7 @@ import { getProj4Utm, parseUtmDescriptor } from '../../common/coordinate-systems
 
 import { createReducer } from '../utils/common';
 import * as actions from '../actions';
-import { validate, imagePoint, joinedPoints, mapPoint, getModeFromId, CP_TYPES, CP_MODES } from '../utils/controlpoints';
+import { validate, imagePoint, relatedPoints, mapPoint, getModeFromId, CP_TYPES, CP_MODES } from '../utils/controlpoints';
 
 
 const removeMapPointFromJoins = (joins, map_id) => {
@@ -137,7 +137,7 @@ const joinPoint = (state, action) => {
 const highlightPoint = (state, action) => {
   let highlighted = [];
   if (action.id) {
-    highlighted = joinedPoints(state.joins, action.id);
+    highlighted = relatedPoints(state.points, state.joins, action.id);
   }
   return {
     ...state,

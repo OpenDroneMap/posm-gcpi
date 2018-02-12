@@ -88,9 +88,18 @@ export const generateGcpOutput = (joins, points, sourceProjection, destinationPr
 /*
  * Get ids of all joined points given an id, including the passed id
  */
-export const joinedPoints = (joins, id) => {
+const joinedPoints = (joins, id) => {
   return uniq(flattenDeep(toPairs(joins).filter(([key, values]) => id === key || values.indexOf(id) >= 0)));
 }
+
+/*
+ * Get ids of all points related to a given an id, including the passed id
+ */
+export const relatedPoints = (points, joins, id) => {
+  const joined = joinedPoints(joins, id);
+  if (joined.length > 0) return joined;
+  return points.filter(point => id === point.id).map(point => point.id);
+};
 
 // TODO(seanc): Not accounting for control objects having points from 3 different images
 export const validate = (points, joins) => {
