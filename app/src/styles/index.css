@@ -6,6 +6,7 @@ html, body, #root {
 body {
   font-family: Helvetica, Arial, sans-serif;
   background: $clr-grey;
+  overflow-y: hidden;
 }
 
 button {
