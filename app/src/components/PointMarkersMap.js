@@ -60,6 +60,11 @@ const GCPMarker = L.Marker.extend({
 });
 
 const GCPIcon = L.DivIcon.extend({
+  initialize: function (options, label) {
+    L.DivIcon.prototype.initialize.call(this, options);
+    this.label = label;
+  },
+
   createIcon: function (oldIcon) {
     let div = L.DivIcon.prototype.createIcon.call(this, oldIcon);
 
@@ -72,6 +77,11 @@ const GCPIcon = L.DivIcon.extend({
       a.innerHTML = d;
       a.href = '#';
     });
+
+    if (this.label) {
+      let labelElement = L.DomUtil.create('div', 'image-point-label', div);
+      labelElement.innerHTML = this.label;
+    }
 
     return div;
   }
@@ -175,7 +185,10 @@ class PointMarkersMap extends Component {
       }
 
       if (m.id === selectedMarker || highlightedControlPoints.indexOf(m.id) >= 0) {
-        m.marker.setIcon(new GCPIcon(HIGHLIGHTED_ICON));
+        console.log('creating new icon', m);
+        const icon = new GCPIcon(HIGHLIGHTED_ICON, m.label);
+        console.log(icon);
+        m.marker.setIcon(new GCPIcon(HIGHLIGHTED_ICON, m.label));
         m.marker.setZIndexOffset(Z_INDEXES.HIGHLIGHTED);
         if (m.id === selectedMarker || this.shouldHighlightMarker(m.id)) {
           m.marker.addClass('active');
@@ -333,7 +346,8 @@ class PointMarkersMap extends Component {
       marker: m,
       id: pt.id,
       img: pt.img,
-      hasImage: pt.hasImage
+      hasImage: pt.hasImage,
+      label: pt.label
     };
   }
 
