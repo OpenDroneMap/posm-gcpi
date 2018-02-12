@@ -155,8 +155,6 @@ class PointMarkersMap extends Component {
 
     markers.forEach((m,i) => {
       m.marker.setIcon(new GCPIcon(ICON));
-      m.marker.removeClass('active');
-      m.marker.dragging.disable();
 
       if (m.id === selectedMarker) {
         m.marker.addClass('active');
@@ -164,6 +162,9 @@ class PointMarkersMap extends Component {
         m.marker.setZIndexOffset(Z_INDEXES.EDITABLE);
       }
       else {
+        m.marker.removeClass('active');
+        m.marker.dragging.disable();
+
         if (this.shouldHighlightMarker(m.id)){
           m.marker.addClass('active');
           m.marker.setZIndexOffset(Z_INDEXES.ACTIVE);
@@ -173,7 +174,7 @@ class PointMarkersMap extends Component {
         }
       }
 
-      if (highlightedControlPoints.indexOf(m.id) >= 0) {
+      if (m.id === selectedMarker || highlightedControlPoints.indexOf(m.id) >= 0) {
         m.marker.setIcon(new GCPIcon(HIGHLIGHTED_ICON));
         m.marker.setZIndexOffset(Z_INDEXES.HIGHLIGHTED);
         if (m.id === selectedMarker || this.shouldHighlightMarker(m.id)) {
