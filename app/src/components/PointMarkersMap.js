@@ -322,7 +322,11 @@ class PointMarkersMap extends Component {
       me.onMarkerClicked(this);
     });
 
-    m.on('mouseout', () => onMarkerMouseOut(pt.id));
+    m.on('mouseout', () => {
+      if (pt.id !== this.props.selectedMarker) {
+        onMarkerMouseOut(pt.id);
+      }
+    });
     m.on('mouseover', () => onMarkerMouseOver(pt.id));
 
     return {
