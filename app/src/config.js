@@ -1,7 +1,7 @@
 const config = {
   map_options: {
     minZoom: 2,
-    scrollWheelZoom: false,
+    scrollWheelZoom: true,
     zoomControl: false,
     initialZoom: 2,
     initialCenter: [30, -20]
