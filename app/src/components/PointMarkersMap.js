@@ -185,9 +185,6 @@ class PointMarkersMap extends Component {
       }
 
       if (m.id === selectedMarker || highlightedControlPoints.indexOf(m.id) >= 0) {
-        console.log('creating new icon', m);
-        const icon = new GCPIcon(HIGHLIGHTED_ICON, m.label);
-        console.log(icon);
         m.marker.setIcon(new GCPIcon(HIGHLIGHTED_ICON, m.label));
         m.marker.setZIndexOffset(Z_INDEXES.HIGHLIGHTED);
         if (m.id === selectedMarker || this.shouldHighlightMarker(m.id)) {

@@ -93,25 +93,25 @@ const deletePoint = (state, action) => {
 }
 
 const joinPoints = (joins, img_id, map_id) => {
+  const newJoins = { ...joins };
   if (!joins.hasOwnProperty(map_id)) {
-    joins[map_id] = [];
+    newJoins[map_id] = [];
   }
 
-  // Check if image point exists for a particular map point
-  // If exists remove it
-  if (joins[map_id].indexOf(img_id) > -1) {
-    console.warn(`Removing image point ${img_id} from map point ${map_id}`);
+  // We're adding the point if it is not in the given joins
+  const addingPoint = (newJoins[map_id].indexOf(img_id) < 0);
 
-    return {
-      ...joins,
-      [map_id]: joins[map_id].filter(d => d !== img_id)
+  // If there any joins for this img_id, remove it
+  Object.keys(joins).forEach(map_id => {
+    if (newJoins[map_id].indexOf(img_id) > -1) {
+      newJoins[map_id] = newJoins[map_id].filter(d => d !== img_id);
     }
-  }
+  });
 
-  return {
-    ...joins,
-    [map_id]: [...joins[map_id], img_id]
-  };
+  if (addingPoint) {
+    newJoins[map_id].push(img_id);
+  }
+  return newJoins;
 }
 
 
