@@ -53,7 +53,10 @@ class ImageNav extends Component {
 
     return (
       <div className={`image-nav${klass}`}>
-        <ToggleImageGridBtn onClick={(evt) => {this.onTogglerClick(evt);}}/>
+        <ToggleImageGridBtn
+          imageSelected={!this.props.imagepanel.menu_active}
+          onClick={(evt) => {this.onTogglerClick(evt);}}
+        />
         <ControlPoints
           controlpoints={this.props.controlpoints}
           selectedImage={this.props.imagery.selected}

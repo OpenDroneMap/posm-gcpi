@@ -10,7 +10,7 @@
   cursor: pointer;
   user-select: none;
 
-  &:hover svg {
+  &.to-editor:hover svg {
     fill: $clr-highlight;
   }
 }
