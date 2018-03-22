@@ -1,9 +1,7 @@
 import { Component } from 'react';
 
 import L from 'leaflet';
-import 'leaflet-geocoder-mapzen';
-
-const API_KEY = 'mapzen-zFfeyp3';
+import 'leaflet-control-geocoder';
 
 class LeafletSearch extends Component {
   constructor(props) {
@@ -24,17 +22,21 @@ class LeafletSearch extends Component {
   initializeSearch(map) {
 
     let options = {
-      position: 'topright',
-      expanded: true,
-      attribution: null,
-      panToPoint: false,
-      pointIcon: false,
-      polygonIcon: false,
-      markers: false,
-      fullWidth: false
+      defaultMarkGeocode: false
     };
 
-    L.control.geocoder(API_KEY, options).addTo(map);
+    L.Control.geocoder(options)
+      .on('markgeocode', function(e) {
+        var bbox = e.geocode.bbox;
+        var poly = L.polygon([
+          bbox.getSouthEast(),
+          bbox.getNorthEast(),
+          bbox.getNorthWest(),
+          bbox.getSouthWest()
+        ]);
+        map.fitBounds(poly.getBounds());
+      })
+      .addTo(map);
 
     this.setState({
       init: true

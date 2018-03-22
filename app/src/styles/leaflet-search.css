@@ -1,10 +1,17 @@
-.leaflet-pelias-control {
+.leaflet-control-geocoder {
   z-index: 9999;
   background: $clr-grey;
 
-  &.leaflet-pelias-expanded {
-    height: 38px !important;
-    border-radius: 38px;
+  &-icon {
+    background-color: $clr-grey;
+    background-image: url('../assets/icons/search.png');
+    background-repeat: no-repeat;
+    background-size: 16px;
+    background-position: 50%;
+  }
+
+  &-alternatives {
+    width: 100%;
   }
 
   &.leaflet-bar {
@@ -15,23 +22,6 @@
 
   &.leaflet-bar a:hover {
     background: transparent;
-  }
-
-  &.leaflet-pelias-expanded .leaflet-pelias-close {
-    border-top-right-radius: 38px;
-    border-bottom-right-radius: 38px;
-  }
-
-  .leaflet-pelias-results {
-    top: 100%;
-    padding: 0 1.2rem;
-    box-shadow: none;
-
-    .leaflet-pelias-result {
-      padding: 5px 7px;
-      background: rgba($clr-grey, 0.8);
-      color: $clr-white;
-    }
   }
 
   input {
@@ -53,24 +43,10 @@
   }
 
 
-  .leaflet-touch &.leaflet-bar a.leaflet-pelias-search-icon {
+  .leaflet-touch &.leaflet-bar a.leaflet-control-geocoder-icon {
     background-image: url('../assets/icons/search.png');
     background-repeat: no-repeat;
     background-size: 16px;
     background-position: 50%;
   }
-
-  .leaflet-pelias-close {
-    color: $clr-white;
-  }
-
-  @media
-  (-webkit-min-device-pixel-ratio: 2),
-  (min-resolution: 192dpi) {
-
-      .leaflet-touch &.leaflet-bar a.leaflet-pelias-search-icon {
-        background-image: url('../assets/icons/search@2x.png');
-      }
-  }
 }
-

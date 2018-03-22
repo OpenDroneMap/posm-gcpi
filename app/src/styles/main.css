@@ -1,5 +1,5 @@
 /* Vendor Styles */
-@import "../../node_modules/leaflet-geocoder-mapzen/dist/leaflet-geocoder-mapzen.css";
+@import "../../node_modules/leaflet-control-geocoder/dist/Control.Geocoder.css";
 
 /* User Styles */
 @import "index.css";
