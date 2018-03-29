@@ -84,6 +84,8 @@ module.exports = {
   },
 
   module: {
+    noParse: /node_modules\/leaflet-control-geocoder\/dist\/Control.Geocoder.js/,
+
     // First, run the linter.
     // It's important to do this before Babel processes the JS.
     preLoaders: [
