@@ -3,7 +3,7 @@ import { getProj4Utm, parseUtmDescriptor } from '../../common/coordinate-systems
 
 import { createReducer } from '../utils/common';
 import * as actions from '../actions';
-import { validate, imagePoint, relatedPoints, mapPoint, getModeFromId, CP_TYPES, CP_MODES } from '../utils/controlpoints';
+import { validate, imagePoint, joinedPoints, relatedPoints, mapPoint, getModeFromId, CP_TYPES, CP_MODES } from '../utils/controlpoints';
 
 
 const removeMapPointFromJoins = (joins, map_id) => {
@@ -22,7 +22,7 @@ const removeMapPointFromJoins = (joins, map_id) => {
   return r;
 }
 
-const removeImagePointFromJoins = (joins,  img_id) => {
+const removeImagePointFromJoins = (joins, img_id) => {
   let touched = false;
 
   Object.keys(joins).forEach(k => {
@@ -147,12 +147,36 @@ const highlightPoint = (state, action) => {
 
 // img_name, img_coord, map_coord
 const addPoint = (state, action) => {
-  let pt = action.isImage ? imagePoint(action.img_coord, action.img_name) :
-                            mapPoint(action.map_coord);
-
+  let pt = action.isImage ?
+    imagePoint(action.img_coord, action.img_name, false, action.isAutomatic) :
+    mapPoint(action.map_coord, null, action.isAutomatic);
   if (pt === null) return state;
-  let points = [...state.points, pt];
+
+  let points = [...state.points];
+  if (action.isAutomatic) {
+    // If automatic, remove other automatic points of this type
+    points = points.filter(p => !p.isAutomatic || p.type !== pt.type);
+  }
+  points.push(pt);
+
   let joins = state.joins || {};
+  if (action.isAutomatic) {
+    // If isAutomatic, look for automatic points of other type and join
+    const joinPoint = points.filter(p => p.isAutomatic && p.type !== pt.type)[0];
+    if (joinPoint) {
+      let imgId, mapId;
+      if (pt.type === CP_TYPES.IMAGE) {
+        imgId = pt.id;
+        mapId = joinPoint.id;
+      }
+      else {
+        imgId = joinPoint.id;
+        mapId = pt.id;
+      }
+      console.log(pt, joinPoint, imgId, mapId);
+      joins = joinPoints(joins, imgId, mapId);
+    }
+  }
 
   return {
     ...state,
@@ -161,6 +185,38 @@ const addPoint = (state, action) => {
     selected: pt.id,
     mode: getModeFromId(pt.id, points),
     status: validate(points, joins)
+  };
+}
+
+const lockPoint = (state, action) => {
+  const joined = joinedPoints(state.joins, action.id);
+  const points = state.points.map(p => {
+    return {
+      ...p,
+      isAutomatic: p.isAutomatic && joined.filter(joinedPoint => joinedPoint.id === p.id) ? false : p.isAutomatic
+    };
+  });
+
+  return {
+    ...state,
+    points
+  }
+}
+
+const clearAutomaticControlPoints = (state, action) => {
+  // Remove automatics from joins
+  let joins = state.joins;
+  state.points.forEach(p => {
+    if (p.isAutomatic) joins = removeFromJoins(joins, p);
+  });
+
+  // Remove automatics from points
+  const points = state.points.filter(p => !p.isAutomatic);
+
+  return {
+    ...state,
+    joins,
+    points
   };
 }
 
@@ -299,6 +355,9 @@ const controlPointReducer = (state) => {
     [actions.TOGGLE_CONTROL_POINT_MODE]: toggleMode,
     [actions.AWAIT_CONTROL_POINT]: awaitPoint,
     [actions.JOIN_CONTROL_POINT]: joinPoint,
+    [actions.ADD_AUTOMATIC_CONTROL_POINT]: addPoint,
+    [actions.CLEAR_AUTOMATIC_CONTROL_POINTS]: clearAutomaticControlPoints,
+    [actions.LOCK_CONTROL_POINT]: lockPoint,
     'SYNC_IMAGES_TO_POINTS': syncImages,
     'SYNC_LIST_TO_IMAGES': syncList,
     'ON_DELETE_IMAGE': onDeleteImage

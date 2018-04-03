@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import classNames from 'classnames';
 
 class ControlPoints extends Component {
 
@@ -12,14 +13,11 @@ class ControlPoints extends Component {
       <li>No points...</li>
     );
 
-    return points.map((pt) => {
-      let k = 'active point';
-      if (pt.id === controlpoints.selected) k += ' edit';
-
-      return (
-        <li key={`gcp-tick-${pt.id}`} className={k}/>
-      );
-    });
+    return points.map((pt) => (
+      <li key={`gcp-tick-${pt.id}`} className={classNames(
+        'active', 'point', { 'edit': pt.isAutomatic }
+      )}/>
+    ));
   }
 
   render() {

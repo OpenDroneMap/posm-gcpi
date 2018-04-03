@@ -34,7 +34,7 @@ export const getModeFromId = (id, points) => {
 }
 
 // returns image point object
-export const imagePoint = (coord, img_name, hasImage=true) => {
+export const imagePoint = (coord, img_name, hasImage=true, isAutomatic=false) => {
   if (!validCoordinate(coord) || typeof img_name !== 'string') return null;
 
   return {
@@ -42,18 +42,20 @@ export const imagePoint = (coord, img_name, hasImage=true) => {
     type: CP_TYPES.IMAGE,
     coord: [...coord],
     id: generateID(coord, img_name),
-    hasImage
+    hasImage,
+    isAutomatic
   }
 }
 
 // returns map point object
-export const mapPoint = (coord, label) => {
+export const mapPoint = (coord, label, isAutomatic=false) => {
   if (!validCoordinate(coord)) return null;
 
   return {
     type: CP_TYPES.MAP,
     coord: [...coord],
     id: generateID(coord),
+    isAutomatic,
     label
   };
 }
@@ -88,7 +90,7 @@ export const generateGcpOutput = (joins, points, sourceProjection, destinationPr
 /*
  * Get ids of all joined points given an id, including the passed id
  */
-const joinedPoints = (joins, id) => {
+export const joinedPoints = (joins, id) => {
   return uniq(flattenDeep(toPairs(joins).filter(([key, values]) => id === key || values.indexOf(id) >= 0)));
 }
 

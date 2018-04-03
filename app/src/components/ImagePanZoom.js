@@ -1,13 +1,14 @@
 import React, { Component, PropTypes } from 'react';
 import classNames from 'classnames';
 import Image from './Image';
-import { CP_TYPES, CP_MODES } from '../state/utils/controlpoints';
+import { CP_TYPES, CP_MODES, joinedPoints } from '../state/utils/controlpoints';
 import config from '../config';
 
 // https://github.com/rexxars/react-element-pan/blob/master/src/element-pan.js
 class ImagePanZoom extends Component {
 
   static propTypes = {
+    clearAutomaticControlPoints: PropTypes.func,
     image: PropTypes.object,
     markers: PropTypes.array,
     selectedMarker: PropTypes.any,
@@ -15,6 +16,7 @@ class ImagePanZoom extends Component {
     onImageDragged: PropTypes.func,
     onMarkerToggle: PropTypes.func,
     onMarkerDelete: PropTypes.func,
+    onMarkerLock: PropTypes.func,
     highlightedControlPoints: PropTypes.array,
     highlightControlPoint: PropTypes.func,
     addControlPoint: PropTypes.func,
@@ -26,6 +28,7 @@ class ImagePanZoom extends Component {
   }
 
   static defaultProps = {
+    clearAutomaticControlPoints: () => {},
     image: null,
     markers: [],
     selectedMarker: null,
@@ -33,6 +36,7 @@ class ImagePanZoom extends Component {
     onImageDragged: () => {},
     onMarkerToggle: () => {},
     onMarkerDelete: () => {},
+    onMarkerLock: () => {},
     highlightControlPoint: () => {},
     addControlPoint: () => {},
 
@@ -46,7 +50,8 @@ class ImagePanZoom extends Component {
     super(props);
 
     this.state = {
-      dragging: false,
+      draggingImage: false,
+      draggingMarker: false,
       marker: null,
       scale: null,
       minScale: 0,
@@ -72,16 +77,22 @@ class ImagePanZoom extends Component {
     this.onDoubleClick = this.onDoubleClick.bind(this);
   }
 
-  componentWillReceiveProps(np) {
-    if (this.props.image !== np.image) {
+  componentWillReceiveProps(nextProps) {
+    if (this.props.image !== nextProps.image) {
       this.reset();
     }
 
-    if (this.props.windowSize !== np.windowSize) {
+    if (this.props.windowSize !== nextProps.windowSize) {
       this.updateImageContainerSize();
     }
 
-    this.setState({ dragging: false, marker: null });
+    if (!this.props.visible && nextProps.visible) {
+      this.onVisible(nextProps);
+    }
+
+    if (this.props.visible && !nextProps.visible) {
+      this.onNotVisible();
+    }
   }
 
   componentDidMount() {
@@ -106,7 +117,8 @@ class ImagePanZoom extends Component {
     }
 
     this.setState({
-      dragging: false
+      draggingImage: false,
+      draggingMarker: false
     });
   }
 
@@ -220,18 +232,20 @@ class ImagePanZoom extends Component {
     evt.preventDefault();
 
     if (!evt.target) return;
+    if (evt.target.className.indexOf('action') >= 0) return;
 
     let bounds = evt.target.getBoundingClientRect();
     let [startX, startY] = this.getMousePosition(evt);
 
     // check if marker was clicked
     this._marker = evt.target.className.indexOf('image-point') > -1 ? evt.target : null;
+    const mouseDownOnMarker = this._marker ? true : false;
 
-    let marker_id = null;
+    let markerId = null;
     let marker_selected = null;
-    if (this._marker) {
+    if (mouseDownOnMarker) {
       marker_selected = +evt.target.dataset.selected;
-      marker_id = evt.target.dataset.id;
+      markerId = evt.target.dataset.id;
     }
 
     if (mode === CP_MODES.ADDING) {
@@ -241,22 +255,27 @@ class ImagePanZoom extends Component {
     }
 
     if (this._marker && !marker_selected) {
-      this.props.onMarkerToggle(marker_id);
-      return;
+      // If we're clicking on a marker, select it
+      this.props.onMarkerToggle(markerId);
+    }
+    if (!this._marker && this.state.markerId) {
+      // If we're not clicking on a marker but one was selected, unselect it
+      this.props.onMarkerToggle(this.state.markerId);
     }
 
     this.addPanningEvents();
 
 
     var state = {
-      dragging: true,
-      marker: this._marker  ? true : false,
+      draggingImage: true,
+      marker: mouseDownOnMarker,
+      markerId,
 
       elHeight: this.el.clientHeight,
       elWidth: this.el.clientWidth,
 
-      startX: startX,
-      startY: startY,
+      startX,
+      startY,
 
       scrollX: this.el.scrollLeft,
       scrollY: this.el.scrollTop,
@@ -271,7 +290,7 @@ class ImagePanZoom extends Component {
   }
 
   onDragMove(evt) {
-    if (!this.state.dragging) {
+    if (!this.state.draggingImage) {
       return;
     }
 
@@ -292,6 +311,7 @@ class ImagePanZoom extends Component {
       // apply to marker
       this._marker.style.left = `${nx}px`;
       this._marker.style.top = `${ny}px`;
+      this.setState({ draggingMarker: true });
       return;
     }
 
@@ -337,19 +357,25 @@ class ImagePanZoom extends Component {
     let [nx, ny] = this.transformPosition(left + x, top + y, true);
     let center = this.getNativeCenter(left, top, this.state.scale);
 
-    let marker_id = null;
+    let markerId = null;
 
     if (this._marker) {
       this._marker.style.left = `${nx}px`;
       this._marker.style.top = `${ny}px`;
-      marker_id = this._marker.dataset.id;
+      markerId = this._marker.dataset.id;
     }
 
     this._marker = null;
 
-    this.setState({ dragging: false, marker: false, scrollLeft: left, scrollTop: top }, () => {
-      if (marker_id) {
-        this.props.onMarkerDragged(marker_id, [nx, ny]);
+    this.setState({
+      draggingImage: false,
+      draggingMarker: false,
+      marker: false,
+      scrollLeft: left,
+      scrollTop: top
+    }, () => {
+      if (markerId) {
+        this.props.onMarkerDragged(markerId, [nx, ny]);
       } else {
         this.props.onImageDragged(center);
       }
@@ -428,65 +454,95 @@ class ImagePanZoom extends Component {
 
   onActionDelete(evt, marker) {
     evt.preventDefault();
-    const { onMarkerDelete } = this.props;
+    const { highlightControlPoint, onMarkerDelete } = this.props;
     onMarkerDelete(marker.id);
+    highlightControlPoint(null);
   }
 
   onActionLock(evt, marker) {
     evt.preventDefault();
-    const { onMarkerToggle } = this.props;
+    const { highlightControlPoint, onMarkerLock } = this.props;
+    onMarkerLock(marker.id);
+    highlightControlPoint(null);
+  }
 
-    onMarkerToggle(marker.id);
+  onVisible(nextProps) {
+    const { addAutomaticControlPoint, image, markers, selectedImage } = nextProps;
+    const imageMarkers = this.getImageMarkers(markers, selectedImage);
+
+    // If no points for this image, make one up
+    if (!imageMarkers || !imageMarkers.length) {
+      const x = this.el.offsetWidth / 2;
+      const y = this.el.offsetHeight / 2;
+      const left = this.el.scrollLeft;
+      const top = this.el.scrollTop;
+
+      const [nx, ny] = this.transformPosition(left + x, top + y, true);
+      addAutomaticControlPoint([nx, ny], image.name, true);
+    }
+  }
+
+  onNotVisible() {
+    this.props.clearAutomaticControlPoints();
+  }
+
+  getImageMarkers(markers, selectedImage) {
+    return markers.filter(marker => marker.type === CP_TYPES.IMAGE && marker.img_name === selectedImage);
   }
 
   renderPoints() {
-    const { highlightControlPoint, highlightedControlPoints, markers, selectedImage, selectedMarker } = this.props;
+    const { highlightControlPoint, highlightedControlPoints, joins, markers, selectedImage, selectedMarker } = this.props;
 
-    return markers.map((marker, i) => {
-      if (marker.type === CP_TYPES.IMAGE && marker.img_name === selectedImage) {
-        let [x, y] = this.transformPosition(marker.coord[0], marker.coord[1]);
+    const imageMarkers = this.getImageMarkers(markers, selectedImage);
+    return imageMarkers.map((marker, i) => {
+      let [x, y] = this.transformPosition(marker.coord[0], marker.coord[1]);
 
-        let style = {
-          left: `${x}px`,
-          top: `${y}px`
-        };
+      let style = {
+        left: `${x}px`,
+        top: `${y}px`
+      };
 
-        let selected = selectedMarker === marker.id ? 1 : 0;
+      let selected = selectedMarker === marker.id ? 1 : 0;
+      const highlighted = highlightedControlPoints.indexOf(marker.id) >= 0;
 
-        return (
-          <div key={`ip${i}`}
-            className={classNames('image-point', 'active', {
-              'draggable': selected,
-              'highlighted': highlightedControlPoints.indexOf(marker.id) >= 0
-            })}
-            data-selected={selected}
-            data-id={marker.id}
-            style={style}
-            onMouseOver={() => highlightControlPoint(marker.id)}
-            onMouseOut={() => highlightControlPoint(null)}
-          >
-            <div className='actions'>
-              <ul>
+      return (
+        <div key={`ip${i}`}
+          className={classNames('image-point', {
+            active: selected || marker.isAutomatic,
+            automatic: marker.isAutomatic,
+            joined: joinedPoints(joins, marker.id).length > 1,
+            highlighted
+          })}
+          data-selected={selected}
+          data-id={marker.id}
+          style={style}
+          onMouseOver={() => {
+            if (!highlighted) highlightControlPoint(marker.id);
+          }}
+          onMouseOut={() => {
+            if (!this.state.draggingMarker) highlightControlPoint(null);
+          }}
+        >
+          <div className='actions'>
+            <ul>
+              <li>
+                <a className='action' href='#' onClick={(evt) => {this.onActionDelete(evt, marker);}}>Delete</a>
+              </li>
+              {marker.isAutomatic ? (
                 <li>
-                  <a href='#' onClick={(evt) => {this.onActionDelete(evt, marker);}}>Delete</a>
+                  <a className='action' href='#' onClick={(evt) => {this.onActionLock(evt, marker);}}>Lock</a>
                 </li>
-                <li>
-                  <a href='#' onClick={(evt) => {this.onActionLock(evt, marker);}}>Lock</a>
-                </li>
-              </ul>
-            </div>
+              ) : null}
+            </ul>
           </div>
-        );
-      }
-
-      return null;
+        </div>
+      );
     });
   }
 
   render() {
     const { imageData, imageWidth, imageHeight } = this.state;
     const { image, height } = this.props;
-
 
     // due to image orientation, we need to reverse dimensions
     // if image is a portrait

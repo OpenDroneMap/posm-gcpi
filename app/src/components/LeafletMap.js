@@ -4,7 +4,7 @@ import LeafletSearch from './Leaflet-Search';
 import LeafletMapProviders from './LeafletMap-Providers';
 import PointMarkersMap from './PointMarkersMap';
 import LeafletZoomControls from './Leaflet-ZoomControls.js';
-import { CP_MODES } from '../state/utils/controlpoints';
+import { CP_MODES, CP_TYPES } from '../state/utils/controlpoints';
 
 import config from '../config';
 
@@ -15,21 +15,29 @@ class LeafletMap extends Component {
 
     this.onMarkerDragged = this.onMarkerDragged.bind(this);
     this.onMarkerDelete = this.onMarkerDelete.bind(this);
+    this.onMarkerLock = this.onMarkerLock.bind(this);
     this.onMarkerMouseOut = this.onMarkerMouseOut.bind(this);
     this.onMarkerMouseOver = this.onMarkerMouseOver.bind(this);
     this.onMarkerToggle = this.onMarkerToggle.bind(this);
     this.onMapClick = this.onMapClick.bind(this);
 
     this.state = {
-      leafletmap: null
+      leafletMap: null
     };
   }
 
-  componentWillReceiveProps(np) {
-      let currentList = this.props.imagery.gcp_list;
-      if (np.imagery.gcp_list && currentList !== np.imagery.gcp_list) {
-        this.zoomMapToList(np.controlpoints.points);
-      }
+  componentWillReceiveProps(nextProps) {
+    let currentList = this.props.imagery.gcp_list;
+    if (nextProps.imagery.gcp_list && currentList !== nextProps.imagery.gcp_list) {
+      this.zoomMapToList(nextProps.controlpoints.points);
+    }
+
+    const prevAutomaticImagePoints = this.props.controlpoints.points.filter(p => p.type === CP_TYPES.IMAGE && p.isAutomatic);
+    const nextAutomaticImagePoints = nextProps.controlpoints.points.filter(p => p.type === CP_TYPES.IMAGE && p.isAutomatic);
+    if (nextAutomaticImagePoints.length > 0 && prevAutomaticImagePoints.length === 0) {
+      const center = this.state.leafletMap.getCenter();
+      this.props.addAutomaticControlPoint([center.lat, center.lng]);
+    }
   }
 
   componentDidMount() {
@@ -79,10 +87,13 @@ class LeafletMap extends Component {
   }
 
   onMapClick(evt) {
-    const { controlpoints, addControlPoint } = this.props;
+    const { addControlPoint, controlpoints, toggleControlPointMode } = this.props;
     if (controlpoints.mode === CP_MODES.ADDING) {
       let ll = evt.latlng;
       addControlPoint([ll.lat, ll.lng]);
+    }
+    else if (controlpoints.selected) {
+      toggleControlPointMode(controlpoints.selected);
     }
   }
 
@@ -92,8 +103,14 @@ class LeafletMap extends Component {
   }
 
   onMarkerDelete(marker_id) {
-    const { deleteControlPoint } = this.props;
+    const { deleteControlPoint, highlightControlPoint } = this.props;
     deleteControlPoint(marker_id);
+    highlightControlPoint(null);
+  }
+
+  onMarkerLock(marker_id) {
+    const { lockControlPoint } = this.props;
+    lockControlPoint(marker_id);
   }
 
   onMarkerMouseOut() {
@@ -140,6 +157,7 @@ class LeafletMap extends Component {
           mode={controlpoints.mode}
           onMarkerDragged={this.onMarkerDragged}
           onMarkerDelete={this.onMarkerDelete}
+          onMarkerLock={this.onMarkerLock}
           onMarkerMouseOut={this.onMarkerMouseOut}
           onMarkerMouseOver={this.onMarkerMouseOver}
           onMarkerToggle={this.onMarkerToggle}

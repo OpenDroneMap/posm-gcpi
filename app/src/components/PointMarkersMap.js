@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import L from 'leaflet';
-import { CP_TYPES } from '../state/utils/controlpoints';
+import { CP_TYPES, joinedPoints } from '../state/utils/controlpoints';
 
 const ICON = {
   className: 'image-point',
@@ -71,7 +71,7 @@ const GCPIcon = L.DivIcon.extend({
     let actions = L.DomUtil.create('div', 'actions', div);
     let ul = L.DomUtil.create('ul', '', actions);
     ['Delete', 'Lock'].forEach(d => {
-      let li = L.DomUtil.create('li', '', ul);
+      let li = L.DomUtil.create('li', d.toLowerCase(), ul);
       let a = L.DomUtil.create('a', '', li);
       a.setAttribute('data-action', d.toLowerCase());
       a.innerHTML = d;
@@ -96,6 +96,7 @@ class PointMarkersMap extends Component {
     selectedImage: PropTypes.any,
     onMarkerDragged: PropTypes.func,
     onMarkerDelete: PropTypes.func,
+    onMarkerLock: PropTypes.func,
     onMarkerMouseOut: PropTypes.func,
     onMarkerMouseOver: PropTypes.func,
     onMarkerToggle: PropTypes.func
@@ -109,6 +110,7 @@ class PointMarkersMap extends Component {
     selectedImage: null,
     onMarkerDragged: () => {},
     onMarkerDelete: () => {},
+    onMarkerLock: () => {},
     onMarkerMouseOut: () => {},
     onMarkerMouseOver: () => {},
     onMarkerToggle: () => {}
@@ -119,7 +121,10 @@ class PointMarkersMap extends Component {
 
     this.onMarkerDragEnd = this.onMarkerDragEnd.bind(this);
 
-    this.state = { markers: [] };
+    this.state = {
+      dragging: false,
+      markers: []
+    };
   }
 
   // Determine if an update is needed
@@ -160,23 +165,25 @@ class PointMarkersMap extends Component {
   }
 
   componentDidUpdate() {
-    const { highlightedControlPoints, selectedMarker } = this.props;
+    const { highlightedControlPoints, joins, selectedMarker } = this.props;
     const { markers } = this.state;
 
     markers.forEach((m,i) => {
       m.marker.setIcon(new GCPIcon(ICON));
 
+      if (highlightedControlPoints.indexOf(m.id) >= 0) {
+        m.marker.setIcon(new GCPIcon(HIGHLIGHTED_ICON, m.label));
+        m.marker.setZIndexOffset(Z_INDEXES.HIGHLIGHTED);
+      }
+
       if (m.id === selectedMarker) {
         m.marker.addClass('active');
-        m.marker.dragging.enable();
         m.marker.setZIndexOffset(Z_INDEXES.EDITABLE);
       }
       else {
         m.marker.removeClass('active');
-        m.marker.dragging.disable();
 
         if (this.shouldHighlightMarker(m.id)){
-          m.marker.addClass('active');
           m.marker.setZIndexOffset(Z_INDEXES.ACTIVE);
         }
         else {
@@ -184,12 +191,18 @@ class PointMarkersMap extends Component {
         }
       }
 
-      if (m.id === selectedMarker || highlightedControlPoints.indexOf(m.id) >= 0) {
-        m.marker.setIcon(new GCPIcon(HIGHLIGHTED_ICON, m.label));
-        m.marker.setZIndexOffset(Z_INDEXES.HIGHLIGHTED);
-        if (m.id === selectedMarker || this.shouldHighlightMarker(m.id)) {
-          m.marker.addClass('active');
-        }
+      if (joinedPoints(joins, m.id).length > 1) {
+        m.marker.addClass('joined');
+      }
+      else {
+        m.marker.removeClass('joined');
+      }
+
+      if (m.isAutomatic) {
+        m.marker.addClass('automatic');
+      }
+      else {
+        m.marker.removeClass('automatic');
       }
     });
   }
@@ -229,6 +242,7 @@ class PointMarkersMap extends Component {
       if (r) {
         let pt = points[hash[m.id]];
         m.hasImage = pt.hasImage;
+        m.isAutomatic = pt.isAutomatic;
       }
     });
 
@@ -275,11 +289,13 @@ class PointMarkersMap extends Component {
     let action = evt.target.dataset.action;
     if (!action) return;
 
-    const { onMarkerDelete, onMarkerMouseOut, onMarkerToggle } = this.props;
+    const { onMarkerDelete, onMarkerLock, onMarkerMouseOut, onMarkerToggle } = this.props;
 
     if (action === 'delete') {
       onMarkerDelete(id);
-    } else if (action === 'lock') {
+    }
+    else if (action === 'lock') {
+      onMarkerLock(id);
       onMarkerToggle(id);
       onMarkerMouseOut();
     }
@@ -292,14 +308,14 @@ class PointMarkersMap extends Component {
   }
 
   onMarkerClicked(marker) {
-    if (marker.dragging.enabled()) return;
-
-    const { onMarkerToggle } = this.props;
+    const { onMarkerToggle, selectedMarker } = this.props;
     const { markers } = this.state;
 
-    let match = markers.find(m => m.id === marker._pointid);
-    //if (!match || !match.hasImage) return;
+    const match = markers.find(m => m.id === marker._pointid);
     if (!match) return;
+
+    const isSelected = selectedMarker === match.id;
+    if (isSelected) return;
 
     onMarkerToggle(match.id, match.img, marker.getLatLng());
   }
@@ -324,7 +340,12 @@ class PointMarkersMap extends Component {
     m.addTo(leafletMap);
     m._pointid = pt.id;
 
+    m.on('dragstart', function(evt) {
+      me.setState({ dragging: true });
+    });
+
     m.on('dragend', function(evt) {
+      me.setState({ dragging: false });
       me.onMarkerDragEnd(this);
     });
 
@@ -333,7 +354,7 @@ class PointMarkersMap extends Component {
     });
 
     m.on('mouseout', () => {
-      if (pt.id !== this.props.selectedMarker) {
+      if (!this.state.dragging) {
         onMarkerMouseOut(pt.id);
       }
     });

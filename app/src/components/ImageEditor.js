@@ -12,6 +12,7 @@ class ImageEditor extends Component {
     this.onImageDragged = this.onImageDragged.bind(this);
     this.onMarkerDragged = this.onMarkerDragged.bind(this);
     this.onMarkerDelete = this.onMarkerDelete.bind(this);
+    this.onMarkerLock = this.onMarkerLock.bind(this);
     this.onMarkerToggle = this.onMarkerToggle.bind(this);
   }
 
@@ -28,6 +29,11 @@ class ImageEditor extends Component {
   onMarkerDelete(marker_id) {
     const { deleteControlPoint } = this.props;
     deleteControlPoint(marker_id);
+  }
+
+  onMarkerLock(marker_id) {
+    const { lockControlPoint } = this.props;
+    lockControlPoint(marker_id);
   }
 
   onMarkerToggle(marker_id) {
@@ -53,16 +59,19 @@ class ImageEditor extends Component {
   }
 
   render() {
-    const { controlpoints, imagery, height, highlightControlPoint, addControlPoint } = this.props;
+    const { controlpoints, clearAutomaticControlPoints, imagepanel, imagery, height, highlightControlPoint, addControlPoint, addAutomaticControlPoint } = this.props;
 
     return (
       <div className='image-editor'>
         <ImagePanZoom
+          clearAutomaticControlPoints={clearAutomaticControlPoints}
           height={height}
           onMarkerDragged={this.onMarkerDragged}
           onMarkerDelete={this.onMarkerDelete}
+          onMarkerLock={this.onMarkerLock}
           onMarkerToggle={this.onMarkerToggle}
           onImageDragged={this.onImageDragged}
+          joins={controlpoints.joins}
           markers={controlpoints.points}
           mode={controlpoints.mode}
           selectedMarker={controlpoints.selected}
@@ -70,7 +79,9 @@ class ImageEditor extends Component {
           selectedImage={imagery.selected}
           highlightedControlPoints={controlpoints.highlighted}
           highlightControlPoint={highlightControlPoint}
+          addAutomaticControlPoint={addAutomaticControlPoint}
           addControlPoint={addControlPoint}
+          visible={!imagepanel.menu_active}
         />
       </div>
     );

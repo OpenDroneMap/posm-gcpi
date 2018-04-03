@@ -38,6 +38,14 @@ export function deleteControlPoint(id) {
   }
 }
 
+export const LOCK_CONTROL_POINT = 'LOCK_CONTROL_POINT';
+export function lockControlPoint(id) {
+  return {
+    type: LOCK_CONTROL_POINT,
+    id
+  }
+}
+
 export const HIGHLIGHT_CONTROL_POINT = 'HIGHLIGHT_CONTROL_POINT';
 export function highlightControlPoint(id) {
   return {
@@ -55,14 +63,27 @@ export function awaitControlPoint(image_loc) {
 }
 
 export const ADD_CONTROL_POINT = 'ADD_CONTROL_POINT';
-export function addControlPoint(coord, img_name, isImage) {
+export function addControlPoint(coord, img_name, isImage, isAutomatic=false) {
   let k = isImage ? 'img_coord' : 'map_coord';
   return {
     type: ADD_CONTROL_POINT,
     [k]: coord,
     img_name,
+    isAutomatic,
     isImage
   }
+}
+
+export const ADD_AUTOMATIC_CONTROL_POINT = 'ADD_AUTOMATIC_CONTROL_POINT';
+export function addAutomaticControlPoint(coord, img_name, isImage) {
+  return addControlPoint(coord, img_name, isImage, true);
+}
+
+export const CLEAR_AUTOMATIC_CONTROL_POINTS = 'CLEAR_AUTOMATIC_CONTROL_POINTS';
+export function clearAutomaticControlPoints() {
+  return {
+    type: CLEAR_AUTOMATIC_CONTROL_POINTS
+  };
 }
 
 export const TOGGLE_CONTROL_POINT_MODE = 'TOGGLE_CONTROL_POINT_MODE';

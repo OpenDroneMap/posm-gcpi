@@ -90,17 +90,10 @@
         text-decoration: underline;
       }
     }
-  }
 
-  &.draggable {
-    .actions {
-      display: block;
+    .lock {
+      display: none;
     }
-  }
-
-  &.active,
-  &.active {
-    background-image: url('../assets/icons/gcp-green.png');
   }
 
   &.highlighted {
@@ -110,13 +103,25 @@
     margin: -resolve($point-size / 2) 0 0 -resolve($point-size / 2);
   }
 
-  &.active.draggable,
-  &.active.leaflet-marker-draggable {
-    background-image: url('../assets/icons/gcp-yellow.png');
-
+  &.active,
+  &.active.automatic {
     .actions {
       display: block;
     }
+  }
+
+  &.automatic {
+    .actions li.lock {
+      display: block;
+    }
+  }
+
+  &.joined {
+    background-image: url('../assets/icons/gcp-green.png');
+  }
+
+  &.automatic {
+    background-image: url('../assets/icons/gcp-yellow.png');
   }
 
   .imagepanzoom &.draggable:after {
