@@ -8,6 +8,7 @@
     }
     .errors {
       p {
+        color: red;
         font-size: 0.85rem;
         white-space: initial;
       }
