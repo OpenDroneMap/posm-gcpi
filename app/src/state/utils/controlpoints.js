@@ -72,14 +72,19 @@ export const generateGcpOutput = (joins, points, sourceProjection, destinationPr
     joins[k].forEach(ptId => {
       let point = points.find(p => p.id === ptId);
       if (point === undefined) return;
-      rows.push([
+
+      const row = [
         transformedMapPoint[0].toFixed(2),
         transformedMapPoint[1].toFixed(2),
         point.coord[2] || 0,
         point.coord[0].toFixed(2),
         point.coord[1].toFixed(2),
         point.img_name
-      ].join('\t') );
+      ];
+
+      if (mapPoint.label) row.push(mapPoint.label);
+
+      rows.push(row.join('\t') );
     });
 
   });
