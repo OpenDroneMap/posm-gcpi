@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { Component } from 'react';
 import FileSaver from 'file-saver';
 import L from 'leaflet';
@@ -108,10 +109,10 @@ class ExportModal extends Component {
     const { status } = controlpoints;
     const { destinationProjection, error, exportText } = this.state;
 
-    let klass = (!status.valid) ? ' no-pts' : '';
-
     return (
-      <div className={`export-modal modal-dialog ${klass}`}>
+      <div className={classNames('export-modal', 'modal-dialog', {
+        'no-pts': !status.valid
+      })}>
         <div className='bk' onClick={(evt) => {this.props.onClick(evt);} }/>
         <div className='inner'>
           <div className='head'>

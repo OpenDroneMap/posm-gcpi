@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { Component } from 'react';
 import ControlPoints from '../connectors/ControlPoints';
 
@@ -32,19 +33,13 @@ class ImageNav extends Component {
 
   render() {
     const { controlpoints } = this.props;
-    let editable = this.isEditable();
-    let klass = editable ? ' editable' : '';
-
-    if (!this.hasImages()) {
-      klass += ' no-images';
-    }
-
-    if (controlpoints.mode === 'adding') {
-      klass += ' mode-adding';
-    }
 
     return (
-      <div className={`image-nav${klass}`}>
+      <div className={classNames('image-nav', {
+        editable: this.isEditable(),
+        'mode-adding': controlpoints.mode === 'adding',
+        'no-images': !this.hasImages()
+      })}>
         <ToggleImageGridBtn
           imageSelected={!this.props.imagepanel.menu_active}
           onClick={(evt) => {this.onTogglerClick(evt);}}

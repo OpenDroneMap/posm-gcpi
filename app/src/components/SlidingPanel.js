@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { Component, PropTypes } from 'react';
 
 class SlidingPanel extends Component {
@@ -9,19 +10,12 @@ class SlidingPanel extends Component {
     panelOpen: false
   }
 
-  panelClass() {
-    const { panelOpen } = this.props;
-    let klass = 'sliding-panel';
-
-    if (!panelOpen) return klass;
-
-    return klass + ' open';
-  }
-
   render() {
-    const { height } = this.props;
+    const { height, panelOpen } = this.props;
     return (
-      <div className={this.panelClass()} style={{ height: height }}>
+      <div className={classNames('sliding-panel', {
+        open: panelOpen
+      })} style={{ height }}>
         {this.props.children}
       </div>
     );

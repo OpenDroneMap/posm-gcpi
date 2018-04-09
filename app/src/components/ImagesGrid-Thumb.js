@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { Component, PropTypes } from 'react';
 import ImageLoader from 'blueimp-load-image';
 
@@ -67,21 +68,14 @@ class ImagesGridThumb extends Component {
     onDeleteImage(filename);
   }
 
-  getThumbClass() {
-    const { selected, src } = this.props;
-    let klass = 'thumb';
-
-    if (!src) klass += ' no-img';
-    if (!selected) return klass;
-
-    return klass += ' selected';
-  }
-
   render() {
-    const { points, filename } = this.props;
+    const { filename, points, selected, src } = this.props;
 
     return (
-      <div className={this.getThumbClass()} onClick={(evt) => {this.onClickHandler(evt);}}>
+      <div className={classNames('thumb', {
+        'no-img': !src,
+        selected
+      })} onClick={(evt) => {this.onClickHandler(evt);}}>
         <div className='badge bubble'>
           <span className='count'>{points}</span>
         </div>
