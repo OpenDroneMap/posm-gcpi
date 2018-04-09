@@ -20,14 +20,6 @@ class ImageNav extends Component {
     this.props.awaitControlPoint();
   }
 
-  onFinishAddPoint(evt) {
-    /*
-    const {setControlPoint} = this.props;
-    evt.preventDefault();
-    setControlPoint();
-    */
-  }
-
   isEditable() {
     const { imagery, imagepanel } = this.props;
     return ((imagery.items && imagery.items.length) && !imagepanel.menu_active);
@@ -61,7 +53,7 @@ class ImageNav extends Component {
           controlpoints={this.props.controlpoints}
           selectedImage={this.props.imagery.selected}
         />
-        <AddPoint onAdd={(evt) => {this.onFinishAddPoint(evt);}} onClick={(evt) => {this.onAddPoint(evt);}}/>
+        <AddPoint onClick={(evt) => {this.onAddPoint(evt);}}/>
       </div>
     );
   }
