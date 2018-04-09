@@ -52,7 +52,7 @@ const onDeleteImage = (state, action) => {
 
   if (!pts.length) return state;
 
-  let joins; // = {...joins};
+  let { joins } = state;
   pts.forEach(pt => {
     joins = removeFromJoins(joins, pt);
   });
