@@ -41,8 +41,6 @@ class ImagesGrid extends Component {
     const selected = imagery.selected;
 
     let images = imagery.items || [];
-
-    // TODO (sean): Move this to reducer at some point
     let rollup = {};
 
     controlpoints.points.forEach(pt => {
@@ -61,7 +59,6 @@ class ImagesGrid extends Component {
         }
       });
     }
-
 
     return Object.keys(rollup).map(key => {
       let pts = rollup[key];

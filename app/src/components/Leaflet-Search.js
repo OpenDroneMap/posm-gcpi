@@ -7,20 +7,18 @@ class LeafletSearch extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      init: false
+      initialized: false
     };
-
   }
 
-  componentWillReceiveProps(np) {
-    if (this.state.init) return;
-    if (np.leafletMap) {
-      this.initializeSearch(np.leafletMap);
+  componentWillReceiveProps(nextProps) {
+    if (this.state.initialized) return;
+    if (nextProps.leafletMap) {
+      this.initializeSearch(nextProps.leafletMap);
     }
   }
 
   initializeSearch(map) {
-
     let options = {
       defaultMarkGeocode: false
     };
@@ -39,7 +37,7 @@ class LeafletSearch extends Component {
       .addTo(map);
 
     this.setState({
-      init: true
+      initialized: true
     });
   }
 

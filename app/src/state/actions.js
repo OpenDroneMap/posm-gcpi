@@ -125,8 +125,6 @@ export function selectImageFile(img_name) {
 export const RECEIVE_IMAGE_FILES = 'RECEIVE_IMAGE_FILES';
 // Expects an array of File / Blob objects or strings
 export function receiveImageFiles(files) {
-  // var isFileObjects = Object.prototype.toString.call(files[0]) === '[object File]' || Object.prototype.toString.call(files[0]) === '[object Blob]';
-
   let now = Date.now();
   files.forEach((f,i) => {
     f.id = now + i;

@@ -173,7 +173,6 @@ const addPoint = (state, action) => {
         imgId = joinPoint.id;
         mapId = pt.id;
       }
-      console.log(pt, joinPoint, imgId, mapId);
       joins = joinPoints(joins, imgId, mapId);
     }
   }

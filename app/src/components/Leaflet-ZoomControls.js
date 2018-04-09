@@ -2,9 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import L from 'leaflet';
 import { CP_TYPES } from '../state/utils/controlpoints';
 
-
 class LeafletZoomControls extends Component {
-
   static propTypes = {
     leafletMap: PropTypes.object,
     controlpoints: PropTypes.object
@@ -13,20 +11,6 @@ class LeafletZoomControls extends Component {
   static defaultProps = {
     leafletMap: null
   }
-
-  constructor(props) {
-    super(props);
-
-    this._init = false;
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.leafletMap && !this._init) {
-      this._init = true;
-    }
-  }
-
-  componentDidMount() {}
 
   onZoomIn() {
     const { leafletMap } = this.props;
@@ -61,7 +45,6 @@ class LeafletZoomControls extends Component {
 
     leafletMap.fitBounds(bds);
   }
-
 
   render() {
     const { leafletMap } = this.props;

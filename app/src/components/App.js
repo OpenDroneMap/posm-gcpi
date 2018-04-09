@@ -28,9 +28,8 @@ class App extends Component {
 
   getLeftDimensions() {
     if (!this.rightPanel) return ['auto', 'auto'];
-    // since the left side needs to be the same size
-    // of the right side, we use the height of the
-    // right side
+
+    // Use height of right side as basis for left side height
     let parentHeight = this.rightPanel.offsetHeight;
     let imageNavHeight = (this.imageNavElm) ? this.imageNavElm.offsetHeight : 0;
 

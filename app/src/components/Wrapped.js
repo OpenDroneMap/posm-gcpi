@@ -10,7 +10,6 @@ function WrappedApp(WrappedComponent) {
         this.onImagePositionChange = this.onImagePositionChange.bind(this);
         this.getPositions = this.getPositions.bind(this);
         this.setPointProperties = this.setPointProperties.bind(this);
-        this.setControlPoint = this.setControlPoint.bind(this);
 
         this._mapPosition = [0,0];
         this._imagePosition = [0,0];
@@ -57,24 +56,10 @@ function WrappedApp(WrappedComponent) {
           this._pointProperties.map_id = map_id;
           this._pointProperties.map_loc = map_loc;
         }
-
-        console.log(this._pointProperties);
       }
 
-      setControlPoint() {
-        if ( (this._pointProperties.img || this._pointProperties.map_loc) &&
-              this._pointProperties.img_loc) {
-          console.log('Set Control Point!');
-        } else {
-          console.warn('Not enough properties: ', this._pointProperties);
-        }
-       }
-
       render() {
-        //console.log(this.props.mode);
-        //
         return <WrappedComponent
-          setControlPoint={this.setControlPoint}
           setPointProperties={this.setPointProperties}
           getPositions={this.getPositions}
           onImagePositionChange={this.onImagePositionChange}

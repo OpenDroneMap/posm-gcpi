@@ -23,7 +23,6 @@ class ImagesGridThumb extends Component {
     if (!src) return;
     let imgElm = this.thumbImage;
 
-    // TODO: width & height need to be settable
     let options = {
       canvas: true,
       maxWidth: 150,
@@ -38,11 +37,10 @@ class ImagesGridThumb extends Component {
       function (canvas) {
         imgElm.style.backgroundImage = `url(${canvas.toDataURL('image/jpeg', 0.5)})`;
       },
-      options // Options
+      options
     );
   }
 
-  /* Lifecycles */
   shouldComponentUpdate(nextProps) {
     return (this.props !== nextProps) ? true : false;
   }

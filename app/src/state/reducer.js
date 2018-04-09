@@ -4,8 +4,7 @@ import * as actions from './actions';
 import controlPointReducer from './reducers/controlpoints';
 
 const INITIAL_STATE = {};
-// const identity = (state = INITIAL_STATE, action) => state;
-//
+
 function windowSize(state = INITIAL_STATE, action) {
   switch (action.type) {
     case actions.ON_WINDOW_RESIZE:

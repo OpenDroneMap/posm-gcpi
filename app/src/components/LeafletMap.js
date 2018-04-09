@@ -9,7 +9,6 @@ import { CP_MODES, CP_TYPES } from '../state/utils/controlpoints';
 import config from '../config';
 
 class LeafletMap extends Component {
-
   constructor() {
     super();
 
@@ -68,8 +67,7 @@ class LeafletMap extends Component {
 
     let mapContainer = this.refs.lmap;
     let map = L.map(mapContainer, config.map_options)
-                  .setView(config.map_options.initialCenter, config.map_options.initialZoom);
-
+      .setView(config.map_options.initialCenter, config.map_options.initialZoom);
 
     map.on('moveend', (evt) => {
       onMapPositionChange(map.getCenter());
@@ -77,8 +75,7 @@ class LeafletMap extends Component {
 
     map.on('click', this.onMapClick);
 
-    // let others know center
-    // method from Wrapped.js
+    // Let others know center method from Wrapped.js
     onMapPositionChange(map.getCenter());
 
     this.setState({
@@ -130,7 +127,6 @@ class LeafletMap extends Component {
       return setPointProperties(false, null, null, null, marker_id, [latlng.lat, latlng.lng]);
 
     } else if (controlpoints.mode === CP_MODES.IMAGE_EDIT) {
-      console.log('JOIN HERE: ', marker_id);
       return joinControlPoint(marker_id);
     }
 

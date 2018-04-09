@@ -339,7 +339,7 @@ class ImagePanZoom extends Component {
     let [nx, ny] = this.transformPosition(left + x, top + y, true);
     let center = this.getNativeCenter(left, top, this.state.scale);
 
-    return [nx,ny, center];
+    return [nx, ny, center];
   }
 
   onDragStop(evt) {
@@ -544,8 +544,7 @@ class ImagePanZoom extends Component {
     const { imageData, imageWidth, imageHeight } = this.state;
     const { image, height } = this.props;
 
-    // due to image orientation, we need to reverse dimensions
-    // if image is a portrait
+    // Reverse dimensions if image is portrait
     let pointsWidth = imageData.isPortrait ? imageHeight : imageWidth;
     let pointsHeight = imageData.isPortrait ? imageWidth : imageHeight;
 

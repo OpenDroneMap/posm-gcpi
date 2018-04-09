@@ -3,9 +3,7 @@ import L from 'leaflet';
 import './LeafletMap-Providers-Control';
 import config from '../config';
 
-
 class LeafletMapProviders extends Component {
-
   static propTypes = {
     leafletMap: PropTypes.object
   }
@@ -17,16 +15,15 @@ class LeafletMapProviders extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      init: false
+      initialized: false
     };
-
   }
 
-  componentWillReceiveProps(np) {
-    if (this.state.init) return;
+  componentWillReceiveProps(nextProps) {
+    if (this.state.initialized) return;
 
-    if (np.leafletMap) {
-      this.initialize(np.leafletMap);
+    if (nextProps.leafletMap) {
+      this.initialize(nextProps.leafletMap);
     }
   }
 
@@ -39,10 +36,9 @@ class LeafletMapProviders extends Component {
     }).addTo(map);
 
     this.setState({
-      init: true
+      initialized: true
     });
   }
-
 
   render() {
     return null;

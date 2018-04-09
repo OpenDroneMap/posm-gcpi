@@ -59,7 +59,6 @@ class Image extends Component {
     );
   }
 
-  /* Lifecycles */
   shouldComponentUpdate(nextProps) {
     return (this.props !== nextProps) ? true : false;
   }
@@ -72,7 +71,6 @@ class Image extends Component {
     this.loadImage(this.props.srcToLoad);
   }
 
-  // revoke blob
   onInternalImageLoad(evt) {
     if (evt.target.src.indexOf('blob:') === 0 || this.props.needsRevoking) ImageLoader.revokeObjectURL(evt.target.src);
   }
