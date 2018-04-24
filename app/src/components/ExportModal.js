@@ -58,13 +58,19 @@ class ExportModal extends Component {
   updateProps(props) {
     let destinationProjection = 'EPSG:4326';
     const { points, status } = props.controlpoints;
+    const { sourceProjection } = props;
 
-    let utmZones = points.filter(p => p.type === 'map')
-      .map(p => getUtmZoneFromLatLng(p.coord[0], p.coord[1]));
-    utmZones = uniqWith(utmZones, isEqual);
-    if (utmZones.length === 1) {
-      const { zone, hemisphere } = utmZones[0];
-      destinationProjection = getProj4Utm(zone, hemisphere);
+    if (sourceProjection === 'EPSG:4326') {
+      let utmZones = points.filter(p => p.type === 'map')
+        .map(p => getUtmZoneFromLatLng(p.coord[0], p.coord[1]));
+      utmZones = uniqWith(utmZones, isEqual);
+      if (utmZones.length === 1) {
+        const { zone, hemisphere } = utmZones[0];
+        destinationProjection = getProj4Utm(zone, hemisphere);
+      }
+    }
+    else {
+      destinationProjection = sourceProjection;
     }
 
     let error;

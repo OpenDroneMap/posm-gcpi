@@ -70,6 +70,7 @@ class App extends Component {
         {exporter.active &&
           <ExportModal
             projection={imagery.projection}
+            sourceProjection={imagery.sourceProjection}
             controlpoints={controlpoints}
             onClick={ (evt)=>{this.onExportClick(evt);} }/>
         }
