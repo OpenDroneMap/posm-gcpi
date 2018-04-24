@@ -1,4 +1,6 @@
+import proj4 from 'proj4';
 import { isProjectionString } from '../common/coordinate-systems';
+import { getProj4Utm, parseUtmDescriptor } from '../common/coordinate-systems';
 
 export const ON_WINDOW_RESIZE = 'ON_WINDOW_RESIZE';
 export function onWindowResize(size) {
@@ -140,11 +142,44 @@ export function receiveImageFiles(files) {
 export const PREVIEW_GCP_FILE = 'PREVIEW_GCP_FILE';
 
 export function previewGcpFile(name, content) {
+  let newline = /\r|\n/g;
+  let delimiter = /\s|\t|,|\|/g;
+
+  let lines = content.split(newline);
+  let rows = lines;
+  let sourceProjection;
+
+  const errors = [];
+
+  if (isProjectionString(lines[0])) {
+    sourceProjection = lines[0].trim();
+    rows = lines.slice(1);
+
+    if (sourceProjection) {
+      let utmProjection = parseUtmDescriptor(sourceProjection);
+      if (utmProjection) {
+        sourceProjection = getProj4Utm(utmProjection.zone, utmProjection.hemisphere);
+      }
+    }
+  }
+  rows = rows
+    .map(r => r.split(delimiter))
+    .map(r => r.map(d => !isNaN(d) ? +d : d));
+
+  try {
+    proj4(sourceProjection, 'EPSG:4326', [0, 0]);
+  }
+  catch (e) {
+    errors.push(`Unknown projection ${sourceProjection}, please use a proj.4 string or UTM (for example, "WGS84 UTM 11N") to define the projection.`);
+  }
+
   return {
     type: PREVIEW_GCP_FILE,
-    receivedAt: Date.now(),
     file_name: name,
-    gcp_list_text: content
+    gcp_list_text: content,
+    errors,
+    rows,
+    sourceProjection
   };
 }
 
@@ -159,28 +194,10 @@ export function previewGcpFileCancel() {
 
 export const RECEIVE_GCP_FILE = 'RECEIVE_GCP_FILE';
 
-export function receiveGcpFile(file_name, file_content) {
-  let newline = /\r|\n/g;
-  let delimiter = /\s|\t|,|\|/g;
-
-  let lines = file_content.split(newline);
-  let rows = lines;
-  let sourceProjection;
-
-  if (isProjectionString(lines[0])) {
-    sourceProjection = lines[0];
-    rows = lines.slice(1);
-  }
-  rows = rows
-    .map(r => r.split(delimiter))
-    .map(r => r.map(d => !isNaN(d) ? +d : d));
-
+export function receiveGcpFile() {
   return {
     type: RECEIVE_GCP_FILE,
     receivedAt: Date.now(),
-    projection: 'EPSG:4326',
-    rows,
-    sourceProjection,
-    file_name
-  }
+    projection: 'EPSG:4326'
+  };
 }

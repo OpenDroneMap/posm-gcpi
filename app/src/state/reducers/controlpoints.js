@@ -1,5 +1,4 @@
 import proj4 from 'proj4';
-import { getProj4Utm, parseUtmDescriptor } from '../../common/coordinate-systems';
 
 import { createReducer } from '../utils/common';
 import * as actions from '../actions';
@@ -290,12 +289,7 @@ const syncList = (state, action) => {
   let points = [...state.points];
   let joins = { ...state.joins };
   let selected = state.selected;
-
   let projection = action.sourceProjection;
-  if (projection) {
-    let utmProjection = parseUtmDescriptor(projection);
-    if (utmProjection) projection = getProj4Utm(utmProjection.zone, utmProjection.hemisphere);
-  }
 
   rows.forEach((r, i) => {
     let { img_name, lat, lng, x, y, mapPointLabel } = parseRow(r);
@@ -311,7 +305,18 @@ const syncList = (state, action) => {
     if (lat && lng) {
       if (projection !== 'EPSG:4326') {
         // Transform into EPSG:4326
-        [lng, lat] = proj4(projection, 'EPSG:4326', [lng, lat]);
+        try {
+          [lng, lat] = proj4(projection, 'EPSG:4326', [lng, lat]);
+        }
+        catch (e) {
+          return {
+            ...state,
+            status: {
+              errors: `Invalid projection ${projection}`,
+              valid: false
+            }
+          };
+        }
       }
       mapPt = mapPoint([lat, lng], mapPointLabel);
     }

@@ -74,6 +74,17 @@
       color: $text-light;
       white-space: nowrap;
     }
+
+    .errors {
+      width: 500px;
+    }
+    .errors {
+      p {
+        color: red;
+        font-size: 0.85rem;
+        white-space: initial;
+      }
+    }
   }
 
   .actions {

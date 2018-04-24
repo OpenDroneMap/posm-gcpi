@@ -3,15 +3,8 @@
   .output {
     padding: 1rem 1.5rem;
 
-    table, .errors {
+    table {
       width: 500px;
-    }
-    .errors {
-      p {
-        color: red;
-        font-size: 0.85rem;
-        white-space: initial;
-      }
     }
 
     td:first-child {

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 export default class FilePreview extends Component {
   render () {
-    const { filename, previewGcpFileCancel, previewText, receiveGcpFile } = this.props;
+    const { errors, previewGcpFileCancel, previewText, receiveGcpFile } = this.props;
 
     return (
       <div className='file-preview modal-dialog'>
@@ -13,10 +13,18 @@ export default class FilePreview extends Component {
             <span className='icon' onClick={previewGcpFileCancel}><span>&times;</span></span>
           </div>
           <div className='output'>
+            {errors && (
+              <div className='errors'>
+                {errors.map((error, i) => <p key={`error-${i}`}>{error}</p>)}
+              </div>
+            )}
             <textarea value={previewText} readOnly></textarea>
             <div className='actions'>
               <button onClick={previewGcpFileCancel}>Cancel</button>
-              <button onClick={() => receiveGcpFile(filename, previewText)}>Load</button>
+              <button
+                disabled={errors.length > 0}
+                onClick={receiveGcpFile}
+              >Load</button>
             </div>
           </div>
         </div>

@@ -27,7 +27,10 @@ class LeafletMap extends Component {
 
   componentWillReceiveProps(nextProps) {
     let currentList = this.props.imagery.gcp_list;
-    if (nextProps.imagery.gcp_list && currentList !== nextProps.imagery.gcp_list) {
+    if (
+      (nextProps.imagery.gcp_list && currentList !== nextProps.imagery.gcp_list) ||
+      (!nextProps.imagery.gcp_list_preview && this.props.imagery.gcp_list_preview)
+    ) {
       this.zoomMapToList(nextProps.controlpoints.points);
     }
 
