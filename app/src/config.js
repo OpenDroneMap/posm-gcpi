@@ -19,7 +19,7 @@ const config = {
       label: 'Satellite',
       url: 'https://ecn.t{s}.tiles.virtualearth.net/tiles/a{q}.jpeg?g=587&mkt=en-gb&n=z',
       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors</a>',
-      maxZoom: 19,
+      maxZoom: 20,
       useBing: true
     }
   ],

@@ -199,7 +199,8 @@
       if (selected === 'custom' && custom) {
         L.tileLayer(custom, {
             attribution: '',
-            maxZoom: 19
+            maxZoom: 23,
+            maxNativeZoom: 19
         }).addTo(this._map);
 
         return;
@@ -211,12 +212,14 @@
         if (provider.useBing) {
           L.tileLayer.bing(provider.url, {
               attribution: provider.attribute,
-              maxZoom: provider.maxZoom
+              maxZoom: 23,
+              maxNativeZoom: provider.maxZoom
           }).addTo(this._map);
         } else {
           L.tileLayer(provider.url, {
               attribution: provider.attribute,
-              maxZoom: provider.maxZoom
+              maxZoom: 23,
+              maxNativeZoom: provider.maxZoom
           }).addTo(this._map);
         }
       }
