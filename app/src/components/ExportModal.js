@@ -60,7 +60,7 @@ class ExportModal extends Component {
     const { points, status } = props.controlpoints;
     const { sourceProjection } = props;
 
-    if (sourceProjection === 'EPSG:4326') {
+    if (!sourceProjection || sourceProjection === 'EPSG:4326') {
       let utmZones = points.filter(p => p.type === 'map')
         .map(p => getUtmZoneFromLatLng(p.coord[0], p.coord[1]));
       utmZones = uniqWith(utmZones, isEqual);
