@@ -142,7 +142,7 @@ export function receiveImageFiles(files) {
 export const PREVIEW_GCP_FILE = 'PREVIEW_GCP_FILE';
 
 export function previewGcpFile(name, content) {
-  let newline = /\r|\n/g;
+  let newline = /\r\n|\r|\n/g;
   let delimiter = /\s|\t|,|\|/g;
 
   let lines = content.split(newline);
@@ -163,7 +163,8 @@ export function previewGcpFile(name, content) {
     }
   }
   rows = rows
-    .map(r => r.split(delimiter))
+    .filter(r => r.trim() !== '')
+    .map(r => r.trim().split(delimiter))
     .map(r => r.map(d => !isNaN(d) ? +d : d));
 
   try {
