@@ -48,7 +48,7 @@ export const imagePoint = (coord, img_name, hasImage=true, isAutomatic=false) =>
 }
 
 // returns map point object
-export const mapPoint = (coord, label, isAutomatic=false) => {
+export const mapPoint = (coord, label, isAutomatic=false, z=0) => {
   if (!validCoordinate(coord)) return null;
 
   return {
@@ -56,7 +56,8 @@ export const mapPoint = (coord, label, isAutomatic=false) => {
     coord: [...coord],
     id: generateID(coord),
     isAutomatic,
-    label
+    label,
+    z
   };
 }
 
@@ -76,7 +77,7 @@ export const generateGcpOutput = (joins, points, sourceProjection, destinationPr
       const row = [
         transformedMapPoint[0].toFixed(2),
         transformedMapPoint[1].toFixed(2),
-        point.coord[2] || 0,
+        mapPoint.z || 0,
         point.coord[0].toFixed(2),
         point.coord[1].toFixed(2),
         point.img_name

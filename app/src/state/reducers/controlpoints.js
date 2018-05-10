@@ -292,7 +292,7 @@ const syncList = (state, action) => {
   let projection = action.sourceProjection;
 
   rows.forEach((r, i) => {
-    let { img_name, lat, lng, x, y, mapPointLabel } = parseRow(r);
+    let { img_name, lat, lng, z, x, y, mapPointLabel } = parseRow(r);
 
     let img_index = images.findIndex( img => img.name === img_name );
     let hasImage = img_index > -1;
@@ -318,7 +318,7 @@ const syncList = (state, action) => {
           };
         }
       }
-      mapPt = mapPoint([lat, lng], mapPointLabel);
+      mapPt = mapPoint([lat, lng], mapPointLabel, false, z);
     }
 
     if (imgPt) points.push(imgPt);
