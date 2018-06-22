@@ -52,7 +52,7 @@ class ExportModal extends Component {
   saveText(evt) {
     evt.preventDefault();
     var blob = new Blob([this.txtarea.value], { type: "text/plain;charset=utf-8" });
-    FileSaver.saveAs(blob, `gcp_file_${Date.now()}.txt`);
+    FileSaver.saveAs(blob, `gcp_file_${Date.now()}.txt`, true);
   }
 
   updateProps(props) {
@@ -73,12 +73,9 @@ class ExportModal extends Component {
       destinationProjection = sourceProjection;
     }
 
-    let error;
-    if (!status.valid) {
-      error = status.errors.map((err, index) => {
+    let error = status.errors.map((err, index) => {
         return <p key={index} dangerouslySetInnerHTML={{ __html: err }} />
       });
-    }
 
     const exportText = this.renderGcpOutput(destinationProjection);
     this.setState({ destinationProjection, error, exportText });
