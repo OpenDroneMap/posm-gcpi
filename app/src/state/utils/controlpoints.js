@@ -113,15 +113,10 @@ export const relatedPoints = (points, joins, id) => {
 export const validate = (points, joins) => {
   let errors = [];
 
-  if (points.length < 15) {
-    errors.push('A ground control point file must have a minimum of 15 points. There needs to be 5 control objects and each control object must have 3 image points referenced. Please see this <a href="https://github.com/OpenDroneMap/OpenDroneMap/wiki/Running-OpenDroneMap#running-odm-with-ground-control" target="_blank">article</a> for more information.');
-  }
-
-  if (errors.length) {
-    return {
-      valid: false,
-      errors
-    };
+  if (points.length === 0){
+    errors.push('There are no ground control points to export.');
+  }else if (points.length < 15) {
+    errors.push('A ground control point file should have a minimum of 15 points. There needs to be 5 control objects and each control object must have 3 image points referenced. Please see this <a href="https://github.com/OpenDroneMap/OpenDroneMap/wiki/Running-OpenDroneMap#running-odm-with-ground-control" target="_blank">article</a> for more information.');
   }
 
   let mapPoints = points.filter(pt => pt.type === CP_TYPES.MAP);
@@ -130,19 +125,19 @@ export const validate = (points, joins) => {
   let validObjects = joinKeys.filter(d => d.length >= 3);
 
   if (imgPointsLength < 9) {
-    errors.push('Need at least 10 image points.');
+    errors.push('It\'s recommended to have at least 10 image points.');
   }
 
   if (mapPoints.length < 5) {
-    errors.push('Seems you have enough image points but not enough control objects. There must be at least 5.');
+    errors.push('Seems you have enough image points but not enough control objects. There should be at least 5.');
   } else if (joinKeys.length < 5) {
-    errors.push('There must be at least 5 control points that have image points referenced.');
+    errors.push('There should be at least 5 control points that have image points referenced.');
   } else if (validObjects.length < 5) {
-    errors.push('Control objects must have at least 3 image points referenced.');
+    errors.push('Control objects should have at least 3 image points referenced.');
   }
 
   return {
-    valid: errors.length ? false : true,
+    valid: true,
     errors
   }
 };

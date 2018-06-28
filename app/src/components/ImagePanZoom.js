@@ -530,7 +530,7 @@ class ImagePanZoom extends Component {
               </li>
               {marker.isAutomatic ? (
                 <li>
-                  <a className='action' href='#' onClick={(evt) => {this.onActionLock(evt, marker);}}>Lock</a>
+                  <a className='action' href='#' onClick={(evt) => {this.onActionLock(evt, marker);}}>Deselect</a>
                 </li>
               ) : null}
             </ul>
