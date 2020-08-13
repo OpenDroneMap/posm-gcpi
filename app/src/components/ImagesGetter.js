@@ -92,7 +92,7 @@ class ImagesGetter extends Component {
               onDrop={this.onImagesDrop}
               activeStyle={DROPZONE_STYLE_ACTIVE}
               rejectStyle={DROPZONE_STYLE_REJECT}
-              accept='image/jpeg,image/png'>
+              accept='image/jpeg,image/png,image/tiff'>
               <div><b>Choose images</b> / drag here</div>
             </Dropzone>
           </div>

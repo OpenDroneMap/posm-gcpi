@@ -22,7 +22,7 @@ class Directions extends Component {
           <ol>
             <li>
               <span className='tc'><span className='circled'>1</span></span>
-              <span className='tc'>Upload images (jpeg or png).</span></li>
+              <span className='tc'>Upload images (jpeg/png/tiff).</span></li>
             <li>
               <span className='tc'><span className='circled'>2</span></span>
               <span className='tc'>Set a point in an image.</span>
